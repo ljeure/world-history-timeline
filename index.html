@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World History Timeline</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>World History Timeline</h1>
+            <p class="subtitle">An interactive visualization scaled by human experience</p>
+        </header>
+
+        <div class="controls">
+            <div class="search-section">
+                <input type="text" id="searchInput" placeholder="Search events..." autocomplete="off">
+            </div>
+
+            <div class="filter-section">
+                <h3>Topics</h3>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-category="all">All</button>
+                    <button class="filter-btn" data-category="people">People</button>
+                    <button class="filter-btn" data-category="political">Political Events</button>
+                    <button class="filter-btn" data-category="technology">Technology</button>
+                    <button class="filter-btn" data-category="civilizations">Civilizations</button>
+                    <button class="filter-btn" data-category="religion">Religion</button>
+                    <button class="filter-btn" data-category="science">Science & Philosophy</button>
+                    <button class="filter-btn" data-category="books">Books I've Read</button>
+                </div>
+            </div>
+
+            <div class="scale-toggle">
+                <label>
+                    <input type="checkbox" id="experienceScale" checked>
+                    Experience-based scaling
+                </label>
+            </div>
+
+            <div class="zoom-controls">
+                <button id="zoomOut">-</button>
+                <input type="range" id="zoomSlider" min="0.5" max="10" step="0.1" value="1">
+                <button id="zoomIn">+</button>
+                <button id="zoomReset">Reset</button>
+            </div>
+
+            <div class="data-controls">
+                <button id="exportData" title="Export your data">Export</button>
+                <button id="importData" title="Import data">Import</button>
+                <button id="resetLayout" title="Reset row arrangements">Reset Layout</button>
+                <button id="resetData" title="Reset to default data">Reset All</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;">
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <span id="eventCount">0 events</span>
+            <span id="timeRange"></span>
+        </div>
+
+        <div class="legend">
+            <span class="legend-item"><span class="legend-color people"></span>People</span>
+            <span class="legend-item"><span class="legend-color political"></span>Political</span>
+            <span class="legend-item"><span class="legend-color technology"></span>Technology</span>
+            <span class="legend-item"><span class="legend-color era-european"></span>European Eras</span>
+            <span class="legend-item"><span class="legend-color era-chinese"></span>Chinese Eras</span>
+            <span class="legend-item"><span class="legend-color religion"></span>Religion</span>
+            <span class="legend-item"><span class="legend-color science"></span>Science</span>
+            <span class="legend-item"><span class="legend-color books"></span>Books</span>
+        </div>
+
+        <div class="timeline-container">
+            <div class="timeline-scale">
+                <div class="scale-markers"></div>
+            </div>
+            <div class="timeline-content" id="timelineContent">
+                <!-- Timeline regions will be rendered here -->
+            </div>
+        </div>
+
+        <div class="event-detail-panel" id="eventDetailPanel">
+            <button class="close-panel" id="closePanel">&times;</button>
+            <h2 id="eventTitle"></h2>
+            <p class="event-date" id="eventDate"></p>
+            <p class="event-category" id="eventCategory"></p>
+            <div class="event-description" id="eventDescription"></div>
+            <div class="event-notes" id="eventNotes">
+                <h4>My Notes</h4>
+                <textarea id="notesInput" placeholder="Add your notes here..."></textarea>
+                <button id="saveNotes">Save Notes</button>
+            </div>
+            <div class="event-references" id="eventReferences">
+                <h4>References</h4>
+                <ul id="referencesList"></ul>
+                <button id="addReference">+ Add Reference</button>
+            </div>
+        </div>
+
+        <div class="add-event-modal" id="addEventModal">
+            <div class="modal-content">
+                <h2>Add New Event</h2>
+                <form id="addEventForm">
+                    <label>
+                        Title
+                        <input type="text" id="newEventTitle" required>
+                    </label>
+                    <label>
+                        Year (negative for BCE)
+                        <input type="number" id="newEventYear" required>
+                    </label>
+                    <label>
+                        End Year (optional, for periods)
+                        <input type="number" id="newEventEndYear">
+                    </label>
+                    <label>
+                        Region
+                        <select id="newEventRegion" required>
+                            <option value="subsaharan-africa">Subsaharan Africa</option>
+                            <option value="europe-middle-east">Europe & Middle East</option>
+                            <option value="asia">Asia</option>
+                            <option value="americas">The Americas</option>
+                            <option value="pacific">Pacific</option>
+                        </select>
+                    </label>
+                    <label>
+                        Category
+                        <select id="newEventCategory">
+                            <option value="people">People</option>
+                            <option value="political">Political Events</option>
+                            <option value="technology">Technology</option>
+                            <option value="civilizations">Civilizations</option>
+                            <option value="religion">Religion</option>
+                            <option value="science">Science & Philosophy</option>
+                            <option value="books">Books I've Read</option>
+                        </select>
+                    </label>
+                    <label>
+                        Subcategory (optional)
+                        <input type="text" id="newEventSubcategory">
+                    </label>
+                    <label>
+                        Description
+                        <textarea id="newEventDescription"></textarea>
+                    </label>
+                    <div class="modal-buttons">
+                        <button type="button" id="cancelAddEvent">Cancel</button>
+                        <button type="submit">Add Event</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="add-reference-modal" id="addReferenceModal">
+            <div class="modal-content">
+                <h2>Add Reference</h2>
+                <form id="addReferenceForm">
+                    <label>
+                        Type
+                        <select id="refType">
+                            <option value="book">Book</option>
+                            <option value="article">Article</option>
+                            <option value="podcast">Podcast</option>
+                            <option value="video">Video</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </label>
+                    <label>
+                        Title
+                        <input type="text" id="refTitle" required>
+                    </label>
+                    <label>
+                        URL (Goodreads, Spotify, etc.)
+                        <input type="url" id="refUrl">
+                    </label>
+                    <label>
+                        Status
+                        <select id="refStatus">
+                            <option value="to-read">To Read/Watch/Listen</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </label>
+                    <div class="modal-buttons">
+                        <button type="button" id="cancelAddReference">Cancel</button>
+                        <button type="submit">Add Reference</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <button class="add-event-btn" id="addEventBtn">+ Add Event</button>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
