@@ -14,14 +14,18 @@ class TimelineApp {
         this.init();
     }
 
-    init() {
+    async init() {
         console.log('Initializing timeline...');
-        loadData();
-        this.loadRowAssignments();
+        await loadData();
         console.log('Data loaded. Events:', timelineData.events.length);
         this.bindEvents();
         this.render();
         console.log('Render complete');
+
+        // Show server mode indicator
+        if (isServerMode) {
+            this.showToast('Connected - changes auto-save');
+        }
     }
 
     bindEvents() {
@@ -661,20 +665,8 @@ class TimelineApp {
     }
 
     saveRowAssignments() {
-        const saved = localStorage.getItem('worldHistoryTimeline');
-        let data = saved ? JSON.parse(saved) : {};
-        data.rowAssignments = timelineData.rowAssignments;
-        localStorage.setItem('worldHistoryTimeline', JSON.stringify(data));
-    }
-
-    loadRowAssignments() {
-        const saved = localStorage.getItem('worldHistoryTimeline');
-        if (saved) {
-            const data = JSON.parse(saved);
-            if (data.rowAssignments) {
-                timelineData.rowAssignments = data.rowAssignments;
-            }
-        }
+        // Now uses the unified saveData function
+        debouncedSave();
     }
 
     formatYear(year) {
@@ -763,7 +755,8 @@ class TimelineApp {
             year: parseInt(document.getElementById('newEventYear').value),
             category: document.getElementById('newEventCategory').value,
             region: document.getElementById('newEventRegion').value,
-            description: document.getElementById('newEventDescription').value
+            description: document.getElementById('newEventDescription').value,
+            userAdded: true
         };
 
         const endYear = document.getElementById('newEventEndYear').value;
@@ -804,7 +797,8 @@ class TimelineApp {
             title: document.getElementById('refTitle').value,
             type: document.getElementById('refType').value,
             url: document.getElementById('refUrl').value,
-            status: document.getElementById('refStatus').value
+            status: document.getElementById('refStatus').value,
+            userAdded: true
         };
 
         timelineData.references.push(newRef);
@@ -840,7 +834,7 @@ class TimelineApp {
     resetLayout() {
         if (confirm('This will reset all row arrangements to auto-layout. Continue?')) {
             timelineData.rowAssignments = {};
-            this.saveRowAssignments();
+            saveData();
             this.render();
             this.showToast('Layout reset to auto-arrange');
         }
@@ -848,8 +842,7 @@ class TimelineApp {
 
     resetData() {
         if (confirm('This will reset all data to defaults. Your notes and custom events will be lost. Continue?')) {
-            localStorage.removeItem('worldHistoryTimeline');
-            location.reload();
+            clearSavedData();
         }
     }
 

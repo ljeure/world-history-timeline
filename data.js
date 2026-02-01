@@ -181,48 +181,109 @@ function getNextReferenceId() {
     return Math.max(...timelineData.references.map(r => r.id)) + 1;
 }
 
-// Save data to localStorage
-function saveData() {
-    localStorage.setItem('worldHistoryTimeline', JSON.stringify({
-        events: timelineData.events,
-        references: timelineData.references,
-        notes: timelineData.notes
-    }));
+// Check if running on server (vs file://)
+const isServerMode = window.location.protocol !== 'file:';
+
+// Debounce helper for auto-save
+let saveTimeout = null;
+function debouncedSave() {
+    if (saveTimeout) clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => saveData(), 500);
 }
 
-// Load data from localStorage (only loads user additions, not replacing defaults)
-function loadData() {
-    const saved = localStorage.getItem('worldHistoryTimeline');
-    if (saved) {
+// Save data - to server if available, otherwise localStorage
+async function saveData() {
+    const userData = {
+        events: timelineData.events.filter(e => e.userAdded),
+        references: timelineData.references.filter(r => r.userAdded),
+        notes: timelineData.notes,
+        rowAssignments: timelineData.rowAssignments || {}
+    };
+
+    if (isServerMode) {
         try {
-            const data = JSON.parse(saved);
-            // Only load notes - don't override the default events
-            if (data.notes) timelineData.notes = data.notes;
-            // Merge user-added events (those with id > 200)
-            if (data.events) {
-                const userEvents = data.events.filter(e => e.id > 200);
-                userEvents.forEach(e => {
-                    if (!timelineData.events.find(existing => existing.id === e.id)) {
-                        timelineData.events.push(e);
-                    }
-                });
+            const response = await fetch('/api/data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userData)
+            });
+            if (response.ok) {
+                console.log('Data saved to server');
             }
-            if (data.references) {
-                const userRefs = data.references.filter(r => r.id > 10);
-                userRefs.forEach(r => {
-                    if (!timelineData.references.find(existing => existing.id === r.id)) {
-                        timelineData.references.push(r);
-                    }
-                });
+        } catch (err) {
+            console.error('Failed to save to server, falling back to localStorage:', err);
+            localStorage.setItem('worldHistoryTimeline', JSON.stringify(userData));
+        }
+    } else {
+        localStorage.setItem('worldHistoryTimeline', JSON.stringify(userData));
+    }
+}
+
+// Load data from server or localStorage
+async function loadData() {
+    let userData = null;
+
+    if (isServerMode) {
+        try {
+            const response = await fetch('/api/data');
+            if (response.ok) {
+                userData = await response.json();
+                console.log('Data loaded from server');
             }
-        } catch (e) {
-            console.error('Error loading saved data:', e);
+        } catch (err) {
+            console.error('Failed to load from server, trying localStorage:', err);
+        }
+    }
+
+    // Fallback to localStorage
+    if (!userData) {
+        const saved = localStorage.getItem('worldHistoryTimeline');
+        if (saved) {
+            try {
+                userData = JSON.parse(saved);
+            } catch (e) {
+                console.error('Error parsing localStorage data:', e);
+            }
+        }
+    }
+
+    // Merge user data with defaults
+    if (userData) {
+        if (userData.notes) timelineData.notes = userData.notes;
+        if (userData.rowAssignments) timelineData.rowAssignments = userData.rowAssignments;
+
+        // Add user events
+        if (userData.events) {
+            userData.events.forEach(e => {
+                e.userAdded = true;
+                if (!timelineData.events.find(existing => existing.id === e.id)) {
+                    timelineData.events.push(e);
+                }
+            });
+        }
+
+        // Add user references
+        if (userData.references) {
+            userData.references.forEach(r => {
+                r.userAdded = true;
+                if (!timelineData.references.find(existing => existing.id === r.id)) {
+                    timelineData.references.push(r);
+                }
+            });
         }
     }
 }
 
 // Clear saved data (for debugging)
 function clearSavedData() {
-    localStorage.removeItem('worldHistoryTimeline');
-    location.reload();
+    if (isServerMode) {
+        fetch('/api/data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ events: [], references: [], notes: {}, rowAssignments: {} })
+        }).then(() => location.reload());
+    } else {
+        localStorage.removeItem('worldHistoryTimeline');
+        location.reload();
+    }
 }
