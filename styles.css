@@ -509,6 +509,95 @@ header h1 {
     font-size: 0.9rem;
 }
 
+/* Category Section */
+.event-category-section {
+    margin-bottom: 15px;
+}
+
+.event-category-section label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.category-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.category-color-preview {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+#eventCategorySelect {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-size: 0.85rem;
+}
+
+.save-category-btn {
+    padding: 8px 12px;
+    background: var(--primary-color);
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.save-category-btn:hover {
+    opacity: 0.9;
+}
+
+/* Region Section */
+.event-region-section {
+    margin-bottom: 15px;
+    font-size: 0.85rem;
+}
+
+.event-region-section label {
+    color: var(--text-muted);
+    margin-right: 8px;
+}
+
+#eventRegion {
+    color: var(--text-color);
+    text-transform: capitalize;
+}
+
+/* Danger Zone */
+.event-danger-zone {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--secondary-color);
+}
+
+.delete-event-btn {
+    width: 100%;
+    padding: 10px 16px;
+    background: transparent;
+    border: 1px solid #e74c3c;
+    border-radius: 5px;
+    color: #e74c3c;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.delete-event-btn:hover {
+    background: #e74c3c;
+    color: white;
+}
+
 .event-notes, .event-references {
     margin-top: 15px;
     padding-top: 15px;
@@ -708,7 +797,409 @@ header h1 {
     transform: scale(1.05);
 }
 
-/* Responsive */
+/* ========================================
+   VIEW TABS
+   ======================================== */
+.view-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.view-tab {
+    padding: 10px 30px;
+    background: var(--secondary-color);
+    border: 2px solid var(--secondary-color);
+    color: var(--text-color);
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.view-tab:hover {
+    background: var(--surface-color);
+    border-color: var(--primary-color);
+}
+
+.view-tab.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* View Content Containers */
+.view-content {
+    display: none;
+}
+
+.view-content.active {
+    display: block;
+}
+
+/* ========================================
+   MAP VIEW
+   ======================================== */
+.map-view {
+    height: calc(100vh - 150px);
+    display: none;
+    flex-direction: column;
+}
+
+.map-view.active {
+    display: flex;
+}
+
+.map-controls {
+    background: var(--surface-color);
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.map-time-control {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.map-nav-btn, .map-play-btn {
+    padding: 8px 16px;
+    border: none;
+    background: var(--secondary-color);
+    color: var(--text-color);
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background 0.2s;
+}
+
+.map-nav-btn:hover, .map-play-btn:hover {
+    background: var(--primary-color);
+}
+
+.map-play-btn {
+    min-width: 80px;
+    background: var(--primary-color);
+}
+
+.map-year-display {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    min-width: 150px;
+    text-align: center;
+}
+
+.map-slider {
+    flex: 1;
+    min-width: 200px;
+    height: 8px;
+    -webkit-appearance: none;
+    background: var(--secondary-color);
+    border-radius: 4px;
+    outline: none;
+}
+
+.map-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.map-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+
+.map-speed-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+}
+
+.map-speed-control select {
+    padding: 5px 10px;
+    background: var(--bg-color);
+    border: 1px solid var(--secondary-color);
+    color: var(--text-color);
+    border-radius: 5px;
+}
+
+.map-scale-toggle {
+    display: flex;
+    align-items: center;
+}
+
+.map-scale-toggle label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.map-scale-toggle input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+/* Map Main Area */
+.map-main {
+    flex: 1;
+    display: flex;
+    gap: 15px;
+    min-height: 0;
+}
+
+.map-sidebar {
+    width: 220px;
+    background: var(--surface-color);
+    border-radius: 10px;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.map-sidebar h3 {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    color: var(--text-muted);
+}
+
+.empire-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.empire-list-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: var(--bg-color);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 0.8rem;
+}
+
+.empire-list-item:hover {
+    background: var(--secondary-color);
+}
+
+.empire-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+.empire-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.no-empires {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Map Container */
+.map-container {
+    flex: 1;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #72AED5;
+}
+
+/* Leaflet customizations */
+.leaflet-container {
+    background: #72AED5;
+    font-family: inherit;
+}
+
+.empire-tooltip {
+    background: var(--surface-color);
+    border: none;
+    border-radius: 5px;
+    color: var(--text-color);
+    font-size: 0.85rem;
+    padding: 5px 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.empire-tooltip::before {
+    display: none;
+}
+
+/* Empire Detail Modal */
+.empire-detail-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.empire-detail-modal.open {
+    display: flex;
+}
+
+.empire-modal-content {
+    background: var(--surface-color);
+    padding: 30px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 450px;
+    position: relative;
+}
+
+.empire-modal-content h2 {
+    margin-bottom: 10px;
+    padding-right: 30px;
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.empire-dates {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+.empire-description {
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: var(--text-muted);
+}
+
+.empire-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.add-to-timeline-btn {
+    flex: 1;
+    padding: 12px 20px;
+    background: var(--primary-color);
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.add-to-timeline-btn:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
+.add-to-timeline-btn:disabled {
+    background: var(--secondary-color);
+    cursor: not-allowed;
+}
+
+.save-edits-btn {
+    flex: 1;
+    padding: 12px 20px;
+    background: var(--religion-color);
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.save-edits-btn:hover {
+    opacity: 0.9;
+}
+
+/* Empire Edit Form */
+.empire-edit-form {
+    margin-bottom: 15px;
+}
+
+.empire-edit-form label {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.empire-edit-form input,
+.empire-edit-form select,
+.empire-edit-form textarea {
+    width: 100%;
+    padding: 8px 10px;
+    margin-top: 4px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+
+.empire-edit-form textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.empire-edit-form .form-row {
+    display: flex;
+    gap: 10px;
+}
+
+.empire-edit-form .form-row label {
+    flex: 1;
+}
+
+/* Map Toast */
+.map-toast {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    background: var(--primary-color);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 5px;
+    z-index: 3000;
+    transition: opacity 0.3s;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
 @media (max-width: 768px) {
     .controls {
         flex-direction: column;
@@ -728,5 +1219,33 @@ header h1 {
         width: 80px;
         min-width: 80px;
         font-size: 0.65rem;
+    }
+
+    /* Map responsive */
+    .map-main {
+        flex-direction: column;
+    }
+
+    .map-sidebar {
+        width: 100%;
+        max-height: 150px;
+    }
+
+    .map-time-control {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .map-year-display {
+        order: -1;
+    }
+
+    .view-tabs {
+        gap: 5px;
+    }
+
+    .view-tab {
+        padding: 8px 20px;
+        font-size: 0.8rem;
     }
 }

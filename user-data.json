@@ -1,11 +1,42 @@
 {
-  "events": [],
+  "events": [
+    {
+      "id": 214,
+      "title": "Maya Civilization",
+      "year": -2000,
+      "endYear": 1500,
+      "category": "civilizations",
+      "region": "americas",
+      "description": "Mesoamerican civilization known for writing, astronomy, and pyramids",
+      "userAdded": true,
+      "fromMap": true
+    }
+  ],
   "references": [],
   "notes": {},
   "rowAssignments": {
-    "europe-middle-east-210": 2,
+    "europe-middle-east-210": 0,
     "europe-middle-east-211": 0,
-    "europe-middle-east-209": 2,
-    "europe-middle-east-206": 2
+    "europe-middle-east-209": 0,
+    "europe-middle-east-206": 2,
+    "europe-middle-east-50": 0,
+    "europe-middle-east-212": 0,
+    "europe-middle-east-213": 0,
+    "europe-middle-east-95": 0,
+    "europe-middle-east-96": 0,
+    "europe-middle-east-61": 0,
+    "europe-middle-east-123": 2,
+    "europe-middle-east-121": 2,
+    "europe-middle-east-122": 2,
+    "europe-middle-east-48": 1,
+    "europe-middle-east-49": 1,
+    "europe-middle-east-120": 1,
+    "europe-middle-east-47": 2,
+    "asia-60": 0,
+    "asia-97": 0,
+    "asia-59": 0,
+    "asia-58": 0,
+    "asia-57": 0,
+    "asia-99": 0
   }
 }

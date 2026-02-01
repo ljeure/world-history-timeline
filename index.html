@@ -5,13 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>World History Timeline</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Leaflet CSS for Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
     <div class="app-container">
         <header>
             <h1>World History Timeline</h1>
             <p class="subtitle">An interactive visualization scaled by human experience</p>
+            <div class="view-tabs">
+                <button class="view-tab active" data-view="timeline">Timeline</button>
+                <button class="view-tab" data-view="map">World Map</button>
+            </div>
         </header>
+
+        <!-- Timeline View -->
+        <div class="view-content timeline-view active" id="timelineView">
 
         <div class="controls">
             <div class="search-section">
@@ -84,17 +93,47 @@
             <button class="close-panel" id="closePanel">&times;</button>
             <h2 id="eventTitle"></h2>
             <p class="event-date" id="eventDate"></p>
-            <p class="event-category" id="eventCategory"></p>
+
+            <div class="event-category-section">
+                <label>Category (determines color):</label>
+                <div class="category-selector">
+                    <span class="category-color-preview" id="categoryColorPreview"></span>
+                    <select id="eventCategorySelect">
+                        <option value="people">People</option>
+                        <option value="political">Political Events</option>
+                        <option value="technology">Technology</option>
+                        <option value="civilizations">Civilizations</option>
+                        <option value="era-european">European Eras</option>
+                        <option value="era-chinese">Chinese Eras</option>
+                        <option value="religion">Religion</option>
+                        <option value="science">Science & Philosophy</option>
+                        <option value="books">Books I've Read</option>
+                    </select>
+                    <button id="saveCategoryBtn" class="save-category-btn">Save</button>
+                </div>
+            </div>
+
+            <div class="event-region-section">
+                <label>Region:</label>
+                <span id="eventRegion"></span>
+            </div>
+
             <div class="event-description" id="eventDescription"></div>
+
             <div class="event-notes" id="eventNotes">
                 <h4>My Notes</h4>
                 <textarea id="notesInput" placeholder="Add your notes here..."></textarea>
                 <button id="saveNotes">Save Notes</button>
             </div>
+
             <div class="event-references" id="eventReferences">
                 <h4>References</h4>
                 <ul id="referencesList"></ul>
                 <button id="addReference">+ Add Reference</button>
+            </div>
+
+            <div class="event-danger-zone">
+                <button id="deleteEventBtn" class="delete-event-btn">Delete Event</button>
             </div>
         </div>
 
@@ -191,9 +230,118 @@
         </div>
 
         <button class="add-event-btn" id="addEventBtn">+ Add Event</button>
+
+        </div> <!-- End Timeline View -->
+
+        <!-- Map View -->
+        <div class="view-content map-view" id="mapView">
+            <div class="map-controls">
+                <div class="map-time-control">
+                    <button id="mapPrevEra" class="map-nav-btn" title="Previous Era">&lt;&lt;</button>
+                    <button id="mapPlayBtn" class="map-play-btn">Play</button>
+                    <button id="mapNextEra" class="map-nav-btn" title="Next Era">&gt;&gt;</button>
+                    <div class="map-year-display">
+                        <span id="mapYearDisplay">1 CE</span>
+                    </div>
+                    <input type="range" id="mapYearSlider" min="0" max="1000" value="500" class="map-slider">
+                    <div class="map-speed-control">
+                        <label>Speed:</label>
+                        <select id="mapSpeed">
+                            <option value="1">Slow</option>
+                            <option value="2" selected>Medium</option>
+                            <option value="3">Fast</option>
+                        </select>
+                    </div>
+                    <div class="map-scale-toggle">
+                        <label>
+                            <input type="checkbox" id="mapExperienceScale">
+                            People-years scale
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="map-main">
+                <div class="map-sidebar">
+                    <h3>Active Empires</h3>
+                    <div id="activeEmpiresList" class="empire-list"></div>
+                </div>
+                <div id="mapContainer" class="map-container"></div>
+            </div>
+        </div> <!-- End Map View -->
+
+        <!-- Empire Detail Modal (for Map) -->
+        <div class="empire-detail-modal" id="empireDetailModal">
+            <div class="modal-content empire-modal-content">
+                <button class="close-modal" id="closeEmpirePanel">&times;</button>
+                <h2 id="empireTitle"></h2>
+                <p class="empire-dates" id="empireDates"></p>
+
+                <!-- Info section (shown when not in timeline) -->
+                <div id="empireInfoSection">
+                    <p class="empire-description" id="empireDescription"></p>
+                </div>
+
+                <!-- Edit section (shown when in timeline) -->
+                <div id="empireEditSection" style="display: none;">
+                    <div class="empire-edit-form">
+                        <label>
+                            Title
+                            <input type="text" id="editEmpireTitle">
+                        </label>
+                        <div class="form-row">
+                            <label>
+                                Start Year
+                                <input type="number" id="editEmpireStartYear">
+                            </label>
+                            <label>
+                                End Year
+                                <input type="number" id="editEmpireEndYear">
+                            </label>
+                        </div>
+                        <label>
+                            Category
+                            <select id="editEmpireCategory">
+                                <option value="civilizations">Civilizations</option>
+                                <option value="people">People</option>
+                                <option value="political">Political Events</option>
+                                <option value="technology">Technology</option>
+                                <option value="religion">Religion</option>
+                                <option value="science">Science & Philosophy</option>
+                                <option value="books">Books I've Read</option>
+                            </select>
+                        </label>
+                        <label>
+                            Region
+                            <select id="editEmpireRegion">
+                                <option value="subsaharan-africa">Subsaharan Africa</option>
+                                <option value="europe-middle-east">Europe & Middle East</option>
+                                <option value="asia">Asia</option>
+                                <option value="americas">The Americas</option>
+                                <option value="pacific">Pacific</option>
+                            </select>
+                        </label>
+                        <label>
+                            Description
+                            <textarea id="editEmpireDescription" rows="3"></textarea>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="empire-actions">
+                    <button id="addEmpireToTimeline" class="add-to-timeline-btn">Add to Timeline</button>
+                    <button id="saveEmpireEdits" class="save-edits-btn" style="display: none;">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
+    <!-- Leaflet JS for Map -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="data.js"></script>
+    <script src="map-data.js"></script>
+    <script src="map.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

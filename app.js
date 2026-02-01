@@ -10,6 +10,9 @@ class TimelineApp {
         this.selectedEvent = null;
         this.timelineWidth = 2500;
         this.searchQuery = '';
+        this.wasDragging = false;
+        this.draggedEvent = null;
+        this.dragStartY = 0;
 
         this.init();
     }
@@ -29,6 +32,11 @@ class TimelineApp {
     }
 
     bindEvents() {
+        // View tabs
+        document.querySelectorAll('.view-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => this.handleTabSwitch(e));
+        });
+
         // Filter buttons
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', (e) => this.handleFilterClick(e));
@@ -66,6 +74,15 @@ class TimelineApp {
 
         // Save notes
         document.getElementById('saveNotes').addEventListener('click', () => this.saveNotes());
+
+        // Category selector
+        document.getElementById('eventCategorySelect').addEventListener('change', (e) => {
+            this.updateCategoryColorPreview(e.target.value);
+        });
+        document.getElementById('saveCategoryBtn').addEventListener('click', () => this.saveEventCategory());
+
+        // Delete event
+        document.getElementById('deleteEventBtn').addEventListener('click', () => this.deleteEvent());
 
         // Export/Import/Reset
         document.getElementById('exportData').addEventListener('click', () => this.exportData());
@@ -147,6 +164,23 @@ class TimelineApp {
                 this.zoom(zoomFactor);
             }
         }, { passive: false });
+    }
+
+    handleTabSwitch(e) {
+        const view = e.target.dataset.view;
+
+        // Update tab buttons
+        document.querySelectorAll('.view-tab').forEach(tab => tab.classList.remove('active'));
+        e.target.classList.add('active');
+
+        // Update view content
+        document.querySelectorAll('.view-content').forEach(content => content.classList.remove('active'));
+        document.getElementById(`${view}View`).classList.add('active');
+
+        // Initialize map if switching to map view
+        if (view === 'map') {
+            initMap();
+        }
     }
 
     handleFilterClick(e) {
@@ -585,6 +619,11 @@ class TimelineApp {
         e.target.style.opacity = '1';
         this.draggedEvent = null;
 
+        // Reset wasDragging after a short delay to allow click event to fire first
+        setTimeout(() => {
+            this.wasDragging = false;
+        }, 100);
+
         // Clean up all drop indicators and highlights
         document.querySelectorAll('.drop-indicator').forEach(el => el.remove());
         document.querySelectorAll('.region-timeline.drag-over').forEach(el => {
@@ -686,19 +725,83 @@ class TimelineApp {
             ? `${this.formatYear(event.year)} - ${this.formatYear(event.endYear)}`
             : this.formatYear(event.year);
 
-        let categoryDisplay = event.category.replace('era-', '').replace('-', ' ');
-        if (event.subcategory) categoryDisplay += ' / ' + event.subcategory;
-        if (event.region) {
-            const regionName = REGIONS.find(r => r.id === event.region)?.name || event.region;
-            categoryDisplay += ` (${regionName})`;
-        }
-        document.getElementById('eventCategory').textContent = categoryDisplay;
+        // Set category dropdown and color preview
+        const categorySelect = document.getElementById('eventCategorySelect');
+        categorySelect.value = event.category || 'civilizations';
+        this.updateCategoryColorPreview(event.category || 'civilizations');
+
+        // Set region display
+        const regionName = REGIONS.find(r => r.id === event.region)?.name || event.region || 'Unknown';
+        document.getElementById('eventRegion').textContent = regionName;
+
         document.getElementById('eventDescription').textContent = event.description || 'No description available.';
 
         document.getElementById('notesInput').value = timelineData.notes[event.id] || '';
         this.renderReferences(event.id);
 
         document.getElementById('eventDetailPanel').classList.add('open');
+    }
+
+    updateCategoryColorPreview(category) {
+        const colorMap = {
+            'people': 'var(--people-color)',
+            'political': 'var(--political-color)',
+            'technology': 'var(--technology-color)',
+            'civilizations': 'var(--civilizations-color)',
+            'era-european': 'var(--era-european-color)',
+            'era-chinese': 'var(--era-chinese-color)',
+            'religion': 'var(--religion-color)',
+            'science': 'var(--science-color)',
+            'books': 'var(--books-color)'
+        };
+        const preview = document.getElementById('categoryColorPreview');
+        preview.style.background = colorMap[category] || 'var(--civilizations-color)';
+    }
+
+    saveEventCategory() {
+        if (!this.selectedEvent) return;
+
+        const newCategory = document.getElementById('eventCategorySelect').value;
+        this.selectedEvent.category = newCategory;
+
+        // Mark as user-modified if not already
+        if (!this.selectedEvent.userAdded) {
+            this.selectedEvent.userAdded = true;
+        }
+
+        saveData();
+        this.render();
+        this.updateCategoryColorPreview(newCategory);
+        this.showToast('Category updated!');
+    }
+
+    deleteEvent() {
+        if (!this.selectedEvent) return;
+
+        const eventTitle = this.selectedEvent.title;
+        if (!confirm(`Are you sure you want to delete "${eventTitle}"? This cannot be undone.`)) {
+            return;
+        }
+
+        // Remove from events array
+        const index = timelineData.events.findIndex(e => e.id === this.selectedEvent.id);
+        if (index > -1) {
+            timelineData.events.splice(index, 1);
+        }
+
+        // Remove any notes for this event
+        delete timelineData.notes[this.selectedEvent.id];
+
+        // Remove any row assignments for this event
+        if (timelineData.rowAssignments) {
+            const key = `${this.selectedEvent.region}-${this.selectedEvent.id}`;
+            delete timelineData.rowAssignments[key];
+        }
+
+        saveData();
+        this.closeDetailPanel();
+        this.render();
+        this.showToast(`"${eventTitle}" deleted`);
     }
 
     renderReferences(eventId) {
