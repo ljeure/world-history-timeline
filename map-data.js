@@ -1,5 +1,5 @@
 // Historical Empire/Civilization Data with simplified GeoJSON boundaries
-// Each empire has: id, name, startYear, endYear, color, and boundary coordinates
+// Each empire links to a societal entity via entityId
 
 const historicalEmpires = [
     // Ancient Near East
@@ -9,7 +9,7 @@ const historicalEmpires = [
         startYear: -2334,
         endYear: -2154,
         color: '#8B4513',
-        category: 'civilizations',
+        entityId: 'akkad',
         region: 'europe-middle-east',
         description: 'First ancient empire of Mesopotamia, founded by Sargon of Akkad',
         coordinates: [
@@ -22,7 +22,7 @@ const historicalEmpires = [
         startYear: -1894,
         endYear: -1595,
         color: '#DAA520',
-        category: 'civilizations',
+        entityId: 'babylon',
         region: 'europe-middle-east',
         description: 'Ancient Mesopotamian empire, known for Hammurabi\'s Code',
         coordinates: [
@@ -35,7 +35,7 @@ const historicalEmpires = [
         startYear: -626,
         endYear: -539,
         color: '#B8860B',
-        category: 'civilizations',
+        entityId: 'babylon',
         region: 'europe-middle-east',
         description: 'Chaldean dynasty, built the Hanging Gardens',
         coordinates: [
@@ -48,7 +48,7 @@ const historicalEmpires = [
         startYear: -911,
         endYear: -609,
         color: '#800000',
-        category: 'civilizations',
+        entityId: 'assyria',
         region: 'europe-middle-east',
         description: 'Powerful Mesopotamian empire known for military prowess',
         coordinates: [
@@ -63,7 +63,7 @@ const historicalEmpires = [
         startYear: -2686,
         endYear: -2181,
         color: '#FFD700',
-        category: 'civilizations',
+        entityId: null, // No entity yet
         region: 'subsaharan-africa',
         description: 'Age of the pyramids, powerful pharaonic rule',
         coordinates: [
@@ -76,7 +76,7 @@ const historicalEmpires = [
         startYear: -1550,
         endYear: -1077,
         color: '#FFA500',
-        category: 'civilizations',
+        entityId: null, // No entity yet
         region: 'subsaharan-africa',
         description: 'Height of Egyptian power, Tutankhamun and Ramesses II',
         coordinates: [
@@ -91,7 +91,7 @@ const historicalEmpires = [
         startYear: -550,
         endYear: -330,
         color: '#4169E1',
-        category: 'civilizations',
+        entityId: 'achaemenid',
         region: 'europe-middle-east',
         description: 'First Persian Empire, founded by Cyrus the Great. Largest empire of ancient history.',
         coordinates: [
@@ -104,7 +104,7 @@ const historicalEmpires = [
         startYear: -247,
         endYear: 224,
         color: '#6A5ACD',
-        category: 'civilizations',
+        entityId: 'parthia',
         region: 'europe-middle-east',
         description: 'Iranian empire and major rival of Rome',
         coordinates: [
@@ -117,7 +117,7 @@ const historicalEmpires = [
         startYear: 224,
         endYear: 651,
         color: '#483D8B',
-        category: 'civilizations',
+        entityId: 'sasanian',
         region: 'europe-middle-east',
         description: 'Last pre-Islamic Persian Empire, rival to Rome and Byzantium',
         coordinates: [
@@ -132,7 +132,7 @@ const historicalEmpires = [
         startYear: -336,
         endYear: -323,
         color: '#9932CC',
-        category: 'civilizations',
+        entityId: 'macedon',
         region: 'europe-middle-east',
         description: 'Empire of Alexander the Great, from Greece to India',
         coordinates: [
@@ -145,7 +145,7 @@ const historicalEmpires = [
         startYear: -312,
         endYear: -63,
         color: '#BA55D3',
-        category: 'civilizations',
+        entityId: 'seleucid',
         region: 'europe-middle-east',
         description: 'Hellenistic successor state, controlled Persia and Near East',
         coordinates: [
@@ -160,7 +160,7 @@ const historicalEmpires = [
         startYear: -509,
         endYear: -27,
         color: '#DC143C',
-        category: 'civilizations',
+        entityId: 'roman-republic',
         region: 'europe-middle-east',
         description: 'Roman state governed by elected officials',
         coordinates: [
@@ -173,7 +173,7 @@ const historicalEmpires = [
         startYear: -27,
         endYear: 476,
         color: '#B22222',
-        category: 'civilizations',
+        entityId: 'roman-empire',
         region: 'europe-middle-east',
         description: 'One of the largest empires in ancient history at its peak',
         coordinates: [
@@ -186,7 +186,7 @@ const historicalEmpires = [
         startYear: 330,
         endYear: 1453,
         color: '#800080',
-        category: 'civilizations',
+        entityId: 'byzantine',
         region: 'europe-middle-east',
         description: 'Eastern Roman Empire, preserved Roman and Greek culture',
         coordinates: [
@@ -201,7 +201,7 @@ const historicalEmpires = [
         startYear: 632,
         endYear: 661,
         color: '#228B22',
-        category: 'civilizations',
+        entityId: 'rashidun',
         region: 'europe-middle-east',
         description: 'First caliphate after Muhammad, rapid expansion',
         coordinates: [
@@ -214,7 +214,7 @@ const historicalEmpires = [
         startYear: 661,
         endYear: 750,
         color: '#006400',
-        category: 'civilizations',
+        entityId: 'umayyad',
         region: 'europe-middle-east',
         description: 'Second caliphate, expanded Islam from Spain to India',
         coordinates: [
@@ -227,7 +227,7 @@ const historicalEmpires = [
         startYear: 750,
         endYear: 1258,
         color: '#2E8B57',
-        category: 'civilizations',
+        entityId: 'abbasid',
         region: 'europe-middle-east',
         description: 'Islamic Golden Age, center of learning in Baghdad',
         coordinates: [
@@ -240,7 +240,7 @@ const historicalEmpires = [
         startYear: 1299,
         endYear: 1922,
         color: '#FF4500',
-        category: 'civilizations',
+        entityId: 'ottoman',
         region: 'europe-middle-east',
         description: 'Major empire spanning Southeast Europe, Western Asia, and North Africa',
         coordinates: [
@@ -255,7 +255,7 @@ const historicalEmpires = [
         startYear: 1206,
         endYear: 1368,
         color: '#8B0000',
-        category: 'civilizations',
+        entityId: 'mongol',
         region: 'asia',
         description: 'Largest contiguous land empire in history, founded by Genghis Khan',
         coordinates: [
@@ -270,7 +270,7 @@ const historicalEmpires = [
         startYear: -206,
         endYear: 220,
         color: '#FF6347',
-        category: 'civilizations',
+        entityId: null, // No entity yet - add han entity if needed
         region: 'asia',
         description: 'Golden age of Chinese civilization, Silk Road trade',
         coordinates: [
@@ -283,7 +283,7 @@ const historicalEmpires = [
         startYear: 618,
         endYear: 907,
         color: '#FF7F50',
-        category: 'civilizations',
+        entityId: 'tang',
         region: 'asia',
         description: 'Golden age of Chinese civilization, poetry and art',
         coordinates: [
@@ -296,7 +296,7 @@ const historicalEmpires = [
         startYear: 960,
         endYear: 1279,
         color: '#E9967A',
-        category: 'civilizations',
+        entityId: 'song',
         region: 'asia',
         description: 'Era of economic and technological advancement',
         coordinates: [
@@ -309,7 +309,7 @@ const historicalEmpires = [
         startYear: 1271,
         endYear: 1368,
         color: '#CD5C5C',
-        category: 'civilizations',
+        entityId: 'yuan',
         region: 'asia',
         description: 'Mongol-led dynasty founded by Kublai Khan',
         coordinates: [
@@ -322,7 +322,7 @@ const historicalEmpires = [
         startYear: 1368,
         endYear: 1644,
         color: '#F08080',
-        category: 'civilizations',
+        entityId: 'ming',
         region: 'asia',
         description: 'Era known for trade expansion and iconic architecture',
         coordinates: [
@@ -335,7 +335,7 @@ const historicalEmpires = [
         startYear: 1644,
         endYear: 1912,
         color: '#FA8072',
-        category: 'civilizations',
+        entityId: 'qing',
         region: 'asia',
         description: 'Last imperial dynasty of China, largest Qing territory',
         coordinates: [
@@ -350,7 +350,7 @@ const historicalEmpires = [
         startYear: -322,
         endYear: -185,
         color: '#20B2AA',
-        category: 'civilizations',
+        entityId: null, // No entity yet
         region: 'asia',
         description: 'First empire to unify most of India, founded by Chandragupta',
         coordinates: [
@@ -363,7 +363,7 @@ const historicalEmpires = [
         startYear: 320,
         endYear: 550,
         color: '#48D1CC',
-        category: 'civilizations',
+        entityId: null, // No entity yet
         region: 'asia',
         description: 'Golden Age of India, advances in science and art',
         coordinates: [
@@ -376,7 +376,7 @@ const historicalEmpires = [
         startYear: 1526,
         endYear: 1857,
         color: '#40E0D0',
-        category: 'civilizations',
+        entityId: null, // No entity yet
         region: 'asia',
         description: 'Islamic empire in Indian subcontinent, built Taj Mahal',
         coordinates: [
@@ -391,7 +391,7 @@ const historicalEmpires = [
         startYear: 768,
         endYear: 843,
         color: '#4682B4',
-        category: 'civilizations',
+        entityId: null, // No entity yet
         region: 'europe-middle-east',
         description: 'Empire of Charlemagne, predecessor to France and Germany',
         coordinates: [
@@ -404,7 +404,7 @@ const historicalEmpires = [
         startYear: 962,
         endYear: 1806,
         color: '#5F9EA0',
-        category: 'civilizations',
+        entityId: null, // No entity yet
         region: 'europe-middle-east',
         description: 'Multi-ethnic complex of territories in Central Europe',
         coordinates: [
@@ -417,7 +417,7 @@ const historicalEmpires = [
         startYear: 1492,
         endYear: 1898,
         color: '#FFD700',
-        category: 'civilizations',
+        entityId: null, // No entity yet
         region: 'europe-middle-east',
         description: 'Global colonial empire, first to be called "empire on which the sun never sets"',
         coordinates: [
@@ -430,7 +430,7 @@ const historicalEmpires = [
         startYear: 1583,
         endYear: 1997,
         color: '#DC143C',
-        category: 'civilizations',
+        entityId: 'england',
         region: 'europe-middle-east',
         description: 'Largest empire in history by land area',
         coordinates: [
@@ -445,7 +445,7 @@ const historicalEmpires = [
         startYear: -2000,
         endYear: 1500,
         color: '#32CD32',
-        category: 'civilizations',
+        entityId: null, // No entity yet
         region: 'americas',
         description: 'Mesoamerican civilization known for writing, astronomy, and pyramids',
         coordinates: [
@@ -458,7 +458,7 @@ const historicalEmpires = [
         startYear: 1428,
         endYear: 1521,
         color: '#228B22',
-        category: 'civilizations',
+        entityId: null, // No entity yet
         region: 'americas',
         description: 'Mesoamerican empire centered at Tenochtitlan',
         coordinates: [
@@ -471,7 +471,7 @@ const historicalEmpires = [
         startYear: 1438,
         endYear: 1533,
         color: '#FFD700',
-        category: 'civilizations',
+        entityId: null, // No entity yet
         region: 'americas',
         description: 'Largest empire in pre-Columbian America',
         coordinates: [
@@ -489,6 +489,9 @@ function getEmpiresForYear(year) {
 
 // Convert coordinates to GeoJSON polygon
 function empireToGeoJSON(empire) {
+    // Get entity if available for additional data
+    const entity = empire.entityId ? getEntityById(empire.entityId) : null;
+
     return {
         type: 'Feature',
         properties: {
@@ -497,7 +500,9 @@ function empireToGeoJSON(empire) {
             startYear: empire.startYear,
             endYear: empire.endYear,
             color: empire.color,
-            category: empire.category,
+            entityId: empire.entityId,
+            // Backwards compatibility: derive category from entity type
+            category: entity ? (entity.type === 'country' ? 'civilizations' : entity.type) : 'civilizations',
             region: empire.region,
             description: empire.description
         },
@@ -515,4 +520,15 @@ function getEmpiresGeoJSON(year) {
         type: 'FeatureCollection',
         features: empires.map(empireToGeoJSON)
     };
+}
+
+// Helper: Get entity by ID (references function from data.js)
+// This is a fallback if getEntityById is not available
+if (typeof getEntityById === 'undefined') {
+    function getEntityById(id) {
+        if (typeof timelineData !== 'undefined' && timelineData.entities) {
+            return timelineData.entities.find(e => e.id === id);
+        }
+        return null;
+    }
 }
