@@ -20,6 +20,7 @@ class TimelineApp {
     async init() {
         console.log('Initializing timeline...');
         await loadData();
+        initializeTimelineData(); // Ensure categories are set before rendering
         console.log('Data loaded. Events:', timelineData.events.length);
         this.bindEvents();
         this.render();
@@ -267,29 +268,24 @@ class TimelineApp {
             const filters = Array.isArray(this.currentFilter) ? this.currentFilter : [this.currentFilter];
             events = events.filter(e => {
                 return filters.some(f => {
-                    if (f === 'people') {
-                        return e.category === 'people';
+                    // New entity-type based filtering
+                    if (f === 'period') {
+                        return e.category === 'period' || e.entityType === 'period';
                     }
-                    if (f === 'political') {
-                        return e.category === 'political';
-                    }
-                    if (f === 'technology') {
-                        return e.category === 'technology';
-                    }
-                    if (f === 'civilizations') {
-                        return e.category === 'civilizations' ||
-                               e.category === 'era-european' ||
-                               e.category === 'era-chinese';
+                    if (f === 'state') {
+                        return e.category === 'state' || e.entityType === 'state';
                     }
                     if (f === 'religion') {
-                        return e.category === 'religion' || e.subcategory === 'religious';
+                        return e.category === 'religion' || e.entityType === 'religion';
                     }
-                    if (f === 'science') {
-                        return e.category === 'science' || e.subcategory === 'science';
+                    if (f === 'culture') {
+                        return e.category === 'culture' || e.entityType === 'culture';
                     }
-                    if (f === 'books') {
-                        return e.category === 'books';
+                    if (f === 'event') {
+                        // Events are items that aren't entities or periods
+                        return e.category === 'event' || (!e.isEntity && !e.isPeriod && !e.entityType);
                     }
+                    // Direct category match for any other filters
                     return e.category === f;
                 });
             });
@@ -457,23 +453,30 @@ class TimelineApp {
         const rowAssignments = timelineData.rowAssignments || {};
 
         // Category order (top to bottom):
-        // 1. Civilizations/Eras, 2. Religion, 3. Science, 4. Technology, 5. Political, 6. People, 7. Books
+        // 1. Periods (background), 2. States, 3. Cultures, 4. Religions, 5. Events
         const categoryOrder = {
-            'era-european': 0,
-            'era-chinese': 1,
-            'civilizations': 2,
+            // New entity-type categories
+            'period': 0,
+            'state': 1,
+            'culture': 2,
             'religion': 3,
+            'event': 4,
+            // Legacy categories for backwards compat
+            'era-european': 2,
+            'era-chinese': 2,
+            'civilizations': 1,
             'science': 4,
-            'technology': 5,
-            'political': 6,
-            'people': 7,
-            'books': 8
+            'technology': 4,
+            'political': 4,
+            'people': 4,
+            'books': 4
         };
 
         const getCategoryOrder = (event) => {
-            // Check subcategory first for people with religious/science subcategories
-            if (event.subcategory === 'religious') return categoryOrder['religion'];
-            if (event.subcategory === 'science') return categoryOrder['science'];
+            // Use entityType if available, otherwise fall back to category
+            if (event.entityType) {
+                return categoryOrder[event.entityType] ?? 99;
+            }
             return categoryOrder[event.category] ?? 99;
         };
 
@@ -526,8 +529,10 @@ class TimelineApp {
             // Auto-layout the rest within this category group
             autoEvents.forEach(event => {
                 const startPos = this.yearToPosition(event.year);
-                const endPos = event.endYear ? this.yearToPosition(event.endYear) : startPos + 60;
-                const width = Math.max(endPos - startPos, 20);
+                const endPos = event.endYear ? this.yearToPosition(event.endYear) : startPos;
+                const rawWidth = endPos - startPos;
+                const isFlag = rawWidth < 80;
+                const width = isFlag ? Math.max(event.title.length * 5 + 30, 80) : Math.max(rawWidth, 20);
 
                 let placed = false;
 
@@ -536,8 +541,10 @@ class TimelineApp {
                     const rowEvents = rows[i];
                     const canFit = rowEvents.every(existing => {
                         const existingStart = this.yearToPosition(existing.year);
-                        const existingEnd = existing.endYear ? this.yearToPosition(existing.endYear) : existingStart + 60;
-                        const existingWidth = Math.max(existingEnd - existingStart, 20);
+                        const existingEnd = existing.endYear ? this.yearToPosition(existing.endYear) : existingStart;
+                        const existingRawWidth = existingEnd - existingStart;
+                        const existingIsFlag = existingRawWidth < 80;
+                        const existingWidth = existingIsFlag ? Math.max(existing.title.length * 5 + 30, 80) : Math.max(existingRawWidth, 20);
 
                         return startPos >= existingStart + existingWidth + 5 ||
                                startPos + width + 5 <= existingStart;
@@ -563,31 +570,67 @@ class TimelineApp {
     createEventElement(event, rowIndex) {
         const div = document.createElement('div');
         const isPeriod = event.endYear && (event.endYear - event.year) > 30;
-        const isEra = event.category.startsWith('era-');
+        const isEra = event.category && event.category.startsWith('era-');
 
         let categoryClass = event.category;
         if (isEra) {
             categoryClass = event.category;
         }
 
-        div.className = `timeline-event ${categoryClass} ${isPeriod ? 'period' : ''} ${isEra ? 'era' : ''}`;
+        const startPos = this.yearToPosition(event.year);
+        const endPos = event.endYear ? this.yearToPosition(event.endYear) : startPos;
+        const rawWidth = endPos - startPos;
+        const isFlag = rawWidth < 80;
+
         div.draggable = true;
         div.dataset.eventId = event.id;
         div.dataset.region = event.region;
-
-        const startPos = this.yearToPosition(event.year);
-        const endPos = event.endYear ? this.yearToPosition(event.endYear) : startPos;
-        const eventWidth = Math.max(endPos - startPos, isPeriod ? 40 : 20);
-
         div.style.left = `${startPos}px`;
-        div.style.width = `${eventWidth}px`;
         div.style.top = `${rowIndex * 32 + 5}px`;
 
-        // Create inner content with smart label
-        const labelSpan = document.createElement('span');
-        labelSpan.className = 'event-label';
-        labelSpan.textContent = event.title;
-        div.appendChild(labelSpan);
+        if (isFlag) {
+            div.className = `timeline-event flag-event ${categoryClass}`;
+
+            // Set flag color via CSS custom property
+            const flagColorMap = {
+                'period': 'var(--period-color)',
+                'state': 'var(--state-color)',
+                'religion': 'var(--religion-color)',
+                'culture': 'var(--culture-color)',
+                'event': 'var(--event-color)',
+                'people': 'var(--people-color)',
+                'political': 'var(--political-color)',
+                'technology': 'var(--technology-color)',
+                'civilizations': 'var(--civilizations-color)',
+                'science': 'var(--science-color)',
+                'books': 'var(--books-color)',
+                'era-european': 'var(--era-european-color)',
+                'era-chinese': 'var(--era-chinese-color)',
+            };
+            div.style.setProperty('--flag-color', flagColorMap[event.category] || 'var(--event-color)');
+
+            const dot = document.createElement('div');
+            dot.className = 'flag-dot';
+            div.appendChild(dot);
+
+            const stem = document.createElement('div');
+            stem.className = 'flag-stem';
+            div.appendChild(stem);
+
+            const labelSpan = document.createElement('span');
+            labelSpan.className = 'flag-label';
+            labelSpan.textContent = event.title;
+            div.appendChild(labelSpan);
+        } else {
+            div.className = `timeline-event ${categoryClass} ${isPeriod ? 'period' : ''} ${isEra ? 'era' : ''}`;
+            const eventWidth = Math.max(rawWidth, isPeriod ? 40 : 20);
+            div.style.width = `${eventWidth}px`;
+
+            const labelSpan = document.createElement('span');
+            labelSpan.className = 'event-label';
+            labelSpan.textContent = event.title;
+            div.appendChild(labelSpan);
+        }
 
         // Tooltip with full info
         div.title = `${event.title}\n${this.formatYear(event.year)}${event.endYear ? ' - ' + this.formatYear(event.endYear) : ''}\n${event.description || ''}\n\nDrag to reorder rows`;
@@ -744,18 +787,24 @@ class TimelineApp {
 
     updateCategoryColorPreview(category) {
         const colorMap = {
+            // New entity-type colors
+            'period': 'var(--period-color)',
+            'state': 'var(--state-color)',
+            'religion': 'var(--religion-color)',
+            'culture': 'var(--culture-color)',
+            'event': 'var(--event-color)',
+            // Legacy colors
             'people': 'var(--people-color)',
             'political': 'var(--political-color)',
             'technology': 'var(--technology-color)',
             'civilizations': 'var(--civilizations-color)',
             'era-european': 'var(--era-european-color)',
             'era-chinese': 'var(--era-chinese-color)',
-            'religion': 'var(--religion-color)',
             'science': 'var(--science-color)',
             'books': 'var(--books-color)'
         };
         const preview = document.getElementById('categoryColorPreview');
-        preview.style.background = colorMap[category] || 'var(--civilizations-color)';
+        preview.style.background = colorMap[category] || 'var(--state-color)';
     }
 
     saveEventCategory() {
@@ -867,9 +916,9 @@ class TimelineApp {
             newEvent.endYear = parseInt(endYear);
         }
 
-        const subcategory = document.getElementById('newEventSubcategory').value;
-        if (subcategory) {
-            newEvent.subcategory = subcategory;
+        const subcategoryEl = document.getElementById('newEventSubcategory');
+        if (subcategoryEl && subcategoryEl.value) {
+            newEvent.subcategory = subcategoryEl.value;
         }
 
         timelineData.events.push(newEvent);
