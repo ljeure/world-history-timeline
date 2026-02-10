@@ -491,6 +491,33 @@ header h1 {
     pointer-events: auto;
 }
 
+/* Narrow bar events: time-spanning but too small for internal text */
+.timeline-event.narrow-bar-event {
+    overflow: visible;
+    min-width: 4px;
+}
+
+.narrow-bar-label {
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 4px);
+    transform: translateY(-50%);
+    white-space: nowrap;
+    font-size: 0.65rem;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: var(--flag-color);
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.timeline-event.narrow-bar-event:hover .narrow-bar-label {
+    filter: brightness(1.3);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
 /* Event colors by entity type (new knowledge map system) */
 .timeline-event.period { background: var(--period-color); opacity: 0.6; }
 .timeline-event.state { background: var(--state-color); }
@@ -564,41 +591,67 @@ header h1 {
     cursor: pointer;
 }
 
-.event-detail-panel h2 {
-    margin-bottom: 10px;
-    padding-right: 30px;
-    font-size: 1.3rem;
-}
-
-.event-date {
-    color: var(--primary-color);
-    font-size: 1rem;
-    margin-bottom: 5px;
-}
-
-.event-category {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    margin-bottom: 15px;
-    text-transform: capitalize;
-}
-
-.event-description {
-    line-height: 1.5;
-    margin-bottom: 20px;
-    font-size: 0.9rem;
-}
-
-/* Category Section */
-.event-category-section {
+/* Event Edit Fields */
+.event-edit-fields {
     margin-bottom: 15px;
 }
 
-.event-category-section label {
+.event-edit-fields label {
     display: block;
     font-size: 0.8rem;
     color: var(--text-muted);
-    margin-bottom: 6px;
+    margin-bottom: 12px;
+}
+
+.event-edit-fields input[type="text"],
+.event-edit-fields input[type="number"],
+.event-edit-fields select,
+.event-edit-fields textarea {
+    width: 100%;
+    padding: 8px 10px;
+    margin-top: 4px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+
+.event-edit-fields textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.event-edit-fields input[type="text"]:first-child {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.event-year-row {
+    display: flex;
+    gap: 10px;
+}
+
+.event-year-row label {
+    flex: 1;
+}
+
+.event-edit-fields .save-edits-btn {
+    width: 100%;
+    padding: 10px 16px;
+    background: var(--primary-color);
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-top: 5px;
+    transition: opacity 0.2s;
+}
+
+.event-edit-fields .save-edits-btn:hover {
+    opacity: 0.9;
 }
 
 .category-selector {
@@ -622,20 +675,6 @@ header h1 {
     background: var(--bg-color);
     color: var(--text-color);
     font-size: 0.85rem;
-}
-
-.save-category-btn {
-    padding: 8px 12px;
-    background: var(--primary-color);
-    border: none;
-    border-radius: 5px;
-    color: white;
-    font-size: 0.8rem;
-    cursor: pointer;
-}
-
-.save-category-btn:hover {
-    opacity: 0.9;
 }
 
 /* Region Section */

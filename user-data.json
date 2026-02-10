@@ -1,42 +1,171 @@
 {
   "events": [
     {
-      "id": 214,
-      "title": "Maya Civilization",
-      "year": -2000,
-      "endYear": 1500,
-      "category": "civilizations",
+      "id": 201,
+      "title": "Out of Africa migration",
+      "year": -70000,
+      "endYear": -50000,
+      "entityIds": [
+        "early-humans"
+      ],
+      "region": "subsaharan-africa",
+      "description": "Humans migrate out of Africa to populate the world",
+      "category": "event",
+      "userAdded": true
+    },
+    {
+      "id": 203,
+      "title": "Last glacial maximum",
+      "year": -26000,
+      "endYear": -19000,
+      "entityIds": [
+        "paleolithic"
+      ],
       "region": "americas",
-      "description": "Mesoamerican civilization known for writing, astronomy, and pyramids",
+      "description": "Last Glacial Maximum - ice sheets at their greatest extent. Lets people get to Americas",
+      "category": "event",
+      "userAdded": true
+    },
+    {
+      "id": 206,
+      "title": "First cities emerge",
+      "year": -6000,
+      "endYear": -4000,
+      "entityIds": [
+        "neolithic"
+      ],
+      "region": "europe-middle-east",
+      "description": "Çatalhöyük, Jericho, and other early urban settlements",
+      "category": "state",
+      "userAdded": true
+    },
+    {
+      "id": 209,
+      "title": "The Last Supper (da Vinci)",
+      "year": 1498,
+      "category": "event",
+      "region": "europe-middle-east",
+      "description": "",
+      "userAdded": true
+    },
+    {
+      "id": "entity-renaissance",
+      "title": "Renaissance",
+      "year": 1300,
+      "endYear": 1600,
+      "entityIds": [
+        "renaissance"
+      ],
+      "category": "period",
+      "entityType": "culture",
+      "region": "europe-middle-east",
+      "description": "Cultural rebirth in Europe, bridging Middle Ages and Modern era",
+      "isEntity": true,
+      "userAdded": true
+    },
+    {
+      "id": "entity-enlightenment",
+      "title": "Enlightenment",
+      "year": 1600,
+      "endYear": 1789,
+      "entityIds": [
+        "enlightenment"
+      ],
+      "category": "period",
+      "entityType": "culture",
+      "region": "europe-middle-east",
+      "description": "Age of Reason emphasizing science and rational thought",
+      "isEntity": true,
+      "userAdded": true
+    },
+    {
+      "id": "period-europe-middle-ages",
+      "title": "Middle Ages",
+      "year": 476,
+      "endYear": 1300,
+      "entityIds": [],
+      "category": "period",
+      "entityType": "period",
+      "region": "europe-middle-east",
+      "description": "Medieval period after fall of Rome",
+      "isPeriod": true,
+      "userAdded": true
+    },
+    {
+      "id": null,
+      "title": "Black Death",
+      "year": 1346,
+      "category": "event",
+      "region": "europe-middle-east",
+      "description": "",
       "userAdded": true,
-      "fromMap": true
+      "endYear": 1353
+    },
+    {
+      "id": null,
+      "title": "Carolingian dynasty",
+      "year": 751,
+      "category": "state",
+      "region": "europe-middle-east",
+      "description": "",
+      "userAdded": true,
+      "endYear": 888
     }
   ],
+  "entities": [],
   "references": [],
-  "notes": {},
+  "insights": [],
+  "notes": {
+    "201": "",
+    "period-europe-bronze-age": "Widespread bronze tools, rise of complex societies"
+  },
   "rowAssignments": {
-    "europe-middle-east-210": 0,
-    "europe-middle-east-211": 0,
-    "europe-middle-east-209": 0,
-    "europe-middle-east-206": 2,
-    "europe-middle-east-50": 0,
-    "europe-middle-east-212": 0,
-    "europe-middle-east-213": 0,
-    "europe-middle-east-95": 0,
-    "europe-middle-east-96": 0,
-    "europe-middle-east-61": 0,
-    "europe-middle-east-123": 2,
-    "europe-middle-east-121": 2,
-    "europe-middle-east-122": 2,
-    "europe-middle-east-48": 1,
-    "europe-middle-east-49": 1,
-    "europe-middle-east-120": 1,
-    "europe-middle-east-47": 2,
-    "asia-60": 0,
-    "asia-97": 0,
-    "asia-59": 0,
-    "asia-58": 0,
-    "asia-57": 0,
-    "asia-99": 0
+    "subsaharan-africa-period-africa-neolithic": 0,
+    "subsaharan-africa-period-africa-stone-age": 0,
+    "subsaharan-africa-period-africa-iron-age": 0,
+    "subsaharan-africa-period-africa-early-global": 0,
+    "subsaharan-africa-period-africa-colonial": 0,
+    "subsaharan-africa-period-africa-modern": 0,
+    "europe-middle-east-period-europe-neolithic": 0,
+    "europe-middle-east-period-europe-bronze-age": 0,
+    "europe-middle-east-period-europe-stone-age": 0,
+    "europe-middle-east-period-europe-antiquity": 0,
+    "europe-middle-east-period-europe-middle-ages": 0,
+    "europe-middle-east-period-europe-modern": 0,
+    "asia-period-asia-neolithic": 0,
+    "asia-period-asia-stone-age": 0,
+    "asia-period-asia-bronze-age": 0,
+    "asia-period-asia-classical": 0,
+    "asia-period-asia-post-classical": 0,
+    "asia-period-asia-imperial": 0,
+    "asia-period-asia-modern": 0,
+    "americas-period-americas-early-settlement": 0,
+    "americas-period-americas-pre-human": 0,
+    "americas-period-americas-neolithic": 0,
+    "americas-period-americas-classical": 0,
+    "americas-period-americas-colonial": 0,
+    "americas-period-americas-modern": 0,
+    "pacific-period-pacific-colonial": 0,
+    "pacific-period-pacific-modern": 0,
+    "pacific-period-pacific-traditional": 0,
+    "pacific-period-pacific-early-settlement": 0,
+    "pacific-period-pacific-pre-human": 0,
+    "asia-entity-akkad": 1,
+    "asia-entity-sumer": 1,
+    "asia-entity-yuan": 1,
+    "asia-entity-song": 1,
+    "asia-entity-ming": 1,
+    "asia-entity-qing": 1,
+    "asia-entity-roc": 1,
+    "asia-entity-prc": 1,
+    "europe-middle-east-50": 13,
+    "europe-middle-east-51": 16,
+    "europe-middle-east-52": 15,
+    "europe-middle-east-entity-renaissance": 0,
+    "europe-middle-east-entity-enlightenment": 0,
+    "europe-middle-east-entity-high-middle-ages": 8,
+    "europe-middle-east-entity-early-middle-ages": 8,
+    "asia-205": 7,
+    "europe-middle-east-entity-england": 5
   }
 }

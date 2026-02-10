@@ -11,7 +11,16 @@ const REGIONS = [
 ];
 
 // Entity types for societal entities
-const ENTITY_TYPES = ['religion', 'country', 'culture'];
+const ENTITY_TYPES = ['religion', 'state', 'culture'];
+
+// Region mapping for periods (CSV uses different names)
+const PERIOD_REGION_MAP = {
+    'Asia': 'asia',
+    'Europe & Mediterranean': 'europe-middle-east',
+    'Sub-Saharan Africa': 'subsaharan-africa',
+    'Pacific': 'pacific',
+    'Americas': 'americas'
+};
 
 const timelineData = {
     // Experience-based scaling: proportion of all human experience by year
@@ -46,59 +55,71 @@ const timelineData = {
     // ===========================================
     entities: [
         // === RELIGIONS ===
-        { id: 'christianity', name: 'Christianity', type: 'religion', year: 30, endYear: null, region: 'europe-middle-east', description: 'Abrahamic religion based on the teachings of Jesus Christ' },
-        { id: 'islam', name: 'Islam', type: 'religion', year: 622, endYear: null, region: 'europe-middle-east', description: 'Abrahamic religion founded by Prophet Muhammad' },
-        { id: 'buddhism', name: 'Buddhism', type: 'religion', year: -500, endYear: null, region: 'asia', description: 'Religion and philosophy based on teachings of Siddhartha Gautama' },
+        { id: 'christianity', name: 'Christianity', type: 'religion', year: 30, endYear: 2026, region: 'europe-middle-east', description: 'Abrahamic religion based on the teachings of Jesus Christ' },
+        { id: 'islam', name: 'Islam', type: 'religion', year: 622, endYear: 2026, region: 'europe-middle-east', description: 'Abrahamic religion founded by Prophet Muhammad' },
+        { id: 'buddhism', name: 'Buddhism', type: 'religion', year: -500, endYear: 2026, region: 'asia', description: 'Religion and philosophy based on teachings of Siddhartha Gautama' },
         { id: 'manichaeism', name: 'Manichaeism', type: 'religion', year: 240, endYear: 1400, region: 'europe-middle-east', description: 'Gnostic religion founded by Mani, once widespread from Rome to China' },
-        { id: 'bahai', name: "Bahá'í Faith", type: 'religion', year: 1863, endYear: null, region: 'europe-middle-east', description: "Religion founded by Bahá'u'lláh emphasizing unity of humanity" },
-        { id: 'confucianism', name: 'Confucianism', type: 'religion', year: -500, endYear: null, region: 'asia', description: 'Chinese philosophical and ethical system founded by Confucius' },
+        { id: 'bahai', name: "Bahá'í Faith", type: 'religion', year: 1863, endYear: 2026, region: 'europe-middle-east', description: "Religion founded by Bahá'u'lláh emphasizing unity of humanity" },
+        { id: 'confucianism', name: 'Confucianism', type: 'religion', year: -500, endYear: 2026, region: 'asia', description: 'Chinese philosophical and ethical system founded by Confucius' },
 
-        // === COUNTRIES/EMPIRES (political entities) ===
+        // === STATES (political entities - empires, kingdoms, nations) ===
         // Prehistoric
         { id: 'early-humans', name: 'Early Humans', type: 'culture', year: -300000, endYear: -10000, region: 'subsaharan-africa', description: 'Homo sapiens emergence and migration out of Africa' },
 
         // Ancient Mesopotamia
-        { id: 'sumer', name: 'Sumerian City-States', type: 'country', year: -3500, endYear: -2300, region: 'asia', description: 'First known civilization with writing, cities, and complex society' },
-        { id: 'akkad', name: 'Akkadian Empire', type: 'country', year: -2334, endYear: -2154, region: 'asia', description: 'First ancient empire of Mesopotamia, founded by Sargon' },
-        { id: 'babylon', name: 'Babylonian Empire', type: 'country', year: -1900, endYear: -1600, region: 'asia', description: 'Mesopotamian empire known for Hammurabi\'s Code' },
-        { id: 'assyria', name: 'Neo-Assyrian Empire', type: 'country', year: -911, endYear: -609, region: 'asia', description: 'Powerful Mesopotamian empire known for military prowess' },
+        { id: 'sumer', name: 'Sumerian City-States', type: 'state', year: -3500, endYear: -2300, region: 'asia', description: 'First known civilization with writing, cities, and complex society' },
+        { id: 'akkad', name: 'Akkadian Empire', type: 'state', year: -2334, endYear: -2154, region: 'asia', description: 'First ancient empire of Mesopotamia, founded by Sargon' },
+        { id: 'babylon', name: 'Babylonian Empire', type: 'state', year: -1900, endYear: -1600, region: 'asia', description: 'Mesopotamian empire known for Hammurabi\'s Code' },
+        { id: 'assyria', name: 'Neo-Assyrian Empire', type: 'state', year: -911, endYear: -609, region: 'asia', description: 'Powerful Mesopotamian empire known for military prowess' },
 
         // Persian Empires
-        { id: 'achaemenid', name: 'Achaemenid Empire', type: 'country', year: -550, endYear: -330, region: 'europe-middle-east', description: 'First Persian Empire, founded by Cyrus the Great' },
-        { id: 'seleucid', name: 'Seleucid Empire', type: 'country', year: -312, endYear: -63, region: 'europe-middle-east', description: 'Hellenistic empire founded after Alexander\'s death' },
-        { id: 'parthia', name: 'Parthian Empire', type: 'country', year: -247, endYear: 224, region: 'europe-middle-east', description: 'Iranian empire and rival of Rome' },
-        { id: 'sasanian', name: 'Sasanian Empire', type: 'country', year: 224, endYear: 651, region: 'europe-middle-east', description: 'Last pre-Islamic Persian Empire' },
+        { id: 'achaemenid', name: 'Achaemenid Empire', type: 'state', year: -550, endYear: -330, region: 'europe-middle-east', description: 'First Persian Empire, founded by Cyrus the Great' },
+        { id: 'seleucid', name: 'Seleucid Empire', type: 'state', year: -312, endYear: -63, region: 'europe-middle-east', description: 'Hellenistic empire founded after Alexander\'s death' },
+        { id: 'parthia', name: 'Parthian Empire', type: 'state', year: -247, endYear: 224, region: 'europe-middle-east', description: 'Iranian empire and rival of Rome' },
+        { id: 'sasanian', name: 'Sasanian Empire', type: 'state', year: 224, endYear: 651, region: 'europe-middle-east', description: 'Last pre-Islamic Persian Empire' },
 
         // Greek & Roman
-        { id: 'ancient-greece', name: 'Ancient Greece', type: 'country', year: -800, endYear: -146, region: 'europe-middle-east', description: 'Greek city-states and classical civilization' },
-        { id: 'macedon', name: 'Macedonian Empire', type: 'country', year: -336, endYear: -323, region: 'europe-middle-east', description: 'Empire of Alexander the Great' },
-        { id: 'roman-republic', name: 'Roman Republic', type: 'country', year: -509, endYear: -27, region: 'europe-middle-east', description: 'Roman state before the emperors' },
-        { id: 'roman-empire', name: 'Roman Empire', type: 'country', year: -27, endYear: 476, region: 'europe-middle-east', description: 'One of the largest empires in ancient history' },
-        { id: 'byzantine', name: 'Byzantine Empire', type: 'country', year: 330, endYear: 1453, region: 'europe-middle-east', description: 'Eastern Roman Empire, preserved Roman and Greek culture' },
+        { id: 'ancient-greece', name: 'Ancient Greece', type: 'state', year: -800, endYear: -146, region: 'europe-middle-east', description: 'Greek city-states and classical civilization' },
+        { id: 'macedon', name: 'Macedonian Empire', type: 'state', year: -336, endYear: -323, region: 'europe-middle-east', description: 'Empire of Alexander the Great' },
+        { id: 'roman-republic', name: 'Roman Republic', type: 'state', year: -509, endYear: -27, region: 'europe-middle-east', description: 'Roman state before the emperors' },
+        { id: 'roman-empire', name: 'Roman Empire', type: 'state', year: -27, endYear: 476, region: 'europe-middle-east', description: 'One of the largest empires in ancient history' },
+        { id: 'byzantine', name: 'Byzantine Empire', type: 'state', year: 330, endYear: 1453, region: 'europe-middle-east', description: 'Eastern Roman Empire, preserved Roman and Greek culture' },
 
         // Islamic Caliphates
-        { id: 'rashidun', name: 'Rashidun Caliphate', type: 'country', year: 632, endYear: 661, region: 'europe-middle-east', description: 'First caliphate led by the Rightly Guided caliphs' },
-        { id: 'umayyad', name: 'Umayyad Caliphate', type: 'country', year: 661, endYear: 750, region: 'europe-middle-east', description: 'Second caliphate, expanded Islam from Spain to India' },
-        { id: 'abbasid', name: 'Abbasid Caliphate', type: 'country', year: 750, endYear: 1258, region: 'europe-middle-east', description: 'Islamic Golden Age, center of learning in Baghdad' },
-        { id: 'fatimid', name: 'Fatimid Caliphate', type: 'country', year: 909, endYear: 1171, region: 'europe-middle-east', description: 'Shia caliphate based in Egypt, founded Cairo' },
-        { id: 'mamluk', name: 'Mamluk Sultanate', type: 'country', year: 1250, endYear: 1517, region: 'europe-middle-east', description: 'Slave-soldier dynasty that ruled Egypt and Syria' },
-        { id: 'ottoman', name: 'Ottoman Empire', type: 'country', year: 1299, endYear: 1922, region: 'europe-middle-east', description: 'Major empire spanning Southeast Europe, Western Asia, and North Africa' },
+        { id: 'rashidun', name: 'Rashidun Caliphate', type: 'state', year: 632, endYear: 661, region: 'europe-middle-east', description: 'First caliphate led by the Rightly Guided caliphs' },
+        { id: 'umayyad', name: 'Umayyad Caliphate', type: 'state', year: 661, endYear: 750, region: 'europe-middle-east', description: 'Second caliphate, expanded Islam from Spain to India' },
+        { id: 'abbasid', name: 'Abbasid Caliphate', type: 'state', year: 750, endYear: 1258, region: 'europe-middle-east', description: 'Islamic Golden Age, center of learning in Baghdad' },
+        { id: 'fatimid', name: 'Fatimid Caliphate', type: 'state', year: 909, endYear: 1171, region: 'europe-middle-east', description: 'Shia caliphate based in Egypt, founded Cairo' },
+        { id: 'mamluk', name: 'Mamluk Sultanate', type: 'state', year: 1250, endYear: 1517, region: 'europe-middle-east', description: 'Slave-soldier dynasty that ruled Egypt and Syria' },
+        { id: 'ottoman', name: 'Ottoman Empire', type: 'state', year: 1299, endYear: 1922, region: 'europe-middle-east', description: 'Major empire spanning Southeast Europe, Western Asia, and North Africa' },
 
         // Chinese Dynasties
-        { id: 'tang', name: 'Tang Dynasty', type: 'country', year: 618, endYear: 907, region: 'asia', description: 'Golden age of Chinese civilization' },
-        { id: 'song', name: 'Song Dynasty', type: 'country', year: 960, endYear: 1279, region: 'asia', description: 'Era of significant economic and cultural development' },
-        { id: 'yuan', name: 'Yuan Dynasty', type: 'country', year: 1271, endYear: 1368, region: 'asia', description: 'Mongol-led dynasty founded by Kublai Khan' },
-        { id: 'ming', name: 'Ming Dynasty', type: 'country', year: 1368, endYear: 1644, region: 'asia', description: 'Era known for trade expansion and iconic architecture' },
-        { id: 'qing', name: 'Qing Dynasty', type: 'country', year: 1644, endYear: 1912, region: 'asia', description: 'Last imperial dynasty of China' },
-        { id: 'roc', name: 'Republic of China', type: 'country', year: 1912, endYear: 1949, region: 'asia', description: 'Period of republican government in mainland China' },
-        { id: 'prc', name: "People's Republic of China", type: 'country', year: 1949, endYear: null, region: 'asia', description: 'Communist government established by Mao Zedong' },
+        { id: 'tang', name: 'Tang Dynasty', type: 'state', year: 618, endYear: 907, region: 'asia', description: 'Golden age of Chinese civilization' },
+        { id: 'song', name: 'Song Dynasty', type: 'state', year: 960, endYear: 1279, region: 'asia', description: 'Era of significant economic and cultural development' },
+        { id: 'yuan', name: 'Yuan Dynasty', type: 'state', year: 1271, endYear: 1368, region: 'asia', description: 'Mongol-led dynasty founded by Kublai Khan' },
+        { id: 'ming', name: 'Ming Dynasty', type: 'state', year: 1368, endYear: 1644, region: 'asia', description: 'Era known for trade expansion and iconic architecture' },
+        { id: 'qing', name: 'Qing Dynasty', type: 'state', year: 1644, endYear: 1912, region: 'asia', description: 'Last imperial dynasty of China' },
+        { id: 'roc', name: 'Republic of China', type: 'state', year: 1912, endYear: 1949, region: 'asia', description: 'Period of republican government in mainland China' },
+        { id: 'prc', name: "People's Republic of China", type: 'state', year: 1949, endYear: 2026, region: 'asia', description: 'Communist government established by Mao Zedong' },
 
         // Mongol
-        { id: 'mongol', name: 'Mongol Empire', type: 'country', year: 1206, endYear: 1368, region: 'asia', description: 'Largest contiguous land empire in history' },
+        { id: 'mongol', name: 'Mongol Empire', type: 'state', year: 1206, endYear: 1368, region: 'asia', description: 'Largest contiguous land empire in history' },
+
+        // African States
+        { id: 'egypt-old', name: 'Egyptian Old Kingdom', type: 'state', year: -2686, endYear: -2181, region: 'subsaharan-africa', description: 'Age of the pyramids, centralized pharaonic rule' },
+        { id: 'egypt-middle', name: 'Egyptian Middle Kingdom', type: 'state', year: -2055, endYear: -1650, region: 'subsaharan-africa', description: 'Reunification and cultural flourishing of Egypt' },
+        { id: 'egypt-new', name: 'Egyptian New Kingdom', type: 'state', year: -1550, endYear: -1070, region: 'subsaharan-africa', description: 'Egypt at its most powerful, era of Ramesses and Tutankhamun' },
+        { id: 'aksum', name: 'Kingdom of Aksum', type: 'state', year: 100, endYear: 940, region: 'subsaharan-africa', description: 'Major trading empire in modern-day Ethiopia and Eritrea' },
+        { id: 'zimbabwe', name: 'Kingdom of Zimbabwe', type: 'state', year: 1220, endYear: 1450, region: 'subsaharan-africa', description: 'Medieval kingdom known for Great Zimbabwe stone ruins' },
+        { id: 'kongo', name: 'Kingdom of Kongo', type: 'state', year: 1390, endYear: 1914, region: 'subsaharan-africa', description: 'Major kingdom in west-central Africa, early contact with Portugal' },
+        { id: 'zulu', name: 'Zulu Kingdom', type: 'state', year: 1816, endYear: 1897, region: 'subsaharan-africa', description: 'Southern African kingdom founded by Shaka Zulu' },
+
+        // Omani Empire
+        { id: 'oman', name: 'Omani Empire', type: 'state', year: 1696, endYear: 1856, region: 'subsaharan-africa', description: 'Maritime empire controlling East African coast and Indian Ocean trade' },
 
         // European Nations (for later events)
-        { id: 'england', name: 'England/Britain', type: 'country', year: 927, endYear: null, region: 'europe-middle-east', description: 'Kingdom of England, later Great Britain and UK' },
-        { id: 'france', name: 'France', type: 'country', year: 843, endYear: null, region: 'europe-middle-east', description: 'French nation from Carolingian division' },
+        { id: 'england', name: 'England/Britain', type: 'state', year: 927, endYear: 2026, region: 'europe-middle-east', description: 'Kingdom of England, later Great Britain and UK' },
+        { id: 'france', name: 'France', type: 'state', year: 843, endYear: 2026, region: 'europe-middle-east', description: 'French nation from Carolingian division' },
 
         // === CULTURES/ERAS (intellectual and artistic movements) ===
         // European Eras
@@ -121,6 +142,53 @@ const timelineData = {
     ],
 
     // ===========================================
+    // PERIODS - Historical eras that span regions
+    // Background context for the timeline
+    // ===========================================
+    periods: [
+        // Asia
+        { id: 'asia-stone-age', name: 'Stone Age', year: -300000, endYear: -10000, region: 'asia', description: 'Prehistoric period before agriculture' },
+        { id: 'asia-neolithic', name: 'Neolithic', year: -10000, endYear: -3000, region: 'asia', description: 'Agricultural revolution and early settlements' },
+        { id: 'asia-bronze-age', name: 'Bronze Age', year: -3000, endYear: -1200, region: 'asia', description: 'Development of bronze tools and early civilizations' },
+        { id: 'asia-classical', name: 'Classical Era', year: -1200, endYear: 220, region: 'asia', description: 'Rise of major philosophical and religious traditions' },
+        { id: 'asia-post-classical', name: 'Post-Classical', year: 220, endYear: 600, region: 'asia', description: 'Period of fragmentation and transition' },
+        { id: 'asia-imperial', name: 'Imperial Era', year: 600, endYear: 1800, region: 'asia', description: 'Great empires and cultural flowering' },
+        { id: 'asia-modern', name: 'Modern Era', year: 1800, endYear: 2025, region: 'asia', description: 'Colonialism, independence, and modernization' },
+
+        // Europe & Mediterranean
+        { id: 'europe-stone-age', name: 'Stone Age', year: -300000, endYear: -10000, region: 'europe-middle-east', description: 'Prehistoric hunter-gatherer societies' },
+        { id: 'europe-neolithic', name: 'Neolithic', year: -10000, endYear: -3200, region: 'europe-middle-east', description: 'Agricultural revolution spreads to Europe' },
+        { id: 'europe-bronze-age', name: 'Bronze Age', year: -3200, endYear: -800, region: 'europe-middle-east', description: 'Bronze metallurgy and early Mediterranean civilizations' },
+        { id: 'europe-antiquity', name: 'Antiquity', year: -800, endYear: 476, region: 'europe-middle-east', description: 'Classical Greece and Rome' },
+        { id: 'europe-middle-ages', name: 'Middle Ages', year: 476, endYear: 1450, region: 'europe-middle-east', description: 'Medieval period after fall of Rome' },
+        { id: 'europe-early-modern', name: 'Early Modern', year: 1450, endYear: 1789, region: 'europe-middle-east', description: 'Renaissance, Reformation, and Enlightenment' },
+        { id: 'europe-modern', name: 'Modern Era', year: 1789, endYear: 2025, region: 'europe-middle-east', description: 'Industrial revolution to present' },
+
+        // Sub-Saharan Africa
+        { id: 'africa-stone-age', name: 'Stone Age', year: -300000, endYear: -10000, region: 'subsaharan-africa', description: 'Origin of humanity and early development' },
+        { id: 'africa-neolithic', name: 'Neolithic', year: -10000, endYear: -2000, region: 'subsaharan-africa', description: 'Development of agriculture and pastoralism' },
+        { id: 'africa-iron-age', name: 'Iron Age', year: -2000, endYear: 1500, region: 'subsaharan-africa', description: 'Bantu expansion and African kingdoms' },
+        { id: 'africa-early-global', name: 'Early Global', year: 1500, endYear: 1800, region: 'subsaharan-africa', description: 'Trans-Atlantic trade and early European contact' },
+        { id: 'africa-colonial', name: 'Colonial Era', year: 1800, endYear: 1960, region: 'subsaharan-africa', description: 'European colonization of Africa' },
+        { id: 'africa-modern', name: 'Modern Era', year: 1960, endYear: 2025, region: 'subsaharan-africa', description: 'Independence movements and modern states' },
+
+        // Pacific
+        { id: 'pacific-pre-human', name: 'Pre-Human', year: -300000, endYear: -70000, region: 'pacific', description: 'Before human settlement' },
+        { id: 'pacific-early-settlement', name: 'Early Settlement', year: -70000, endYear: -1500, region: 'pacific', description: 'Initial human migration to Australia and Near Oceania' },
+        { id: 'pacific-traditional', name: 'Traditional Societies', year: -1500, endYear: 1600, region: 'pacific', description: 'Polynesian expansion and traditional cultures' },
+        { id: 'pacific-colonial', name: 'Colonial Era', year: 1600, endYear: 1945, region: 'pacific', description: 'European exploration and colonization' },
+        { id: 'pacific-modern', name: 'Modern Era', year: 1945, endYear: 2025, region: 'pacific', description: 'Decolonization and independence' },
+
+        // Americas
+        { id: 'americas-pre-human', name: 'Pre-Human', year: -300000, endYear: -20000, region: 'americas', description: 'Before human arrival' },
+        { id: 'americas-early-settlement', name: 'Early Settlement', year: -20000, endYear: -8000, region: 'americas', description: 'Initial human migration from Asia' },
+        { id: 'americas-neolithic', name: 'Neolithic', year: -8000, endYear: -2000, region: 'americas', description: 'Development of agriculture' },
+        { id: 'americas-classical', name: 'Classical Civilizations', year: -2000, endYear: 1492, region: 'americas', description: 'Maya, Aztec, Inca and other civilizations' },
+        { id: 'americas-colonial', name: 'Colonial Era', year: 1492, endYear: 1800, region: 'americas', description: 'European colonization' },
+        { id: 'americas-modern', name: 'Modern Era', year: 1800, endYear: 2025, region: 'americas', description: 'Independence and modern nations' },
+    ],
+
+    // ===========================================
     // EVENTS - Facts in time that link to societal entities
     // People appear as events (births, deaths, achievements)
     // ===========================================
@@ -140,51 +208,26 @@ const timelineData = {
         { id: 32, title: "Rice mechanization", year: 1850, entityIds: [], region: "asia", description: "Industrial mechanization of rice farming" },
         { id: 33, title: "Rice Green Revolution", year: 1960, entityIds: [], region: "asia", description: "High-yield rice varieties dramatically increase production" },
 
-        // === PEOPLE - Religious figures (as events) ===
-        { id: 16, title: "Buddha born", year: -563, entityIds: ['buddhism'], region: "asia", description: "Birth of Siddhartha Gautama, founder of Buddhism" },
+        // === PEOPLE - Religious figures (one event per person: most prominent achievement) ===
         { id: 160, title: "Buddha achieves enlightenment", year: -528, entityIds: ['buddhism'], region: "asia", description: "Siddhartha Gautama attains nirvana under the Bodhi tree" },
-        { id: 161, title: "Buddha dies (parinirvana)", year: -483, entityIds: ['buddhism'], region: "asia", description: "Death of Buddha, entering final nirvana" },
-        { id: 2, title: "Jesus born", year: -4, entityIds: ['christianity'], region: "europe-middle-east", description: "Birth of Jesus of Nazareth" },
         { id: 20, title: "Jesus crucified", year: 33, entityIds: ['christianity', 'roman-empire'], region: "europe-middle-east", description: "Crucifixion and resurrection, founding event of Christianity" },
-        { id: 3, title: "Mani born", year: 216, entityIds: ['manichaeism', 'sasanian'], region: "europe-middle-east", description: "Birth of the founder of Manichaeism" },
         { id: 30, title: "Mani executed", year: 274, entityIds: ['manichaeism', 'sasanian'], region: "europe-middle-east", description: "Mani executed by Sasanian authorities" },
-        { id: 4, title: "St. Augustine born", year: 354, entityIds: ['christianity', 'roman-empire'], region: "europe-middle-east", description: "Birth of influential Christian theologian" },
         { id: 40, title: "Augustine writes Confessions", year: 400, entityIds: ['christianity'], region: "europe-middle-east", description: "Augustine completes his autobiographical work" },
-        { id: 41, title: "Augustine writes City of God", year: 426, entityIds: ['christianity'], region: "europe-middle-east", description: "Augustine completes major theological work" },
-        { id: 42, title: "St. Augustine dies", year: 430, entityIds: ['christianity'], region: "europe-middle-east", description: "Death of St. Augustine during Vandal siege" },
-        { id: 5, title: "Muhammad born", year: 570, entityIds: ['islam'], region: "europe-middle-east", description: "Birth of the Prophet Muhammad" },
-        { id: 50, title: "Muhammad receives first revelation", year: 610, entityIds: ['islam'], region: "europe-middle-east", description: "First Quranic revelation in Cave of Hira" },
         { id: 51, title: "Hijra to Medina", year: 622, entityIds: ['islam'], region: "europe-middle-east", description: "Muhammad's migration to Medina, start of Islamic calendar" },
-        { id: 52, title: "Muhammad dies", year: 632, entityIds: ['islam', 'rashidun'], region: "europe-middle-east", description: "Death of Prophet Muhammad" },
-        { id: 6, title: "Thomas Aquinas born", year: 1225, entityIds: ['christianity', 'high-middle-ages'], region: "europe-middle-east", description: "Birth of Catholic philosopher and theologian" },
         { id: 60, title: "Aquinas writes Summa Theologica", year: 1265, endYear: 1274, entityIds: ['christianity', 'high-middle-ages'], region: "europe-middle-east", description: "Aquinas composes his masterwork of systematic theology" },
-        { id: 61, title: "Thomas Aquinas dies", year: 1274, entityIds: ['christianity'], region: "europe-middle-east", description: "Death of Thomas Aquinas" },
-        { id: 7, title: "Bahá'u'lláh born", year: 1817, entityIds: ['bahai'], region: "europe-middle-east", description: "Birth of the founder of the Bahá'í Faith" },
         { id: 70, title: "Bahá'u'lláh declares mission", year: 1863, entityIds: ['bahai'], region: "europe-middle-east", description: "Bahá'u'lláh declares himself the Promised One" },
-        { id: 71, title: "Bahá'u'lláh dies", year: 1892, entityIds: ['bahai'], region: "europe-middle-east", description: "Death of Bahá'u'lláh" },
 
         // === PEOPLE - Political leaders ===
-        { id: 17, title: "Alexander the Great born", year: -356, entityIds: ['macedon', 'ancient-greece'], region: "europe-middle-east", description: "Birth of the Macedonian king" },
         { id: 170, title: "Alexander conquers Persian Empire", year: -330, entityIds: ['macedon', 'achaemenid'], region: "europe-middle-east", description: "Alexander defeats Darius III, ending Achaemenid Empire" },
-        { id: 171, title: "Alexander dies", year: -323, entityIds: ['macedon'], region: "europe-middle-east", description: "Death of Alexander in Babylon, empire fragments" },
-        { id: 8, title: "Genghis Khan born", year: 1162, entityIds: ['mongol'], region: "asia", description: "Birth of Temüjin, future Mongol ruler" },
         { id: 80, title: "Mongol Empire founded", year: 1206, entityIds: ['mongol'], region: "asia", description: "Temüjin proclaimed Genghis Khan, unifying Mongol tribes" },
-        { id: 81, title: "Genghis Khan dies", year: 1227, entityIds: ['mongol'], region: "asia", description: "Death of Genghis Khan" },
 
         // === PEOPLE - Philosophers and Scientists ===
-        { id: 11, title: "Thales of Miletus born", year: -624, entityIds: ['greek-philosophy', 'ancient-greece'], region: "europe-middle-east", description: "Birth of first Greek philosopher" },
         { id: 110, title: "Thales predicts solar eclipse", year: -585, entityIds: ['greek-philosophy', 'ancient-greece'], region: "europe-middle-east", description: "Thales allegedly predicts eclipse, demonstrating natural philosophy" },
         { id: 12, title: "Pythagoras born", year: -570, entityIds: ['greek-philosophy', 'ancient-greece'], region: "europe-middle-east", description: "Birth of mathematician and philosopher" },
         { id: 13, title: "Confucius born", year: -551, entityIds: ['confucianism'], region: "asia", description: "Birth of Chinese philosopher" },
-        { id: 130, title: "Confucius dies", year: -479, entityIds: ['confucianism'], region: "asia", description: "Death of Confucius" },
-        { id: 14, title: "Herodotus born", year: -484, entityIds: ['ancient-greece', 'classical-antiquity'], region: "europe-middle-east", description: "Birth of the Father of History" },
         { id: 140, title: "Herodotus writes Histories", year: -440, entityIds: ['ancient-greece', 'classical-antiquity'], region: "europe-middle-east", description: "Herodotus composes first great narrative history" },
-        { id: 15, title: "Plato born", year: -428, entityIds: ['greek-philosophy', 'ancient-greece'], region: "europe-middle-east", description: "Birth of Greek philosopher" },
         { id: 150, title: "Plato founds the Academy", year: -387, entityIds: ['greek-philosophy', 'ancient-greece'], region: "europe-middle-east", description: "Plato establishes school in Athens" },
-        { id: 151, title: "Plato dies", year: -348, entityIds: ['greek-philosophy'], region: "europe-middle-east", description: "Death of Plato" },
-        { id: 18, title: "Marcus Aurelius born", year: 121, entityIds: ['stoicism', 'roman-empire'], region: "europe-middle-east", description: "Birth of Roman Emperor and Stoic philosopher" },
         { id: 180, title: "Marcus Aurelius writes Meditations", year: 170, endYear: 180, entityIds: ['stoicism', 'roman-empire'], region: "europe-middle-east", description: "Marcus Aurelius composes personal philosophical writings" },
-        { id: 181, title: "Marcus Aurelius dies", year: 180, entityIds: ['stoicism', 'roman-empire'], region: "europe-middle-east", description: "Death of the philosopher emperor" },
 
         // === SCIENCE & PHILOSOPHY EVENTS ===
         { id: 10, title: "Iliad & Odyssey composed", year: -750, entityIds: ['ancient-greece', 'classical-antiquity'], region: "europe-middle-east", description: "Homer's epic poems first recorded" },
@@ -209,6 +252,13 @@ const timelineData = {
         { id: 83, title: "French Revolution begins", year: 1789, entityIds: ['france', 'enlightenment'], region: "europe-middle-east", description: "Revolutionary period transforms France and Europe" },
         { id: 84, title: "Napoleonic Wars", year: 1803, endYear: 1815, entityIds: ['france'], region: "europe-middle-east", description: "Major conflicts involving Napoleon's French Empire" },
         { id: 91, title: "Seven Years' War", year: 1756, endYear: 1763, entityIds: ['england', 'france'], region: "europe-middle-east", description: "Global conflict involving most European powers" },
+
+        // === AFRICAN EVENTS ===
+        { id: 92, title: "Foundation of Lamu", year: 1370, entityIds: [], region: "subsaharan-africa", description: "Founding of Lamu, major Swahili trading port on the Kenyan coast" },
+
+        // === MORE EUROPEAN EVENTS ===
+        { id: 93, title: "Thirty Years' War", year: 1618, endYear: 1648, entityIds: [], region: "europe-middle-east", description: "Devastating religious and political conflict across Central Europe" },
+        { id: 94, title: "Treaty of Westphalia", year: 1648, entityIds: [], region: "europe-middle-east", description: "Peace treaties ending Thirty Years' War, established modern state sovereignty" },
     ],
 
     // ===========================================
@@ -359,7 +409,8 @@ async function loadData() {
         if (userData.events) {
             userData.events.forEach(e => {
                 e.userAdded = true;
-                if (!timelineData.events.find(existing => existing.id === e.id)) {
+                if (e.id == null || !timelineData.events.find(existing => existing.id === e.id)) {
+                    if (e.id == null) e.id = getNextEventId();
                     timelineData.events.push(e);
                 }
             });
@@ -402,108 +453,60 @@ function clearSavedData() {
 }
 
 // ===========================================
-// BACKWARDS COMPATIBILITY LAYER
-// Derives display category from entityIds for UI filtering/coloring
+// KNOWLEDGE MAP CATEGORY SYSTEM
+// Categories: state, religion, culture, period, event
 // ===========================================
 
-// Entity type to display category mapping
-const ENTITY_TYPE_TO_CATEGORY = {
-    'religion': 'religion',
-    'country': 'civilizations',
-    'culture': 'civilizations'
-};
+// Convert all entities to timeline events and add category to existing events
+function initializeTimelineData() {
+    // Add all entities (states, religions, cultures) as timeline events
+    timelineData.entities.forEach(entity => {
+        const entityEvent = {
+            id: `entity-${entity.id}`,
+            title: entity.name,
+            year: entity.year,
+            endYear: entity.endYear,
+            entityIds: [entity.id],
+            category: entity.type, // 'state', 'religion', or 'culture'
+            entityType: entity.type,
+            region: entity.region,
+            description: entity.description,
+            isEntity: true
+        };
 
-// Specific entity ID to category overrides
-const ENTITY_TO_CATEGORY_OVERRIDES = {
-    // European cultural eras
-    'paleolithic': 'era-european',
-    'mesolithic': 'era-european',
-    'neolithic': 'era-european',
-    'chalcolithic': 'era-european',
-    'bronze-age': 'era-european',
-    'iron-age': 'era-european',
-    'classical-antiquity': 'era-european',
-    'early-middle-ages': 'era-european',
-    'high-middle-ages': 'era-european',
-    'renaissance': 'era-european',
-    'enlightenment': 'era-european',
-    'scientific-revolution': 'science',
-    // Chinese dynasties
-    'tang': 'era-chinese',
-    'song': 'era-chinese',
-    'yuan': 'era-chinese',
-    'ming': 'era-chinese',
-    'qing': 'era-chinese',
-    'roc': 'era-chinese',
-    'prc': 'era-chinese',
-    // Philosophy
-    'stoicism': 'science',
-    'greek-philosophy': 'science',
-    'confucianism': 'science',
-};
-
-// Derive display category from entityIds for backwards compatibility
-function getCategoryFromEntityIds(entityIds) {
-    if (!entityIds || entityIds.length === 0) return 'political';
-
-    // Check each entity for a category
-    for (const entityId of entityIds) {
-        // Check overrides first
-        if (ENTITY_TO_CATEGORY_OVERRIDES[entityId]) {
-            return ENTITY_TO_CATEGORY_OVERRIDES[entityId];
+        // Only add if not already present
+        if (!timelineData.events.find(e => e.id === entityEvent.id)) {
+            timelineData.events.push(entityEvent);
         }
+    });
 
-        // Look up entity and get type
-        const entity = getEntityById(entityId);
-        if (entity) {
-            // Religion entities get 'religion' category
-            if (entity.type === 'religion') {
-                return 'religion';
-            }
-            // Country entities get 'civilizations' by default
-            // but could be overridden above
+    // Add all periods as timeline events
+    timelineData.periods.forEach(period => {
+        const periodEvent = {
+            id: `period-${period.id}`,
+            title: period.name,
+            year: period.year,
+            endYear: period.endYear,
+            entityIds: [],
+            category: 'period',
+            entityType: 'period',
+            region: period.region,
+            description: period.description,
+            isPeriod: true
+        };
+
+        // Only add if not already present
+        if (!timelineData.events.find(e => e.id === periodEvent.id)) {
+            timelineData.events.push(periodEvent);
         }
-    }
+    });
 
-    // Default based on first entity's type
-    const firstEntity = getEntityById(entityIds[0]);
-    if (firstEntity) {
-        return ENTITY_TYPE_TO_CATEGORY[firstEntity.type] || 'political';
-    }
-
-    return 'political';
-}
-
-// Add category property to all events for backwards compat
-// This runs once after data is loaded
-function ensureEventCategories() {
+    // All regular events (non-entity, non-period) get category 'event'
     timelineData.events.forEach(event => {
-        if (!event.category && event.entityIds) {
-            event.category = getCategoryFromEntityIds(event.entityIds);
+        if (!event.category) {
+            event.category = 'event';
         }
     });
 }
 
-// Ensure entities are rendered on the timeline as duration events
-function getEntitiesAsEvents() {
-    return timelineData.entities
-        .filter(e => e.type === 'country')
-        .map(entity => ({
-            id: `entity-${entity.id}`,
-            title: entity.name,
-            year: entity.year,
-            endYear: entity.endYear || entity.year + 100,
-            entityIds: [entity.id],
-            category: ENTITY_TO_CATEGORY_OVERRIDES[entity.id] ||
-                (entity.type === 'religion' ? 'religion' : 'civilizations'),
-            region: entity.region,
-            description: entity.description,
-            isEntity: true
-        }));
-}
-
-// Call this after loadData to ensure categories are set
-document.addEventListener('DOMContentLoaded', () => {
-    // Will be called after loadData completes
-    setTimeout(ensureEventCategories, 100);
-});
+// initializeTimelineData() is called by app.js after loadData() completes

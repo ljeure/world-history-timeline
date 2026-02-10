@@ -28,16 +28,14 @@
             </div>
 
             <div class="filter-section">
-                <h3>Topics</h3>
+                <h3>Filter by Type</h3>
                 <div class="filter-buttons">
                     <button class="filter-btn active" data-category="all">All</button>
-                    <button class="filter-btn" data-category="people">People</button>
-                    <button class="filter-btn" data-category="political">Political Events</button>
-                    <button class="filter-btn" data-category="technology">Technology</button>
-                    <button class="filter-btn" data-category="civilizations">Civilizations</button>
-                    <button class="filter-btn" data-category="religion">Religion</button>
-                    <button class="filter-btn" data-category="science">Science & Philosophy</button>
-                    <button class="filter-btn" data-category="books">Books I've Read</button>
+                    <button class="filter-btn" data-category="period">Periods</button>
+                    <button class="filter-btn" data-category="state">States</button>
+                    <button class="filter-btn" data-category="religion">Religions</button>
+                    <button class="filter-btn" data-category="culture">Cultures</button>
+                    <button class="filter-btn" data-category="event">Events</button>
                 </div>
             </div>
 
@@ -70,14 +68,11 @@
         </div>
 
         <div class="legend">
-            <span class="legend-item"><span class="legend-color people"></span>People</span>
-            <span class="legend-item"><span class="legend-color political"></span>Political</span>
-            <span class="legend-item"><span class="legend-color technology"></span>Technology</span>
-            <span class="legend-item"><span class="legend-color era-european"></span>European Eras</span>
-            <span class="legend-item"><span class="legend-color era-chinese"></span>Chinese Eras</span>
-            <span class="legend-item"><span class="legend-color religion"></span>Religion</span>
-            <span class="legend-item"><span class="legend-color science"></span>Science</span>
-            <span class="legend-item"><span class="legend-color books"></span>Books</span>
+            <span class="legend-item"><span class="legend-color period"></span>Periods</span>
+            <span class="legend-item"><span class="legend-color state"></span>States</span>
+            <span class="legend-item"><span class="legend-color religion"></span>Religions</span>
+            <span class="legend-item"><span class="legend-color culture"></span>Cultures</span>
+            <span class="legend-item"><span class="legend-color event"></span>Events</span>
         </div>
 
         <div class="timeline-container">
@@ -91,34 +86,56 @@
 
         <div class="event-detail-panel" id="eventDetailPanel">
             <button class="close-panel" id="closePanel">&times;</button>
-            <h2 id="eventTitle"></h2>
-            <p class="event-date" id="eventDate"></p>
 
-            <div class="event-category-section">
-                <label>Category (determines color):</label>
-                <div class="category-selector">
-                    <span class="category-color-preview" id="categoryColorPreview"></span>
-                    <select id="eventCategorySelect">
-                        <option value="people">People</option>
-                        <option value="political">Political Events</option>
-                        <option value="technology">Technology</option>
-                        <option value="civilizations">Civilizations</option>
-                        <option value="era-european">European Eras</option>
-                        <option value="era-chinese">Chinese Eras</option>
-                        <option value="religion">Religion</option>
-                        <option value="science">Science & Philosophy</option>
-                        <option value="books">Books I've Read</option>
-                    </select>
-                    <button id="saveCategoryBtn" class="save-category-btn">Save</button>
+            <div class="event-edit-fields">
+                <label>
+                    Title
+                    <input type="text" id="eventTitle">
+                </label>
+
+                <div class="event-year-row">
+                    <label>
+                        Year
+                        <input type="number" id="eventYear">
+                    </label>
+                    <label>
+                        End Year
+                        <input type="number" id="eventEndYear" placeholder="Optional">
+                    </label>
                 </div>
-            </div>
 
-            <div class="event-region-section">
-                <label>Region:</label>
-                <span id="eventRegion"></span>
-            </div>
+                <label>
+                    Type
+                    <div class="category-selector">
+                        <span class="category-color-preview" id="categoryColorPreview"></span>
+                        <select id="eventCategorySelect">
+                            <option value="event">Event</option>
+                            <option value="state">State</option>
+                            <option value="religion">Religion</option>
+                            <option value="culture">Culture</option>
+                            <option value="period">Period</option>
+                        </select>
+                    </div>
+                </label>
 
-            <div class="event-description" id="eventDescription"></div>
+                <label>
+                    Region
+                    <select id="eventRegionSelect">
+                        <option value="subsaharan-africa">Subsaharan Africa</option>
+                        <option value="europe-middle-east">Europe & Middle East</option>
+                        <option value="asia">Asia</option>
+                        <option value="americas">The Americas</option>
+                        <option value="pacific">Pacific</option>
+                    </select>
+                </label>
+
+                <label>
+                    Description
+                    <textarea id="eventDescription" rows="3"></textarea>
+                </label>
+
+                <button id="saveEventEditsBtn" class="save-edits-btn">Save Changes</button>
+            </div>
 
             <div class="event-notes" id="eventNotes">
                 <h4>My Notes</h4>
@@ -164,24 +181,22 @@
                         </select>
                     </label>
                     <label>
-                        Category
+                        Type
                         <select id="newEventCategory">
-                            <option value="people">People</option>
-                            <option value="political">Political Events</option>
-                            <option value="technology">Technology</option>
-                            <option value="civilizations">Civilizations</option>
+                            <option value="event">Event</option>
+                            <option value="state">State</option>
                             <option value="religion">Religion</option>
-                            <option value="science">Science & Philosophy</option>
-                            <option value="books">Books I've Read</option>
+                            <option value="culture">Culture</option>
+                            <option value="period">Period</option>
                         </select>
-                    </label>
-                    <label>
-                        Subcategory (optional)
-                        <input type="text" id="newEventSubcategory">
                     </label>
                     <label>
                         Description
                         <textarea id="newEventDescription"></textarea>
+                    </label>
+                    <label>
+                        Source URL (optional)
+                        <input type="url" id="newEventSourceUrl" placeholder="https://...">
                     </label>
                     <div class="modal-buttons">
                         <button type="button" id="cancelAddEvent">Cancel</button>
@@ -300,15 +315,13 @@
                             </label>
                         </div>
                         <label>
-                            Category
+                            Type
                             <select id="editEmpireCategory">
-                                <option value="civilizations">Civilizations</option>
-                                <option value="people">People</option>
-                                <option value="political">Political Events</option>
-                                <option value="technology">Technology</option>
+                                <option value="state">State</option>
                                 <option value="religion">Religion</option>
-                                <option value="science">Science & Philosophy</option>
-                                <option value="books">Books I've Read</option>
+                                <option value="culture">Culture</option>
+                                <option value="period">Period</option>
+                                <option value="event">Event</option>
                             </select>
                         </label>
                         <label>

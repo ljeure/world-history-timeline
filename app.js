@@ -76,11 +76,13 @@ class TimelineApp {
         // Save notes
         document.getElementById('saveNotes').addEventListener('click', () => this.saveNotes());
 
-        // Category selector
+        // Category color preview
         document.getElementById('eventCategorySelect').addEventListener('change', (e) => {
             this.updateCategoryColorPreview(e.target.value);
         });
-        document.getElementById('saveCategoryBtn').addEventListener('click', () => this.saveEventCategory());
+
+        // Save all event edits
+        document.getElementById('saveEventEditsBtn').addEventListener('click', () => this.saveEventEdits());
 
         // Delete event
         document.getElementById('deleteEventBtn').addEventListener('click', () => this.deleteEvent());
@@ -531,8 +533,10 @@ class TimelineApp {
                 const startPos = this.yearToPosition(event.year);
                 const endPos = event.endYear ? this.yearToPosition(event.endYear) : startPos;
                 const rawWidth = endPos - startPos;
-                const isFlag = rawWidth < 80;
-                const width = isFlag ? Math.max(event.title.length * 5 + 30, 80) : Math.max(rawWidth, 20);
+                const hasSpan = event.endYear && event.endYear !== event.year;
+                const isFlag = !hasSpan && rawWidth < 80;
+                const isNarrowBar = hasSpan && rawWidth < 80;
+                const width = (isFlag || isNarrowBar) ? Math.max(event.title.length * 5 + 30, 80) : Math.max(rawWidth, 20);
 
                 let placed = false;
 
@@ -580,7 +584,9 @@ class TimelineApp {
         const startPos = this.yearToPosition(event.year);
         const endPos = event.endYear ? this.yearToPosition(event.endYear) : startPos;
         const rawWidth = endPos - startPos;
-        const isFlag = rawWidth < 80;
+        const hasSpan = event.endYear && event.endYear !== event.year;
+        const isFlag = !hasSpan && rawWidth < 80;
+        const isNarrowBar = hasSpan && rawWidth < 80;
 
         div.draggable = true;
         div.dataset.eventId = event.id;
@@ -588,25 +594,26 @@ class TimelineApp {
         div.style.left = `${startPos}px`;
         div.style.top = `${rowIndex * 32 + 5}px`;
 
-        if (isFlag) {
-            div.className = `timeline-event flag-event ${categoryClass}`;
+        // Color map for flags and narrow bars
+        const flagColorMap = {
+            'period': 'var(--period-color)',
+            'state': 'var(--state-color)',
+            'religion': 'var(--religion-color)',
+            'culture': 'var(--culture-color)',
+            'event': 'var(--event-color)',
+            'people': 'var(--people-color)',
+            'political': 'var(--political-color)',
+            'technology': 'var(--technology-color)',
+            'civilizations': 'var(--civilizations-color)',
+            'science': 'var(--science-color)',
+            'books': 'var(--books-color)',
+            'era-european': 'var(--era-european-color)',
+            'era-chinese': 'var(--era-chinese-color)',
+        };
 
-            // Set flag color via CSS custom property
-            const flagColorMap = {
-                'period': 'var(--period-color)',
-                'state': 'var(--state-color)',
-                'religion': 'var(--religion-color)',
-                'culture': 'var(--culture-color)',
-                'event': 'var(--event-color)',
-                'people': 'var(--people-color)',
-                'political': 'var(--political-color)',
-                'technology': 'var(--technology-color)',
-                'civilizations': 'var(--civilizations-color)',
-                'science': 'var(--science-color)',
-                'books': 'var(--books-color)',
-                'era-european': 'var(--era-european-color)',
-                'era-chinese': 'var(--era-chinese-color)',
-            };
+        if (isFlag) {
+            // Point-in-time event: dot + stem + floating label
+            div.className = `timeline-event flag-event ${categoryClass}`;
             div.style.setProperty('--flag-color', flagColorMap[event.category] || 'var(--event-color)');
 
             const dot = document.createElement('div');
@@ -619,6 +626,17 @@ class TimelineApp {
 
             const labelSpan = document.createElement('span');
             labelSpan.className = 'flag-label';
+            labelSpan.textContent = event.title;
+            div.appendChild(labelSpan);
+        } else if (isNarrowBar) {
+            // Time-spanning event too narrow for text inside: bar + external label
+            div.className = `timeline-event narrow-bar-event ${categoryClass} ${isPeriod ? 'period' : ''} ${isEra ? 'era' : ''}`;
+            const eventWidth = Math.max(rawWidth, 6);
+            div.style.width = `${eventWidth}px`;
+            div.style.setProperty('--flag-color', flagColorMap[event.category] || 'var(--event-color)');
+
+            const labelSpan = document.createElement('span');
+            labelSpan.className = 'narrow-bar-label';
             labelSpan.textContent = event.title;
             div.appendChild(labelSpan);
         } else {
@@ -763,21 +781,19 @@ class TimelineApp {
     showEventDetail(event) {
         this.selectedEvent = event;
 
-        document.getElementById('eventTitle').textContent = event.title;
-        document.getElementById('eventDate').textContent = event.endYear
-            ? `${this.formatYear(event.year)} - ${this.formatYear(event.endYear)}`
-            : this.formatYear(event.year);
+        document.getElementById('eventTitle').value = event.title;
+        document.getElementById('eventYear').value = event.year;
+        document.getElementById('eventEndYear').value = event.endYear || '';
 
         // Set category dropdown and color preview
         const categorySelect = document.getElementById('eventCategorySelect');
-        categorySelect.value = event.category || 'civilizations';
-        this.updateCategoryColorPreview(event.category || 'civilizations');
+        categorySelect.value = event.category || 'event';
+        this.updateCategoryColorPreview(event.category || 'event');
 
-        // Set region display
-        const regionName = REGIONS.find(r => r.id === event.region)?.name || event.region || 'Unknown';
-        document.getElementById('eventRegion').textContent = regionName;
+        // Set region dropdown
+        document.getElementById('eventRegionSelect').value = event.region || 'europe-middle-east';
 
-        document.getElementById('eventDescription').textContent = event.description || 'No description available.';
+        document.getElementById('eventDescription').value = event.description || '';
 
         document.getElementById('notesInput').value = timelineData.notes[event.id] || '';
         this.renderReferences(event.id);
@@ -807,21 +823,25 @@ class TimelineApp {
         preview.style.background = colorMap[category] || 'var(--state-color)';
     }
 
-    saveEventCategory() {
+    saveEventEdits() {
         if (!this.selectedEvent) return;
 
-        const newCategory = document.getElementById('eventCategorySelect').value;
-        this.selectedEvent.category = newCategory;
+        this.selectedEvent.title = document.getElementById('eventTitle').value;
+        this.selectedEvent.year = parseInt(document.getElementById('eventYear').value);
+        const endYear = document.getElementById('eventEndYear').value;
+        this.selectedEvent.endYear = endYear ? parseInt(endYear) : null;
+        this.selectedEvent.category = document.getElementById('eventCategorySelect').value;
+        this.selectedEvent.region = document.getElementById('eventRegionSelect').value;
+        this.selectedEvent.description = document.getElementById('eventDescription').value;
 
-        // Mark as user-modified if not already
         if (!this.selectedEvent.userAdded) {
             this.selectedEvent.userAdded = true;
         }
 
         saveData();
         this.render();
-        this.updateCategoryColorPreview(newCategory);
-        this.showToast('Category updated!');
+        this.updateCategoryColorPreview(this.selectedEvent.category);
+        this.showToast('Event updated!');
     }
 
     deleteEvent() {
@@ -916,12 +936,23 @@ class TimelineApp {
             newEvent.endYear = parseInt(endYear);
         }
 
-        const subcategoryEl = document.getElementById('newEventSubcategory');
-        if (subcategoryEl && subcategoryEl.value) {
-            newEvent.subcategory = subcategoryEl.value;
+        timelineData.events.push(newEvent);
+
+        // Create reference if source URL was provided
+        const sourceUrl = document.getElementById('newEventSourceUrl').value;
+        if (sourceUrl) {
+            const newRef = {
+                id: getNextReferenceId(),
+                eventId: newEvent.id,
+                title: sourceUrl,
+                type: 'other',
+                url: sourceUrl,
+                status: 'to-read',
+                userAdded: true
+            };
+            timelineData.references.push(newRef);
         }
 
-        timelineData.events.push(newEvent);
         saveData();
 
         this.closeAddEventModal();

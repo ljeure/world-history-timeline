@@ -502,7 +502,7 @@ function empireToGeoJSON(empire) {
             color: empire.color,
             entityId: empire.entityId,
             // Backwards compatibility: derive category from entity type
-            category: entity ? (entity.type === 'country' ? 'civilizations' : entity.type) : 'civilizations',
+            category: entity ? (entity.type === 'state' ? 'civilizations' : entity.type) : 'civilizations',
             region: empire.region,
             description: empire.description
         },
