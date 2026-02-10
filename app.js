@@ -852,6 +852,12 @@ class TimelineApp {
             return;
         }
 
+        // Track deletion so default events don't reappear on reload
+        if (!timelineData.deletedIds) timelineData.deletedIds = [];
+        if (this.selectedEvent.id != null) {
+            timelineData.deletedIds.push(this.selectedEvent.id);
+        }
+
         // Remove from events array
         const index = timelineData.events.findIndex(e => e.id === this.selectedEvent.id);
         if (index > -1) {

@@ -270,6 +270,66 @@ const timelineData = {
         { id: 2, title: "Meditations", type: "book", author: "Marcus Aurelius", entityIds: ['stoicism', 'roman-empire'], year: 180, status: "completed", description: "Personal writings on Stoic philosophy" },
         { id: 3, title: "Confessions", type: "book", author: "St. Augustine", entityIds: ['christianity', 'roman-empire'], year: 400, status: "completed", description: "Augustine's autobiographical and theological work" },
         { id: 4, title: "The Royal Society (study)", type: "book", entityIds: ['scientific-revolution', 'england'], year: 1660, status: "completed", description: "Study of the founding and history of the Royal Society of London" },
+        { id: 5, title: "Medieval Technology and Social Change", type: "book", author: "Lynn Townsend White Jr.", entityIds: ['early-middle-ages', 'high-middle-ages'], year: 1962, status: "completed", description: "How stirrup, plow, and other inventions transformed medieval society" },
+        { id: 6, title: "Two Paths to Prosperity", type: "book", author: "Avner Greif", entityIds: ['song', 'enlightenment'], year: 2025, status: "completed", description: "Comparative institutional analysis of Europe and China, 1000-2000" },
+        { id: 7, title: "The Iliad", type: "book", author: "Homer", entityIds: ['ancient-greece', 'classical-antiquity'], year: -800, status: "completed", description: "Ancient Greek epic poem of the Trojan War" },
+        { id: 8, title: "The Odyssey", type: "book", author: "Homer", entityIds: ['ancient-greece', 'classical-antiquity'], year: -800, status: "completed", description: "Ancient Greek epic of Odysseus's journey home from Troy" },
+        { id: 9, title: "Civilization: The West and the Rest", type: "book", author: "Niall Ferguson", entityIds: ['enlightenment', 'scientific-revolution'], year: 2011, status: "completed", description: "How Western civilization came to dominate the world" },
+        { id: 10, title: "The Knowledge Machine", type: "book", author: "Michael Strevens", entityIds: ['scientific-revolution'], year: 2020, status: "completed", description: "How the iron rule of explanation created modern science" },
+        { id: 11, title: "Genghis Khan and the Making of the Modern World", type: "book", author: "Jack Weatherford", entityIds: ['mongol'], year: 2004, status: "completed", description: "Revisionist history of the Mongol Empire's global impact" },
+        { id: 12, title: "Cro-Magnon", type: "book", author: "Brian M. Fagan", entityIds: ['paleolithic', 'early-humans'], year: 2010, status: "completed", description: "How the Ice Age gave birth to the first modern humans" },
+        { id: 13, title: "Unfabling the East", type: "book", author: "Jürgen Osterhammel", entityIds: ['enlightenment'], year: 1998, status: "completed", description: "The Enlightenment's encounter with Asia" },
+        { id: 14, title: "Economic And Social History of Medieval Europe", type: "book", author: "Henri Pirenne", entityIds: ['early-middle-ages', 'high-middle-ages'], year: 1933, status: "completed", description: "Classic economic history of medieval Europe" },
+        { id: 15, title: "Napoleon: A Concise Biography", type: "book", author: "David A. Bell", entityIds: ['france'], year: 2015, status: "completed", description: "Concise overview of Napoleon's life and legacy" },
+        { id: 16, title: "The Rise and Fall of the EAST", type: "book", author: "Yasheng Huang", entityIds: ['song', 'qing', 'prc', 'confucianism'], year: 2023, status: "completed", description: "How exams, autocracy, stability, and technology shaped China" },
+        { id: 17, title: "War and Peace", type: "book", author: "Leo Tolstoy", entityIds: ['france'], year: 1869, status: "completed", description: "Epic novel of Russian society during the Napoleonic Wars" },
+        { id: 18, title: "Mao: The Unknown Story", type: "book", author: "Jung Chang", entityIds: ['prc'], year: 2002, status: "completed", description: "Controversial biography of Mao Zedong" },
+        { id: 19, title: "The Cold War: A World History", type: "book", author: "Odd Arne Westad", entityIds: ['prc'], year: 2017, status: "completed", description: "Comprehensive global history of the Cold War" },
+        { id: 20, title: "The Cultural Revolution", type: "book", author: "Frank Dikötter", entityIds: ['prc'], year: 2016, status: "completed", description: "People's history of China's Cultural Revolution, 1962-1976" },
+        { id: 21, title: "Mao's Great Famine", type: "book", author: "Frank Dikötter", entityIds: ['prc'], year: 2010, status: "completed", description: "History of China's most devastating catastrophe, 1958-62" },
+        { id: 22, title: "Factory Girls", type: "book", author: "Leslie T. Chang", entityIds: ['prc'], year: 2008, status: "completed", description: "Lives of migrant factory workers in Dongguan, China" },
+        { id: 23, title: "The Silk Road: A New History", type: "book", author: "Valerie Hansen", entityIds: ['tang', 'buddhism'], year: 2012, status: "completed", description: "Life and trade along the ancient Silk Road" },
+        { id: 24, title: "Osman's Dream", type: "book", author: "Caroline Finkel", entityIds: ['ottoman'], year: 2005, status: "completed", description: "Comprehensive history of the Ottoman Empire" },
+        { id: 25, title: "The Ottoman Age of Exploration", type: "book", author: "Giancarlo Casale", entityIds: ['ottoman'], year: 2010, status: "completed", description: "Ottoman maritime empire and competition with Portugal" },
+        { id: 26, title: "Aristotle's Children", type: "book", author: "Richard E. Rubenstein", entityIds: ['islam', 'christianity', 'greek-philosophy', 'high-middle-ages'], year: 2003, status: "completed", description: "How Christians, Muslims, and Jews rediscovered ancient wisdom" },
+        { id: 27, title: "No God but God", type: "book", author: "Reza Aslan", entityIds: ['islam'], year: 2005, status: "completed", description: "Origins, evolution and future of Islam" },
+        { id: 28, title: "The House of Wisdom", type: "book", author: "Jim Al-Khalili", entityIds: ['abbasid', 'islam', 'ancient-greece'], year: 2010, status: "completed", description: "How Arabic science saved ancient knowledge and fueled the Renaissance" },
+        { id: 29, title: "The Alchemy of Happiness", type: "book", author: "Abu Hamid al-Ghazali", entityIds: ['islam', 'abbasid'], year: 1105, status: "completed", description: "Classic Sufi text on the soul's relationship with God" },
+        { id: 30, title: "Seeing Like a State", type: "book", author: "James C. Scott", entityIds: ['enlightenment'], year: 1998, status: "completed", description: "How state simplification schemes have failed" },
+        { id: 31, title: "Against the Grain", type: "book", author: "James C. Scott", entityIds: ['sumer', 'neolithic'], year: 2017, status: "completed", description: "Deep history of the earliest states" },
+        { id: 32, title: "Conquerors", type: "book", author: "Roger Crowley", entityIds: ['kongo'], year: 2015, status: "completed", description: "How Portugal forged the first global empire" },
+        { id: 33, title: "Merchant Kings", type: "book", author: "Stephen R. Bown", entityIds: ['england', 'france'], year: 2009, status: "completed", description: "When trading companies ruled the world, 1600-1900" },
+        { id: 34, title: "Owning the Earth", type: "book", author: "Andro Linklater", entityIds: ['enlightenment'], year: 2013, status: "completed", description: "Transforming history of land ownership" },
+        { id: 35, title: "Empire of Cotton", type: "book", author: "Sven Beckert", entityIds: ['england'], year: 2014, status: "completed", description: "Global history of cotton and capitalism" },
+        { id: 36, title: "A History of the Bible", type: "book", author: "John Barton", entityIds: ['christianity'], year: 2019, status: "completed", description: "Story of the world's most influential book" },
+        { id: 37, title: "Mengzi", type: "book", author: "Mencius", entityIds: ['confucianism'], year: -300, status: "completed", description: "Classic Confucian text with traditional commentaries" },
+        { id: 38, title: "The Prince", type: "book", author: "Niccolò Machiavelli", entityIds: ['renaissance'], year: 1532, status: "completed", description: "Foundational work of modern political philosophy" },
+        { id: 39, title: "On Liberty", type: "book", author: "John Stuart Mill", entityIds: ['enlightenment'], year: 1859, status: "completed", description: "Classic defense of individual freedom and free speech" },
+        { id: 40, title: "Voices from the Chinese Century", type: "book", author: "Timothy Cheek", entityIds: ['prc'], year: 2019, status: "completed", description: "Public intellectual debate from contemporary China" },
+        { id: 41, title: "Age of Ambition", type: "book", author: "Evan Osnos", entityIds: ['prc'], year: 2014, status: "completed", description: "Chasing fortune, truth, and faith in the new China" },
+        { id: 42, title: "The China Dream", type: "book", author: "Joe Studwell", entityIds: ['prc'], year: 2001, status: "completed", description: "The elusive quest for China's greatest untapped market" },
+        { id: 43, title: "The Great Transformation", type: "book", author: "Odd Arne Westad", entityIds: ['prc'], year: 2024, status: "completed", description: "China's road from revolution to reform" },
+        { id: 44, title: "Chip War", type: "book", author: "Chris Miller", entityIds: ['prc'], year: 2022, status: "completed", description: "The fight for the world's most critical technology" },
+        { id: 45, title: "The Subjection of Women", type: "book", author: "John Stuart Mill", entityIds: ['enlightenment'], year: 1869, status: "completed", description: "Argument for gender equality" },
+        { id: 46, title: "Apology", type: "book", author: "Plato", entityIds: ['greek-philosophy'], year: -399, status: "completed", description: "Socrates's defense speech at his trial" },
+        { id: 47, title: "To Live", type: "book", author: "Yu Hua", entityIds: ['prc'], year: 1992, status: "completed", description: "Novel spanning decades of modern Chinese history" },
+        { id: 48, title: "The Selected Poems of Li Po", type: "book", author: "Li Po", entityIds: ['tang'], year: 762, status: "completed", description: "Poetry from China's Tang Dynasty golden age" },
+        { id: 49, title: "The Horse, the Wheel, and Language", type: "book", author: "David W. Anthony", entityIds: ['bronze-age'], year: 2007, status: "completed", description: "How Bronze-Age riders from the Eurasian steppes shaped the modern world" },
+        { id: 50, title: "Silence", type: "book", author: "Shūsaku Endō", entityIds: ['christianity'], year: 1966, status: "completed", description: "Novel of Jesuit missionaries in 17th-century Japan" },
+        { id: 51, title: "The Way of Zen", type: "book", author: "Alan W. Watts", entityIds: ['buddhism'], year: 1957, status: "completed", description: "Introduction to Zen Buddhism's history and practice" },
+        { id: 52, title: "Utopia", type: "book", author: "Thomas More", entityIds: ['renaissance', 'england'], year: 1516, status: "completed", description: "Foundational work imagining an ideal society" },
+        { id: 53, title: "Laozi's Dao De Jing", type: "book", author: "Lao Tzu", entityIds: ['confucianism'], year: -350, status: "completed", description: "Classic Daoist text on the Way and its power" },
+        { id: 54, title: "The Worldly Philosophers", type: "book", author: "Robert L. Heilbroner", entityIds: ['enlightenment'], year: 1953, status: "completed", description: "Lives, times, and ideas of great economic thinkers" },
+        { id: 55, title: "Language Families of the World", type: "book", author: "John McWhorter", entityIds: ['early-humans'], year: 2019, status: "completed", description: "Comparing and contrasting all the world's language families" },
+        { id: 56, title: "Ancient Writing and the History of the Alphabet", type: "book", author: "John McWhorter", entityIds: ['sumer'], year: 2023, status: "completed", description: "History of writing systems from cuneiform to modern alphabets" },
+        { id: 57, title: "How Asia Works", type: "book", author: "Joe Studwell", entityIds: ['prc', 'song'], year: 2013, status: "completed", description: "Success and failure in the world's most dynamic region" },
+        { id: 58, title: "The Ottoman Empire (Great Courses)", type: "book", author: "Kenneth W. Harl", entityIds: ['ottoman'], year: 2017, status: "completed", description: "General history of the Ottoman Empire" },
+        { id: 59, title: "Turkey: What Everyone Needs to Know", type: "book", author: "Andrew Finkel", entityIds: ['ottoman'], year: 2012, status: "completed", description: "Concise overview of Turkish politics and history" },
+        { id: 60, title: "The Silk Roads: A New History of the World", type: "book", author: "Peter Frankopan", entityIds: ['tang', 'mongol', 'ottoman'], year: 2015, status: "completed", description: "World history centered on the Silk Roads" },
+        { id: 61, title: "Half a Lifelong Romance", type: "book", author: "Eileen Chang", entityIds: ['roc'], year: 1948, status: "completed", description: "Novel of love and loss in 1930s-40s China" },
+        { id: 62, title: "Love in a Fallen City", type: "book", author: "Eileen Chang", entityIds: ['roc'], year: 1943, status: "completed", description: "Short stories of Shanghai and Hong Kong in the 1940s" },
+        { id: 63, title: "The Arc of a Covenant", type: "book", author: "Walter Russell Mead", entityIds: ['christianity'], year: 2022, status: "completed", description: "The United States, Israel, and the fate of the Jewish people" },
+        { id: 64, title: "The Bourgeois Catholicism vs Capitalism in 18th Century France", type: "book", author: "Bernard Groethuysen", entityIds: ['christianity', 'france', 'enlightenment'], year: 1927, status: "completed", description: "Religion and capitalism in 18th century France" },
     ],
 
     // ===========================================
@@ -340,7 +400,8 @@ async function saveData() {
         references: timelineData.references.filter(r => r.userAdded),
         insights: timelineData.insights.filter(i => i.userAdded),
         notes: timelineData.notes,
-        rowAssignments: timelineData.rowAssignments || {}
+        rowAssignments: timelineData.rowAssignments || {},
+        deletedIds: timelineData.deletedIds || []
     };
 
     if (isServerMode) {
@@ -395,6 +456,13 @@ async function loadData() {
         if (userData.notes) timelineData.notes = userData.notes;
         if (userData.rowAssignments) timelineData.rowAssignments = userData.rowAssignments;
 
+        // Restore deleted IDs and remove those items from defaults
+        if (userData.deletedIds && userData.deletedIds.length > 0) {
+            timelineData.deletedIds = userData.deletedIds;
+            timelineData.events = timelineData.events.filter(e => !userData.deletedIds.includes(e.id));
+            timelineData.entities = timelineData.entities.filter(e => !userData.deletedIds.includes(e.id));
+        }
+
         // Add user entities
         if (userData.entities) {
             userData.entities.forEach(e => {
@@ -444,7 +512,7 @@ function clearSavedData() {
         fetch('/api/data', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ events: [], entities: [], references: [], insights: [], notes: {}, rowAssignments: {} })
+            body: JSON.stringify({ events: [], entities: [], references: [], insights: [], notes: {}, rowAssignments: {}, deletedIds: [] })
         }).then(() => location.reload());
     } else {
         localStorage.removeItem('worldHistoryTimeline');
@@ -474,13 +542,15 @@ function initializeTimelineData() {
             isEntity: true
         };
 
-        // Only add if not already present
-        if (!timelineData.events.find(e => e.id === entityEvent.id)) {
+        // Only add if not already present and not deleted by user
+        const deleted = timelineData.deletedIds || [];
+        if (!timelineData.events.find(e => e.id === entityEvent.id) && !deleted.includes(entityEvent.id)) {
             timelineData.events.push(entityEvent);
         }
     });
 
     // Add all periods as timeline events
+    const deleted = timelineData.deletedIds || [];
     timelineData.periods.forEach(period => {
         const periodEvent = {
             id: `period-${period.id}`,
@@ -495,8 +565,8 @@ function initializeTimelineData() {
             isPeriod: true
         };
 
-        // Only add if not already present
-        if (!timelineData.events.find(e => e.id === periodEvent.id)) {
+        // Only add if not already present and not deleted by user
+        if (!timelineData.events.find(e => e.id === periodEvent.id) && !deleted.includes(periodEvent.id)) {
             timelineData.events.push(periodEvent);
         }
     });
