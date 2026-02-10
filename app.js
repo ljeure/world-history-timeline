@@ -883,7 +883,22 @@ class TimelineApp {
         const list = document.getElementById('referencesList');
         list.innerHTML = '';
 
-        const refs = timelineData.references.filter(r => r.eventId === eventId);
+        // Find the event to get its entityIds
+        const event = timelineData.events.find(e => e.id === eventId);
+        const eventEntityIds = event ? (event.entityIds || []) : [];
+
+        // Match references by eventId OR by overlapping entityIds
+        const refs = timelineData.references.filter(r => {
+            if (r.eventId === eventId) return true;
+            if (r.entityIds && r.entityIds.length > 0 && eventEntityIds.length > 0) {
+                return r.entityIds.some(eid => eventEntityIds.includes(eid));
+            }
+            // Also match if the event itself is an entity (e.g., entity-ottoman)
+            if (r.entityIds && event && event.isEntity && event.entityIds) {
+                return r.entityIds.some(eid => event.entityIds.includes(eid));
+            }
+            return false;
+        });
 
         refs.forEach(ref => {
             const li = document.createElement('li');
