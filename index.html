@@ -16,6 +16,8 @@
             <div class="view-tabs">
                 <button class="view-tab active" data-view="timeline">Timeline</button>
                 <button class="view-tab" data-view="map">World Map</button>
+                <button class="view-tab" data-view="quiz">Quiz</button>
+                <button class="view-tab" data-view="takeaways">Takeaways</button>
             </div>
         </header>
 
@@ -273,6 +275,12 @@
                             People-years scale
                         </label>
                     </div>
+                    <div class="map-scale-toggle">
+                        <label>
+                            <input type="checkbox" id="mapCuratedToggle">
+                            Show curated empires
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -281,9 +289,116 @@
                     <h3>Active Empires</h3>
                     <div id="activeEmpiresList" class="empire-list"></div>
                 </div>
-                <div id="mapContainer" class="map-container"></div>
+                <div class="map-container-wrapper">
+                    <div id="mapContainer" class="map-container"></div>
+                    <div id="mapLoading" class="map-loading" style="display: none;">
+                        <div class="map-loading-spinner"></div>
+                        <span>Loading map data...</span>
+                    </div>
+                </div>
             </div>
         </div> <!-- End Map View -->
+
+        <!-- Quiz View -->
+        <div class="view-content quiz-view" id="quizView">
+            <div class="quiz-container">
+                <div class="quiz-header">
+                    <div class="quiz-settings">
+                        <div class="quiz-difficulty">
+                            <label>Difficulty:</label>
+                            <select id="quizDifficulty">
+                                <option value="beginner">Beginner</option>
+                                <option value="intermediate" selected>Intermediate</option>
+                                <option value="advanced">Advanced</option>
+                            </select>
+                        </div>
+                        <div class="quiz-source">
+                            <label>Questions from:</label>
+                            <select id="quizSource">
+                                <option value="all">All Events</option>
+                                <option value="user">My Added Events</option>
+                                <option value="references">My References</option>
+                            </select>
+                        </div>
+                        <div class="quiz-count">
+                            <label>Questions:</label>
+                            <select id="quizCount">
+                                <option value="5">5</option>
+                                <option value="10" selected>10</option>
+                                <option value="20">20</option>
+                            </select>
+                        </div>
+                        <button id="startQuizBtn" class="quiz-start-btn">Start Quiz</button>
+                    </div>
+                    <div class="quiz-score" id="quizScore" style="display: none;">
+                        <span class="score-label">Score:</span>
+                        <span class="score-value" id="quizScoreValue">0</span>
+                        <span class="score-divider">/</span>
+                        <span class="score-total" id="quizScoreTotal">0</span>
+                    </div>
+                </div>
+
+                <div class="quiz-progress" id="quizProgress" style="display: none;">
+                    <div class="quiz-progress-bar">
+                        <div class="quiz-progress-fill" id="quizProgressFill"></div>
+                    </div>
+                    <span class="quiz-progress-text" id="quizProgressText">Question 1 of 10</span>
+                </div>
+
+                <div class="quiz-welcome" id="quizWelcome">
+                    <h2>Test Your History Knowledge</h2>
+                    <p>Generate quiz questions based on your timeline data. Questions are tailored to events you've added and references you've read.</p>
+                    <div class="quiz-stats" id="quizStats"></div>
+                </div>
+
+                <div class="quiz-question-card" id="quizCard" style="display: none;">
+                    <div class="quiz-question-type" id="quizQuestionType"></div>
+                    <h3 class="quiz-question-text" id="quizQuestionText"></h3>
+                    <div class="quiz-answers" id="quizAnswers"></div>
+                    <div class="quiz-feedback" id="quizFeedback" style="display: none;">
+                        <p id="quizFeedbackText"></p>
+                        <button id="quizNextBtn" class="quiz-next-btn">Next Question</button>
+                    </div>
+                </div>
+
+                <div class="quiz-results" id="quizResults" style="display: none;">
+                    <h2>Quiz Complete!</h2>
+                    <div class="quiz-results-score" id="quizResultsScore"></div>
+                    <div class="quiz-results-breakdown" id="quizResultsBreakdown"></div>
+                    <button id="quizRetryBtn" class="quiz-start-btn">Try Again</button>
+                </div>
+
+                <div class="quiz-history" id="quizHistory">
+                    <h3>Recent Quizzes</h3>
+                    <div id="quizHistoryList" class="quiz-history-list"></div>
+                </div>
+            </div>
+        </div> <!-- End Quiz View -->
+
+        <!-- Takeaways View -->
+        <div class="view-content takeaways-view" id="takeawaysView">
+            <div class="takeaways-container">
+                <div class="takeaways-header">
+                    <h2>My History Takeaways</h2>
+                    <p class="takeaways-subtitle">Record your key insights and learnings about history</p>
+                </div>
+
+                <div class="takeaway-editor">
+                    <textarea id="takeawayInput" placeholder="Write a new takeaway... What patterns do you see? What surprised you? What connections have you made?" rows="3"></textarea>
+                    <div class="takeaway-editor-controls">
+                        <div class="takeaway-tags">
+                            <label>Link to:</label>
+                            <select id="takeawayEntitySelect">
+                                <option value="">General (no specific topic)</option>
+                            </select>
+                        </div>
+                        <button id="addTakeawayBtn" class="takeaway-add-btn">Add Takeaway</button>
+                    </div>
+                </div>
+
+                <div class="takeaways-list" id="takeawaysList"></div>
+            </div>
+        </div> <!-- End Takeaways View -->
 
         <!-- Empire Detail Modal (for Map) -->
         <div class="empire-detail-modal" id="empireDetailModal">
@@ -295,6 +410,7 @@
                 <!-- Info section (shown when not in timeline) -->
                 <div id="empireInfoSection">
                     <p class="empire-description" id="empireDescription"></p>
+                    <div id="geoInfoSection" class="geo-info-section" style="display: none;"></div>
                 </div>
 
                 <!-- Edit section (shown when in timeline) -->
@@ -343,6 +459,7 @@
 
                 <div class="empire-actions">
                     <button id="addEmpireToTimeline" class="add-to-timeline-btn">Add to Timeline</button>
+                    <button id="createStateEntity" class="create-entity-btn" style="display: none;">Create State Entity</button>
                     <button id="saveEmpireEdits" class="save-edits-btn" style="display: none;">Save Changes</button>
                 </div>
             </div>
@@ -355,6 +472,7 @@
     <script src="data.js"></script>
     <script src="map-data.js"></script>
     <script src="map.js"></script>
+    <script src="quiz.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

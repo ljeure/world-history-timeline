@@ -1,8 +1,7 @@
 // World History Map Module
-// Interactive map showing empires/civilizations over time
+// Interactive map showing real historical borders from GeoJSON basemaps
 
 // Experience-based scale markers (matching timeline page)
-// Based on cumulative human experience - 1300 CE is the halfway point (50%)
 const experienceScaleMarkers = [
     { year: -300000, experience: 0.00 },
     { year: -100000, experience: 0.03 },
@@ -14,7 +13,7 @@ const experienceScaleMarkers = [
     { year: 0, experience: 0.25 },
     { year: 500, experience: 0.35 },
     { year: 1000, experience: 0.45 },
-    { year: 1300, experience: 0.50 },  // Halfway point
+    { year: 1300, experience: 0.50 },
     { year: 1500, experience: 0.55 },
     { year: 1700, experience: 0.62 },
     { year: 1760, experience: 0.67 },
@@ -31,17 +30,14 @@ function sliderPositionToYear(position, useExperienceScale) {
     const maxYear = 2024;
 
     if (!useExperienceScale) {
-        // Linear scale
         return Math.round(minYear + position * (maxYear - minYear));
     }
 
-    // Experience scale: find the year that corresponds to this experience position
     for (let i = 0; i < experienceScaleMarkers.length - 1; i++) {
         const current = experienceScaleMarkers[i];
         const next = experienceScaleMarkers[i + 1];
 
         if (position >= current.experience && position <= next.experience) {
-            // Interpolate year within this segment
             const segmentProgress = (position - current.experience) / (next.experience - current.experience);
             return Math.round(current.year + segmentProgress * (next.year - current.year));
         }
@@ -56,17 +52,14 @@ function yearToSliderPosition(year, useExperienceScale) {
     const maxYear = 2024;
 
     if (!useExperienceScale) {
-        // Linear scale
         return (year - minYear) / (maxYear - minYear);
     }
 
-    // Experience scale: find the experience position for this year
     for (let i = 0; i < experienceScaleMarkers.length - 1; i++) {
         const current = experienceScaleMarkers[i];
         const next = experienceScaleMarkers[i + 1];
 
         if (year >= current.year && year <= next.year) {
-            // Interpolate experience within this segment
             const segmentProgress = (year - current.year) / (next.year - current.year);
             return current.experience + segmentProgress * (next.experience - current.experience);
         }
@@ -87,10 +80,19 @@ class HistoryMap {
         this.selectedEmpire = null;
         this.linkedTimelineEvent = null;
         this.useExperienceScale = false;
+
+        // New: async GeoJSON loading state
+        this.geoJsonCache = new Map();
+        this.basemapLayer = null;
+        this.curatedLayer = null;
+        this.showCurated = false;
+        this.debounceTimer = null;
+        this.currentSnapshotYear = null;
+        this.selectedGeometry = null;
+        this.fetchController = null;
     }
 
     init() {
-        // Initialize Leaflet map
         this.map = L.map('mapContainer', {
             center: [30, 40],
             zoom: 3,
@@ -99,38 +101,40 @@ class HistoryMap {
             worldCopyJump: true
         });
 
-        // Add base tile layer (using a neutral historical-style map)
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
             subdomains: 'abcd',
             maxZoom: 20
         }).addTo(this.map);
 
-        // Initialize empire layer group
+        // Initialize layer groups
         this.empireLayerGroup = L.layerGroup().addTo(this.map);
+        this.curatedLayerGroup = L.layerGroup(); // Not added by default
 
-        // Bind events
         this.bindEvents();
 
-        // Set initial year based on slider position (500 = middle = year 0 in linear, 1300 in experience)
         const initialPosition = 500 / 1000;
         const initialYear = sliderPositionToYear(initialPosition, this.useExperienceScale);
         this.setYear(initialYear);
     }
 
     bindEvents() {
-        // Year slider - uses 0-1000 range, converted to year based on scale mode
         const yearSlider = document.getElementById('mapYearSlider');
         yearSlider.addEventListener('input', (e) => {
-            const position = parseInt(e.target.value) / 1000; // Convert to 0-1
+            const position = parseInt(e.target.value) / 1000;
             const year = sliderPositionToYear(position, this.useExperienceScale);
-            this.setYear(year, false); // Don't update slider position (we're dragging it)
+
+            // Update year display immediately
+            document.getElementById('mapYearDisplay').textContent = this.formatYear(year);
+            this.currentYear = year;
+
+            // Debounce the actual fetch
+            clearTimeout(this.debounceTimer);
+            this.debounceTimer = setTimeout(() => this.setYear(year, false), 150);
         });
 
-        // Play/Pause button
         document.getElementById('mapPlayBtn').addEventListener('click', () => this.togglePlay());
 
-        // Speed control
         document.getElementById('mapSpeed').addEventListener('change', (e) => {
             if (this.isPlaying) {
                 this.stopPlay();
@@ -138,106 +142,249 @@ class HistoryMap {
             }
         });
 
-        // Jump buttons
         document.getElementById('mapPrevEra').addEventListener('click', () => this.jumpToEra(-1));
         document.getElementById('mapNextEra').addEventListener('click', () => this.jumpToEra(1));
 
-        // Experience scale toggle
         const scaleToggle = document.getElementById('mapExperienceScale');
         if (scaleToggle) {
             scaleToggle.addEventListener('change', (e) => {
                 this.useExperienceScale = e.target.checked;
-                // Update slider position for current year with new scale
                 this.updateSliderPosition();
             });
         }
 
-        // Close empire detail panel
+        // Curated empires toggle
+        const curatedToggle = document.getElementById('mapCuratedToggle');
+        if (curatedToggle) {
+            curatedToggle.addEventListener('change', (e) => {
+                this.showCurated = e.target.checked;
+                if (this.showCurated) {
+                    this.curatedLayerGroup.addTo(this.map);
+                } else {
+                    this.curatedLayerGroup.remove();
+                }
+                this.renderCuratedEmpires();
+            });
+        }
+
         document.getElementById('closeEmpirePanel').addEventListener('click', () => this.closeEmpirePanel());
-
-        // Add to timeline button
         document.getElementById('addEmpireToTimeline').addEventListener('click', () => this.addSelectedToTimeline());
-
-        // Save edits button
         document.getElementById('saveEmpireEdits').addEventListener('click', () => this.saveTimelineEdits());
 
-        // Close modal on background click
+        // Create State Entity button
+        const createEntityBtn = document.getElementById('createStateEntity');
+        if (createEntityBtn) {
+            createEntityBtn.addEventListener('click', () => this.createStateEntity());
+        }
+
         document.getElementById('empireDetailModal').addEventListener('click', (e) => {
             if (e.target === e.currentTarget) this.closeEmpirePanel();
         });
     }
 
     updateSliderPosition() {
-        // Update slider position based on current year and scale mode
         const position = yearToSliderPosition(this.currentYear, this.useExperienceScale);
         document.getElementById('mapYearSlider').value = Math.round(position * 1000);
     }
 
     setYear(year, updateSlider = true) {
         this.currentYear = year;
-
-        // Update display
         document.getElementById('mapYearDisplay').textContent = this.formatYear(year);
 
-        // Update slider position if requested
         if (updateSlider) {
             this.updateSliderPosition();
         }
 
-        // Update map layers
         this.renderEmpires();
     }
 
-    renderEmpires() {
-        // Clear existing layers
+    showLoading(show) {
+        const el = document.getElementById('mapLoading');
+        if (el) el.style.display = show ? 'flex' : 'none';
+    }
+
+    async renderEmpires() {
+        const year = this.currentYear;
+
+        // Check if we already have this exact snapshot year cached
+        if (this.geoJsonCache.has(year)) {
+            this.renderGeoJsonData(this.geoJsonCache.get(year), year);
+            return;
+        }
+
+        // Cancel any in-flight fetch (the user moved the slider again)
+        if (this.fetchController) {
+            this.fetchController.abort();
+        }
+        this.fetchController = new AbortController();
+        this.showLoading(true);
+
+        try {
+            const response = await fetch(`/api/map/${year}`, {
+                signal: this.fetchController.signal
+            });
+            if (!response.ok) {
+                this.empireLayerGroup.clearLayers();
+                this.updateEmpiresList([]);
+                return;
+            }
+
+            const snapshotYear = parseInt(response.headers.get('X-Snapshot-Year')) || year;
+            const data = await response.json();
+
+            // Cache by snapshot year AND by the requested year (so nearby years hit cache)
+            this.geoJsonCache.set(snapshotYear, data);
+            if (snapshotYear !== year) {
+                this.geoJsonCache.set(year, data);
+            }
+            this.currentSnapshotYear = snapshotYear;
+
+            // Only render if this is still the year we want (user may have moved slider)
+            if (this.currentYear === year) {
+                this.renderGeoJsonData(data, year);
+            }
+        } catch (err) {
+            if (err.name === 'AbortError') return; // Fetch was cancelled, ignore
+            console.error('Failed to fetch map data:', err);
+            this.empireLayerGroup.clearLayers();
+            this.updateEmpiresList([]);
+        } finally {
+            this.showLoading(false);
+        }
+    }
+
+    // Compute bounding box area (in square degrees) for a GeoJSON geometry
+    computeBboxArea(geometry) {
+        if (!geometry || !geometry.coordinates) return 0;
+        let minLon = Infinity, maxLon = -Infinity;
+        let minLat = Infinity, maxLat = -Infinity;
+        const walk = (arr) => {
+            if (typeof arr[0] === 'number') {
+                if (arr[0] < minLon) minLon = arr[0];
+                if (arr[0] > maxLon) maxLon = arr[0];
+                if (arr[1] < minLat) minLat = arr[1];
+                if (arr[1] > maxLat) maxLat = arr[1];
+                return;
+            }
+            for (const child of arr) walk(child);
+        };
+        walk(geometry.coordinates);
+        if (!isFinite(minLon)) return 0;
+        return (maxLon - minLon) * (maxLat - minLat);
+    }
+
+    renderGeoJsonData(data, year) {
         this.empireLayerGroup.clearLayers();
 
-        // Get empires for current year
-        const empiresGeoJSON = getEmpiresGeoJSON(this.currentYear);
+        // Pre-compute areas and metadata for all named features
+        const candidates = [];
+        data.features.forEach(feature => {
+            const name = feature.properties.NAME;
+            if (!name) return;
+            const area = this.computeBboxArea(feature.geometry);
+            const entityMatch = findEntityForName(name, year);
+            const isKnown = NAME_TO_ENTITY.hasOwnProperty(name);
+            candidates.push({ feature, name, area, entityMatch, isKnown });
+        });
 
-        // Add each empire as a polygon layer
-        empiresGeoJSON.features.forEach(feature => {
+        // Dynamic area threshold: if too many features, keep top N by area
+        const MAX_FEATURES = 120;
+        let minArea = 0;
+        if (candidates.length > MAX_FEATURES) {
+            // Sort unknown features by area to find cutoff
+            const unknownAreas = candidates
+                .filter(c => !c.entityMatch && !c.isKnown)
+                .map(c => c.area)
+                .sort((a, b) => b - a);
+            const knownCount = candidates.filter(c => c.entityMatch || c.isKnown).length;
+            const remainingSlots = Math.max(20, MAX_FEATURES - knownCount);
+            if (unknownAreas.length > remainingSlots) {
+                minArea = unknownAreas[remainingSlots - 1];
+            }
+        }
+
+        const namedFeatures = [];
+        candidates.forEach(({ feature, name, area, entityMatch, isKnown }) => {
+            // Filter: keep if known entity, in dictionary, or large enough
+            if (!entityMatch && !isKnown && area < minArea) return;
+
+            const subjecto = feature.properties.SUBJECTO;
+            const colorKey = subjecto || name;
+            const color = nameToColor(colorKey);
+
             const layer = L.geoJSON(feature, {
                 style: {
-                    fillColor: feature.properties.color,
+                    fillColor: color,
                     fillOpacity: 0.5,
-                    color: feature.properties.color,
-                    weight: 2,
+                    color: color,
+                    weight: 1.5,
                     opacity: 0.8
                 },
-                onEachFeature: (feature, layer) => {
-                    // Tooltip on hover
-                    layer.bindTooltip(feature.properties.name, {
+                onEachFeature: (feat, lyr) => {
+                    lyr.bindTooltip(name, {
                         permanent: false,
                         direction: 'center',
                         className: 'empire-tooltip'
                     });
 
-                    // Click to show details
-                    layer.on('click', () => this.showEmpireDetail(feature.properties));
+                    lyr.on('click', () => this.showCountryDetail(feat.properties, entityMatch, feat.geometry));
 
-                    // Hover effects
-                    layer.on('mouseover', (e) => {
-                        e.target.setStyle({
-                            fillOpacity: 0.7,
-                            weight: 3
-                        });
+                    lyr.on('mouseover', (e) => {
+                        e.target.setStyle({ fillOpacity: 0.7, weight: 2.5 });
                     });
-
-                    layer.on('mouseout', (e) => {
-                        e.target.setStyle({
-                            fillOpacity: 0.5,
-                            weight: 2
-                        });
+                    lyr.on('mouseout', (e) => {
+                        e.target.setStyle({ fillOpacity: 0.5, weight: 1.5 });
                     });
                 }
             });
 
             this.empireLayerGroup.addLayer(layer);
+            namedFeatures.push({ name, color, properties: feature.properties, entityMatch, geometry: feature.geometry });
         });
 
-        // Update active empires list
-        this.updateEmpiresList(empiresGeoJSON.features);
+        // Deduplicate for sidebar (group by SUBJECTO or NAME)
+        const seen = new Set();
+        const uniqueFeatures = namedFeatures.filter(f => {
+            const key = f.properties.SUBJECTO || f.name;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+
+        this.updateEmpiresList(uniqueFeatures);
+
+        // Also render curated empires if toggled on
+        if (this.showCurated) {
+            this.renderCuratedEmpires();
+        }
+    }
+
+    renderCuratedEmpires() {
+        this.curatedLayerGroup.clearLayers();
+        if (!this.showCurated) return;
+
+        const empiresGeoJSON = getEmpiresGeoJSON(this.currentYear);
+        empiresGeoJSON.features.forEach(feature => {
+            const layer = L.geoJSON(feature, {
+                style: {
+                    fillColor: feature.properties.color,
+                    fillOpacity: 0.3,
+                    color: feature.properties.color,
+                    weight: 3,
+                    opacity: 0.9,
+                    dashArray: '5, 5'
+                },
+                onEachFeature: (feature, layer) => {
+                    layer.bindTooltip(feature.properties.name + ' (curated)', {
+                        permanent: false,
+                        direction: 'center',
+                        className: 'empire-tooltip'
+                    });
+                    layer.on('click', () => this.showEmpireDetail(feature.properties));
+                }
+            });
+            this.curatedLayerGroup.addLayer(layer);
+        });
     }
 
     updateEmpiresList(features) {
@@ -245,27 +392,136 @@ class HistoryMap {
         listEl.innerHTML = '';
 
         if (features.length === 0) {
-            listEl.innerHTML = '<div class="no-empires">No empires in this period</div>';
+            listEl.innerHTML = '<div class="no-empires">No named territories in this period</div>';
             return;
         }
 
+        // Sort by name
+        features.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
         features.forEach(feature => {
-            const props = feature.properties;
             const item = document.createElement('div');
             item.className = 'empire-list-item';
+            const linked = feature.entityMatch ? ' linked' : '';
             item.innerHTML = `
-                <span class="empire-color" style="background: ${props.color}"></span>
-                <span class="empire-name">${props.name}</span>
+                <span class="empire-color" style="background: ${feature.color}"></span>
+                <span class="empire-name${linked}">${feature.name}</span>
             `;
-            item.addEventListener('click', () => this.showEmpireDetail(props));
+            item.addEventListener('click', () => this.showCountryDetail(feature.properties, feature.entityMatch, feature.geometry));
             listEl.appendChild(item);
         });
     }
 
+    // Show detail for a basemap country (new GeoJSON data)
+    showCountryDetail(props, entityMatch, geometry) {
+        this.selectedEmpire = props;
+        this.selectedGeometry = geometry || null;
+
+        const addBtn = document.getElementById('addEmpireToTimeline');
+        const saveBtn = document.getElementById('saveEmpireEdits');
+        const editSection = document.getElementById('empireEditSection');
+        const infoSection = document.getElementById('empireInfoSection');
+        const createBtn = document.getElementById('createStateEntity');
+        const geoInfoSection = document.getElementById('geoInfoSection');
+
+        // Check if linked to a timeline event
+        this.linkedTimelineEvent = null;
+        if (entityMatch) {
+            this.linkedTimelineEvent = timelineData.events.find(e =>
+                e.entityIds && e.entityIds.includes(entityMatch.id)
+            ) || null;
+        }
+
+        if (!this.linkedTimelineEvent && props.NAME) {
+            // Also check by title match
+            this.linkedTimelineEvent = timelineData.events.find(e =>
+                e.title.toLowerCase() === props.NAME.toLowerCase() ||
+                (e.fromMap && e.mapId === props.NAME)
+            );
+        }
+
+        if (this.linkedTimelineEvent) {
+            // LINKED: Show edit form with current timeline data
+            addBtn.style.display = 'none';
+            saveBtn.style.display = 'block';
+            editSection.style.display = 'block';
+            infoSection.style.display = 'none';
+            if (createBtn) createBtn.style.display = 'none';
+            if (geoInfoSection) geoInfoSection.style.display = 'none';
+
+            document.getElementById('editEmpireTitle').value = this.linkedTimelineEvent.title;
+            document.getElementById('editEmpireStartYear').value = this.linkedTimelineEvent.year;
+            document.getElementById('editEmpireEndYear').value = this.linkedTimelineEvent.endYear || '';
+            document.getElementById('editEmpireCategory').value = this.linkedTimelineEvent.category || 'state';
+            document.getElementById('editEmpireRegion').value = this.linkedTimelineEvent.region || 'europe-middle-east';
+            document.getElementById('editEmpireDescription').value = this.linkedTimelineEvent.description || '';
+
+            document.getElementById('empireTitle').textContent = this.linkedTimelineEvent.title + ' (In Timeline)';
+            document.getElementById('empireDates').textContent =
+                `${this.formatYear(this.linkedTimelineEvent.year)} - ${this.formatYear(this.linkedTimelineEvent.endYear || this.linkedTimelineEvent.year)}`;
+
+        } else if (entityMatch) {
+            // Entity found but not yet in timeline as event
+            addBtn.style.display = 'block';
+            addBtn.textContent = 'Add to Timeline';
+            addBtn.disabled = false;
+            saveBtn.style.display = 'none';
+            editSection.style.display = 'none';
+            infoSection.style.display = 'block';
+            if (createBtn) createBtn.style.display = 'none';
+            if (geoInfoSection) geoInfoSection.style.display = 'none';
+
+            document.getElementById('empireTitle').textContent = entityMatch.name;
+            document.getElementById('empireDates').textContent =
+                `${this.formatYear(entityMatch.year)} - ${this.formatYear(entityMatch.endYear)}`;
+            document.getElementById('empireDescription').textContent = entityMatch.description;
+
+            // Store entity info for adding
+            this.selectedEmpire = {
+                ...props,
+                id: entityMatch.id,
+                name: entityMatch.name,
+                startYear: entityMatch.year,
+                endYear: entityMatch.endYear,
+                description: entityMatch.description,
+                region: entityMatch.region,
+                category: entityMatch.type === 'state' ? 'civilizations' : entityMatch.type
+            };
+
+        } else {
+            // UNLINKED: Show GeoJSON info + Create button
+            addBtn.style.display = 'none';
+            saveBtn.style.display = 'none';
+            editSection.style.display = 'none';
+            infoSection.style.display = 'block';
+            if (createBtn) createBtn.style.display = 'block';
+
+            const name = props.NAME || 'Unknown';
+            document.getElementById('empireTitle').textContent = name;
+            document.getElementById('empireDates').textContent = `Snapshot: ${this.formatYear(this.currentYear)}`;
+
+            const descParts = [];
+            if (props.SUBJECTO && props.SUBJECTO !== name) descParts.push(`Sovereign: ${props.SUBJECTO}`);
+            if (props.PARTOF && props.PARTOF !== name) descParts.push(`Part of: ${props.PARTOF}`);
+            if (props.BORDERPRECISION) descParts.push(`Border precision: ${props.BORDERPRECISION}`);
+            document.getElementById('empireDescription').textContent = descParts.join('\n') || 'No additional information available';
+
+            // Show GeoJSON-specific info
+            if (geoInfoSection) {
+                geoInfoSection.style.display = 'block';
+                geoInfoSection.innerHTML = '';
+                if (props.SUBJECTO) geoInfoSection.innerHTML += `<div class="geo-info-item"><span class="geo-label">Sovereign:</span> ${props.SUBJECTO}</div>`;
+                if (props.PARTOF && props.PARTOF !== props.SUBJECTO) geoInfoSection.innerHTML += `<div class="geo-info-item"><span class="geo-label">Part of:</span> ${props.PARTOF}</div>`;
+            }
+        }
+
+        document.getElementById('empireDetailModal').classList.add('open');
+    }
+
+    // Legacy: show detail for curated empire data
     showEmpireDetail(props) {
         this.selectedEmpire = props;
 
-        // Check if this empire is already in the timeline
         this.linkedTimelineEvent = timelineData.events.find(e =>
             e.title.toLowerCase() === props.name.toLowerCase() ||
             (e.fromMap && e.mapId === props.id)
@@ -275,15 +531,18 @@ class HistoryMap {
         const saveBtn = document.getElementById('saveEmpireEdits');
         const editSection = document.getElementById('empireEditSection');
         const infoSection = document.getElementById('empireInfoSection');
+        const createBtn = document.getElementById('createStateEntity');
+        const geoInfoSection = document.getElementById('geoInfoSection');
+
+        if (createBtn) createBtn.style.display = 'none';
+        if (geoInfoSection) geoInfoSection.style.display = 'none';
 
         if (this.linkedTimelineEvent) {
-            // Show edit form with current timeline data
             addBtn.style.display = 'none';
             saveBtn.style.display = 'block';
             editSection.style.display = 'block';
             infoSection.style.display = 'none';
 
-            // Populate edit fields with timeline event data
             document.getElementById('editEmpireTitle').value = this.linkedTimelineEvent.title;
             document.getElementById('editEmpireStartYear').value = this.linkedTimelineEvent.year;
             document.getElementById('editEmpireEndYear').value = this.linkedTimelineEvent.endYear || '';
@@ -295,7 +554,6 @@ class HistoryMap {
             document.getElementById('empireDates').textContent =
                 `${this.formatYear(this.linkedTimelineEvent.year)} - ${this.formatYear(this.linkedTimelineEvent.endYear || this.linkedTimelineEvent.year)}`;
         } else {
-            // Show add button and info
             addBtn.style.display = 'block';
             addBtn.textContent = 'Add to Timeline';
             addBtn.disabled = false;
@@ -323,47 +581,99 @@ class HistoryMap {
 
         const props = this.selectedEmpire;
 
-        // Create new timeline event
         const newEvent = {
             id: getNextEventId(),
-            title: props.name,
-            year: props.startYear,
-            endYear: props.endYear,
-            category: props.category || 'civilizations',
+            title: props.name || props.NAME,
+            year: props.startYear || this.currentYear,
+            endYear: props.endYear || this.currentYear,
+            category: props.category || 'state',
             region: props.region || 'europe-middle-east',
-            description: props.description,
+            description: props.description || '',
             userAdded: true,
             fromMap: true,
-            mapId: props.id
+            mapId: props.id || props.NAME
         };
 
         timelineData.events.push(newEvent);
         saveData();
 
-        // Show confirmation
-        this.showToast(`"${props.name}" added to timeline!`);
+        this.showToast(`"${newEvent.title}" added to timeline!`);
 
-        // Update button state
         const addBtn = document.getElementById('addEmpireToTimeline');
         addBtn.textContent = 'Added to Timeline!';
         addBtn.disabled = true;
 
-        // Refresh timeline if visible
         if (window.app) {
             window.app.render();
         }
 
-        // Close and reopen to show edit form
         setTimeout(() => {
             this.closeEmpirePanel();
-            this.showEmpireDetail(props);
+        }, 500);
+    }
+
+    createStateEntity() {
+        if (!this.selectedEmpire) return;
+
+        const props = this.selectedEmpire;
+        const name = props.NAME || props.name || 'Unknown';
+        const id = slugify(name);
+
+        // Check if entity already exists
+        if (getEntityById(id)) {
+            this.showToast(`Entity "${name}" already exists`);
+            return;
+        }
+
+        // Create new entity
+        const region = guessRegionFromCoords(this.selectedGeometry?.coordinates);
+        const newEntity = {
+            id: id,
+            name: name,
+            type: 'state',
+            year: this.currentYear,
+            endYear: this.currentYear,
+            region: region,
+            description: '',
+            userAdded: true
+        };
+
+        timelineData.entities.push(newEntity);
+
+        // Also create a timeline event for it (use entity-${id} format to match initializeTimelineData)
+        const newEvent = {
+            id: `entity-${id}`,
+            title: name,
+            year: this.currentYear,
+            endYear: this.currentYear,
+            entityIds: [id],
+            category: 'state',
+            entityType: 'state',
+            region: region,
+            description: '',
+            isEntity: true,
+            userAdded: true,
+            fromMap: true,
+            mapId: name
+        };
+
+        timelineData.events.push(newEvent);
+        saveData();
+
+        this.showToast(`Created entity "${name}" and added to timeline!`);
+
+        if (window.app) {
+            window.app.render();
+        }
+
+        setTimeout(() => {
+            this.closeEmpirePanel();
         }, 500);
     }
 
     saveTimelineEdits() {
         if (!this.linkedTimelineEvent) return;
 
-        // Update the timeline event with form values
         this.linkedTimelineEvent.title = document.getElementById('editEmpireTitle').value;
         this.linkedTimelineEvent.year = parseInt(document.getElementById('editEmpireStartYear').value);
 
@@ -373,16 +683,12 @@ class HistoryMap {
         this.linkedTimelineEvent.category = document.getElementById('editEmpireCategory').value;
         this.linkedTimelineEvent.region = document.getElementById('editEmpireRegion').value;
         this.linkedTimelineEvent.description = document.getElementById('editEmpireDescription').value;
-
-        // Mark as user-modified if it wasn't already
         this.linkedTimelineEvent.userAdded = true;
 
         saveData();
 
-        // Show confirmation
         this.showToast('Timeline event updated!');
 
-        // Refresh timeline if visible
         if (window.app) {
             window.app.render();
         }
@@ -404,7 +710,6 @@ class HistoryMap {
 
         const speed = parseInt(document.getElementById('mapSpeed').value);
 
-        // Adjust step size based on current era (bigger steps for prehistoric times)
         const getYearStep = () => {
             if (this.currentYear < -10000) {
                 return speed === 1 ? 5000 : speed === 2 ? 10000 : 20000;
@@ -436,7 +741,6 @@ class HistoryMap {
     }
 
     jumpToEra(direction) {
-        // Key historical eras to jump to (extended for full human history)
         const eras = [-300000, -100000, -50000, -10000, -3000, -2000, -1000, -500, 0, 500, 1000, 1500, 1800, 1900, 2000];
         const currentIndex = eras.findIndex(e => e >= this.currentYear);
 
@@ -484,7 +788,6 @@ function initMap() {
         historyMap = new HistoryMap();
         historyMap.init();
     } else {
-        // Refresh map size if already initialized (needed after tab switch)
         setTimeout(() => historyMap.map.invalidateSize(), 100);
     }
 }

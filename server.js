@@ -10,8 +10,52 @@ const MIME_TYPES = {
     '.html': 'text/html',
     '.css': 'text/css',
     '.js': 'application/javascript',
-    '.json': 'application/json'
+    '.json': 'application/json',
+    '.geojson': 'application/geo+json'
 };
+
+// Build sorted index of available GeoJSON snapshot years
+const GEOJSON_DIR = path.join(__dirname, 'historical-basemaps', 'geojson');
+const snapshotIndex = [];
+
+if (fs.existsSync(GEOJSON_DIR)) {
+    const files = fs.readdirSync(GEOJSON_DIR);
+    for (const file of files) {
+        if (!file.startsWith('world_') || !file.endsWith('.geojson')) continue;
+        const base = file.replace('world_', '').replace('.geojson', '');
+        let year;
+        if (base.startsWith('bc')) {
+            year = -parseInt(base.replace('bc', ''), 10);
+        } else {
+            year = parseInt(base, 10);
+        }
+        if (!isNaN(year)) {
+            snapshotIndex.push({ year, filename: file });
+        }
+    }
+    snapshotIndex.sort((a, b) => a.year - b.year);
+    console.log(`Loaded ${snapshotIndex.length} GeoJSON snapshots (${snapshotIndex[0]?.year} to ${snapshotIndex[snapshotIndex.length - 1]?.year})`);
+}
+
+// Binary search for nearest snapshot year
+function findNearestSnapshot(targetYear) {
+    if (snapshotIndex.length === 0) return null;
+    let lo = 0, hi = snapshotIndex.length - 1;
+    while (lo < hi) {
+        const mid = (lo + hi) >> 1;
+        if (snapshotIndex[mid].year < targetYear) lo = mid + 1;
+        else hi = mid;
+    }
+    // Check if previous entry is closer
+    if (lo > 0) {
+        const prev = snapshotIndex[lo - 1];
+        const curr = snapshotIndex[lo];
+        if (Math.abs(prev.year - targetYear) <= Math.abs(curr.year - targetYear)) {
+            return prev;
+        }
+    }
+    return snapshotIndex[lo];
+}
 
 // Ensure user-data.json exists
 if (!fs.existsSync(USER_DATA_FILE)) {
@@ -62,6 +106,32 @@ const server = http.createServer((req, res) => {
             } catch (err) {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ error: 'Invalid JSON' }));
+            }
+        });
+        return;
+    }
+
+    // API: Get historical map data for a year
+    if (req.method === 'GET' && req.url.match(/^\/api\/map\/-?\d+$/)) {
+        const targetYear = parseInt(req.url.split('/').pop(), 10);
+        const snapshot = findNearestSnapshot(targetYear);
+        if (!snapshot) {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'No map data available' }));
+            return;
+        }
+        const geoPath = path.join(GEOJSON_DIR, snapshot.filename);
+        fs.readFile(geoPath, (err, content) => {
+            if (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Failed to read map data' }));
+            } else {
+                res.writeHead(200, {
+                    'Content-Type': 'application/geo+json',
+                    'Cache-Control': 'public, max-age=86400',
+                    'X-Snapshot-Year': String(snapshot.year)
+                });
+                res.end(content);
             }
         });
         return;

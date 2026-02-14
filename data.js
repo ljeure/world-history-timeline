@@ -342,7 +342,13 @@ const timelineData = {
     notes: {},
 
     // Row assignments for custom layout
-    rowAssignments: {}
+    rowAssignments: {},
+
+    // User takeaways
+    takeaways: [],
+
+    // Quiz history
+    quizHistory: []
 };
 
 // Helper: Get entity by ID
@@ -368,7 +374,8 @@ function getReferencesForEntity(entityId) {
 
 // Get next available ID for events
 function getNextEventId() {
-    return Math.max(...timelineData.events.map(e => e.id)) + 1;
+    const numericIds = timelineData.events.map(e => e.id).filter(id => typeof id === 'number' && !isNaN(id));
+    return numericIds.length > 0 ? Math.max(...numericIds) + 1 : 1;
 }
 
 // Get next available ID for references
@@ -401,7 +408,9 @@ async function saveData() {
         insights: timelineData.insights.filter(i => i.userAdded),
         notes: timelineData.notes,
         rowAssignments: timelineData.rowAssignments || {},
-        deletedIds: timelineData.deletedIds || []
+        deletedIds: timelineData.deletedIds || [],
+        takeaways: timelineData.takeaways || [],
+        quizHistory: timelineData.quizHistory || []
     };
 
     if (isServerMode) {
@@ -503,6 +512,16 @@ async function loadData() {
                 }
             });
         }
+
+        // Restore takeaways
+        if (userData.takeaways) {
+            timelineData.takeaways = userData.takeaways;
+        }
+
+        // Restore quiz history
+        if (userData.quizHistory) {
+            timelineData.quizHistory = userData.quizHistory;
+        }
     }
 }
 
@@ -512,7 +531,7 @@ function clearSavedData() {
         fetch('/api/data', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ events: [], entities: [], references: [], insights: [], notes: {}, rowAssignments: {}, deletedIds: [] })
+            body: JSON.stringify({ events: [], entities: [], references: [], insights: [], notes: {}, rowAssignments: {}, deletedIds: [], takeaways: [], quizHistory: [] })
         }).then(() => location.reload());
     } else {
         localStorage.removeItem('worldHistoryTimeline');

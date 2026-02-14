@@ -1,6 +1,237 @@
 // Historical Empire/Civilization Data with simplified GeoJSON boundaries
 // Each empire links to a societal entity via entityId
 
+// ===========================================
+// NAME_TO_ENTITY: Maps GeoJSON NAME values to data.js entity IDs
+// Used to link basemap countries to timeline entities
+// ===========================================
+const NAME_TO_ENTITY = {
+    // Roman / Byzantine
+    'Roman Empire': 'roman-empire',
+    'Rome': 'roman-republic',
+    'Roman Republic': 'roman-republic',
+    'Byzantine Empire': 'byzantine',
+    'Byzantium': 'byzantine',
+
+    // Persian Empires
+    'Achaemenid Empire': 'achaemenid',
+    'Parthian Empire': 'parthia',
+    'Sasanian Empire': 'sasanian',
+    'Sassanid Empire': 'sasanian',
+
+    // Greek / Macedonian
+    'Greek city-states': 'ancient-greece',
+    'Macedon': 'macedon',
+    'Macedonian Empire': 'macedon',
+    'Seleucid Empire': 'seleucid',
+
+    // Islamic Caliphates
+    'Rashidun Caliphate': 'rashidun',
+    'Umayyad Caliphate': 'umayyad',
+    'Emirate of Córdoba': 'umayyad',
+    'Abbasid Caliphate': 'abbasid',
+    'Ottoman Empire': 'ottoman',
+    'Fatimid Caliphate': 'fatimid',
+    'Mamluke Sultanate': 'mamluk',
+    'Mamluk Sultanate': 'mamluk',
+
+    // Mongol
+    'Mongol Empire': 'mongol',
+    'Golden Horde': 'mongol',
+    'Chagatai Khanate': 'mongol',
+
+    // Chinese Dynasties
+    'Han': 'prc',
+    'Tang': 'tang',
+    'Tang Empire': 'tang',
+    'Song': 'song',
+    'Song Empire': 'song',
+    'Yuan': 'yuan',
+    'Yuan Empire': 'yuan',
+    'Ming Empire': 'ming',
+    'Ming': 'ming',
+    'Qing Empire': 'qing',
+    'Qing': 'qing',
+    'China': 'prc',
+
+    // European Nations
+    'France': 'france',
+    'England': 'england',
+    'Britain': 'england',
+    'United Kingdom': 'england',
+    'Scottland': 'england',
+    'Scottalnd': 'england',
+
+    // African
+    'Egypt': 'egypt-old',
+    'Axum': 'aksum',
+    'Aksum': 'aksum',
+    'Ethiopia': 'aksum',
+    'Mwenemutapa': 'zimbabwe',
+    'Congo': 'kongo',
+
+    // Mesopotamian
+    'Assyria': 'assyria',
+    'Babylonia': 'babylon',
+
+    // Indian
+    'Sultanate of Delhi': 'mongol',
+    'British Raj': 'england',
+    'Vijayanagara': null,
+
+    // Others
+    'Carolingian Empire': 'france',
+    'Holy Roman Empire': null,
+    'Portugal': null,
+    'Castille': null,
+    'Aragón': null,
+    'Denmark': null,
+    'Denmark-Norway': null,
+    'Sweden': null,
+    'Poland-Lithuania': null,
+    'Korea': null,
+    'Japan': null,
+    'Tibet': null,
+    'Nepal': null,
+    'Cambodia': null,
+    'Đại Việt': null,
+
+    // Additional important states (small in area but historically significant)
+    'Netherlands': null,
+    'Venice': null,
+    'Genoa': null,
+    'Naples': null,
+    'Sicily': null,
+    'Papal States': null,
+    'Swiss Confederation': null,
+    'Scotland': null,
+    'Ireland': null,
+    'Norway': null,
+    'Muscovy': null,
+    'Russia': null,
+    'Russian Empire': null,
+    'Prussia': null,
+    'Austria': null,
+    'Austria-Hungary': null,
+    'Hungary': null,
+    'Bohemia': null,
+    'Serbia': null,
+    'Poland': null,
+    'Lithuania': null,
+    'Teutonic Order': null,
+    'Safavid Empire': null,
+    'Mughal Empire': null,
+    'Maratha Empire': null,
+    'Siam': null,
+    'Burma': null,
+    'Khmer Empire': null,
+    'Majapahit': null,
+    'Srivijaya': null,
+    'Songhai': null,
+    'Mali': null,
+    'Ghana': null,
+    'Benin': null,
+    'Aztec Empire': null,
+    'Inca Empire': null,
+    'Maya': null,
+    'United States': null,
+    'Brazil': null,
+    'Mexico': null,
+    'Spain': null,
+    'Italy': null,
+    'Germany': null,
+    'Belgium': null,
+    'Greece': null,
+    'Romania': null,
+    'Bulgaria': null,
+    'Persia': null,
+    'Iran': null,
+    'Iraq': null,
+    'Saudi Arabia': null,
+    'Israel': null,
+    'India': null,
+    'Pakistan': null,
+    'Indonesia': null,
+    'Philippines': null,
+    'Australia': null,
+    'New Zealand': null,
+    'Canada': null,
+    'Argentina': null,
+    'Colombia': null,
+    'Peru': null,
+    'Chile': null,
+    'South Africa': null,
+    'Nigeria': null,
+    'Kenya': null,
+    'Tanzania': null,
+    'Soviet Union': null,
+    'USSR': null,
+};
+
+// Find the matching entity for a GeoJSON NAME, validating year range
+function findEntityForName(name, year) {
+    if (!name) return null;
+
+    const entityId = NAME_TO_ENTITY[name];
+    if (!entityId) return null;
+
+    const entity = getEntityById(entityId);
+    if (!entity) return null;
+
+    // Validate year range — allow some slack (50 years) for border imprecision
+    const slack = 50;
+    if (year < entity.year - slack || year > entity.endYear + slack) {
+        return null;
+    }
+
+    return entity;
+}
+
+// Guess region from centroid coordinates
+function guessRegionFromCoords(coords) {
+    if (!coords || !coords[0]) return 'europe-middle-east';
+    // Get centroid of first polygon ring
+    const ring = Array.isArray(coords[0][0]) ? coords[0] : coords;
+    let lon = 0, lat = 0, count = 0;
+    for (const pt of ring) {
+        if (Array.isArray(pt) && pt.length >= 2) {
+            lon += pt[0]; lat += pt[1]; count++;
+        }
+    }
+    if (count === 0) return 'europe-middle-east';
+    lon /= count; lat /= count;
+
+    // Simple region heuristic based on centroid
+    if (lon < -30) return 'americas';
+    if (lat < 0 && lon > 90) return 'pacific';
+    if (lat < 0 && lon < 90 && lon > 20) return 'subsaharan-africa';
+    if (lon > 60) return 'asia';
+    if (lat < 15 && lon > 0 && lon < 55) return 'subsaharan-africa';
+    return 'europe-middle-east';
+}
+
+// Slugify a name for use as entity ID
+function slugify(name) {
+    return name.toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .substring(0, 60);
+}
+
+// Deterministic color from name string
+function nameToColor(name) {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const h = Math.abs(hash) % 360;
+    return `hsl(${h}, 55%, 50%)`;
+}
+
+// ===========================================
+// CURATED EMPIRES - Original rectangle data
+// Kept for "Show curated empires" overlay
+// ===========================================
 const historicalEmpires = [
     // Ancient Near East
     {
@@ -63,7 +294,7 @@ const historicalEmpires = [
         startYear: -2686,
         endYear: -2181,
         color: '#FFD700',
-        entityId: null, // No entity yet
+        entityId: null,
         region: 'subsaharan-africa',
         description: 'Age of the pyramids, powerful pharaonic rule',
         coordinates: [
@@ -76,7 +307,7 @@ const historicalEmpires = [
         startYear: -1550,
         endYear: -1077,
         color: '#FFA500',
-        entityId: null, // No entity yet
+        entityId: null,
         region: 'subsaharan-africa',
         description: 'Height of Egyptian power, Tutankhamun and Ramesses II',
         coordinates: [
@@ -270,7 +501,7 @@ const historicalEmpires = [
         startYear: -206,
         endYear: 220,
         color: '#FF6347',
-        entityId: null, // No entity yet - add han entity if needed
+        entityId: null,
         region: 'asia',
         description: 'Golden age of Chinese civilization, Silk Road trade',
         coordinates: [
@@ -350,7 +581,7 @@ const historicalEmpires = [
         startYear: -322,
         endYear: -185,
         color: '#20B2AA',
-        entityId: null, // No entity yet
+        entityId: null,
         region: 'asia',
         description: 'First empire to unify most of India, founded by Chandragupta',
         coordinates: [
@@ -363,7 +594,7 @@ const historicalEmpires = [
         startYear: 320,
         endYear: 550,
         color: '#48D1CC',
-        entityId: null, // No entity yet
+        entityId: null,
         region: 'asia',
         description: 'Golden Age of India, advances in science and art',
         coordinates: [
@@ -376,7 +607,7 @@ const historicalEmpires = [
         startYear: 1526,
         endYear: 1857,
         color: '#40E0D0',
-        entityId: null, // No entity yet
+        entityId: null,
         region: 'asia',
         description: 'Islamic empire in Indian subcontinent, built Taj Mahal',
         coordinates: [
@@ -391,7 +622,7 @@ const historicalEmpires = [
         startYear: 768,
         endYear: 843,
         color: '#4682B4',
-        entityId: null, // No entity yet
+        entityId: null,
         region: 'europe-middle-east',
         description: 'Empire of Charlemagne, predecessor to France and Germany',
         coordinates: [
@@ -404,7 +635,7 @@ const historicalEmpires = [
         startYear: 962,
         endYear: 1806,
         color: '#5F9EA0',
-        entityId: null, // No entity yet
+        entityId: null,
         region: 'europe-middle-east',
         description: 'Multi-ethnic complex of territories in Central Europe',
         coordinates: [
@@ -417,7 +648,7 @@ const historicalEmpires = [
         startYear: 1492,
         endYear: 1898,
         color: '#FFD700',
-        entityId: null, // No entity yet
+        entityId: null,
         region: 'europe-middle-east',
         description: 'Global colonial empire, first to be called "empire on which the sun never sets"',
         coordinates: [
@@ -445,7 +676,7 @@ const historicalEmpires = [
         startYear: -2000,
         endYear: 1500,
         color: '#32CD32',
-        entityId: null, // No entity yet
+        entityId: null,
         region: 'americas',
         description: 'Mesoamerican civilization known for writing, astronomy, and pyramids',
         coordinates: [
@@ -458,7 +689,7 @@ const historicalEmpires = [
         startYear: 1428,
         endYear: 1521,
         color: '#228B22',
-        entityId: null, // No entity yet
+        entityId: null,
         region: 'americas',
         description: 'Mesoamerican empire centered at Tenochtitlan',
         coordinates: [
@@ -471,7 +702,7 @@ const historicalEmpires = [
         startYear: 1438,
         endYear: 1533,
         color: '#FFD700',
-        entityId: null, // No entity yet
+        entityId: null,
         region: 'americas',
         description: 'Largest empire in pre-Columbian America',
         coordinates: [
@@ -501,7 +732,6 @@ function empireToGeoJSON(empire) {
             endYear: empire.endYear,
             color: empire.color,
             entityId: empire.entityId,
-            // Backwards compatibility: derive category from entity type
             category: entity ? (entity.type === 'state' ? 'civilizations' : entity.type) : 'civilizations',
             region: empire.region,
             description: empire.description

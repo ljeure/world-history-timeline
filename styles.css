@@ -1144,6 +1144,7 @@ header h1 {
     border-radius: 10px;
     overflow: hidden;
     background: #72AED5;
+    height: 100%;
 }
 
 /* Leaflet customizations */
@@ -1303,6 +1304,92 @@ header h1 {
     flex: 1;
 }
 
+/* Map Container Wrapper (for loading overlay) */
+.map-container-wrapper {
+    flex: 1;
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.map-container-wrapper .map-container {
+    height: 100%;
+    width: 100%;
+}
+
+/* Map Loading Indicator */
+.map-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(26, 26, 46, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    z-index: 1000;
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+.map-loading-spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--secondary-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: map-spin 0.8s linear infinite;
+}
+
+@keyframes map-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* GeoJSON Info Section */
+.geo-info-section {
+    margin-top: 12px;
+    padding: 10px;
+    background: var(--bg-color);
+    border-radius: 5px;
+}
+
+.geo-info-item {
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+    color: var(--text-muted);
+}
+
+.geo-info-item .geo-label {
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+/* Create Entity Button */
+.create-entity-btn {
+    flex: 1;
+    padding: 12px 20px;
+    background: var(--state-color);
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.create-entity-btn:hover {
+    opacity: 0.9;
+}
+
+/* Linked empire names in sidebar */
+.empire-name.linked {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
 /* Map Toast */
 .map-toast {
     position: fixed;
@@ -1314,6 +1401,562 @@ header h1 {
     border-radius: 5px;
     z-index: 3000;
     transition: opacity 0.3s;
+}
+
+/* ========================================
+   QUIZ VIEW
+   ======================================== */
+.quiz-view {
+    padding: 0;
+}
+
+.quiz-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.quiz-header {
+    background: var(--surface-color);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.quiz-settings {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.quiz-difficulty, .quiz-source, .quiz-count {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+}
+
+.quiz-difficulty select,
+.quiz-source select,
+.quiz-count select {
+    padding: 6px 10px;
+    background: var(--bg-color);
+    border: 1px solid var(--secondary-color);
+    color: var(--text-color);
+    border-radius: 5px;
+    font-size: 0.85rem;
+}
+
+.quiz-start-btn {
+    padding: 10px 24px;
+    background: var(--primary-color);
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    font-weight: 500;
+}
+
+.quiz-start-btn:hover {
+    opacity: 0.9;
+}
+
+.quiz-score {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.score-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-right: 4px;
+}
+
+.score-value {
+    color: var(--religion-color);
+}
+
+.score-divider {
+    color: var(--text-muted);
+}
+
+.score-total {
+    color: var(--text-muted);
+}
+
+.quiz-progress {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.quiz-progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--secondary-color);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.quiz-progress-fill {
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 3px;
+    transition: width 0.3s;
+    width: 0%;
+}
+
+.quiz-progress-text {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.quiz-welcome {
+    background: var(--surface-color);
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.quiz-welcome h2 {
+    margin-bottom: 10px;
+}
+
+.quiz-welcome p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    max-width: 500px;
+    margin: 0 auto 20px;
+    line-height: 1.5;
+}
+
+.quiz-stats {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 20px;
+    font-size: 0.85rem;
+}
+
+.quiz-stat {
+    text-align: center;
+}
+
+.quiz-stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    display: block;
+}
+
+.quiz-stat-label {
+    color: var(--text-muted);
+}
+
+.quiz-question-card {
+    background: var(--surface-color);
+    padding: 30px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.quiz-question-type {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
+.quiz-question-text {
+    font-size: 1.2rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.quiz-answers {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.quiz-answer-btn {
+    padding: 14px 20px;
+    background: var(--bg-color);
+    border: 2px solid var(--secondary-color);
+    color: var(--text-color);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-align: left;
+    transition: all 0.2s;
+    line-height: 1.4;
+}
+
+.quiz-answer-btn:hover:not(.answered) {
+    border-color: var(--primary-color);
+    background: rgba(233, 69, 96, 0.1);
+}
+
+.quiz-answer-btn.correct {
+    border-color: var(--religion-color);
+    background: rgba(26, 188, 156, 0.15);
+    color: var(--religion-color);
+}
+
+.quiz-answer-btn.incorrect {
+    border-color: var(--primary-color);
+    background: rgba(233, 69, 96, 0.15);
+    color: var(--primary-color);
+}
+
+.quiz-answer-btn.answered {
+    cursor: default;
+    opacity: 0.7;
+}
+
+.quiz-answer-btn.correct.answered,
+.quiz-answer-btn.incorrect.answered {
+    opacity: 1;
+}
+
+.quiz-answer-btn:disabled {
+    cursor: default;
+    pointer-events: none;
+}
+
+.quiz-feedback {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--secondary-color);
+}
+
+.quiz-feedback p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    color: var(--text-muted);
+}
+
+.quiz-next-btn {
+    padding: 10px 24px;
+    background: var(--secondary-color);
+    border: none;
+    border-radius: 5px;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.quiz-next-btn:hover {
+    background: var(--primary-color);
+}
+
+.quiz-results {
+    background: var(--surface-color);
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.quiz-results h2 {
+    margin-bottom: 20px;
+}
+
+.quiz-results-score {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.quiz-results-score .result-percent {
+    color: var(--primary-color);
+}
+
+.quiz-results-score.excellent .result-percent { color: var(--religion-color); }
+.quiz-results-score.good .result-percent { color: #f39c12; }
+.quiz-results-score.poor .result-percent { color: var(--primary-color); }
+
+.quiz-results-breakdown {
+    margin: 20px 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.quiz-history {
+    background: var(--surface-color);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.quiz-history h3 {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+.quiz-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.quiz-history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: var(--bg-color);
+    border-radius: 5px;
+    font-size: 0.85rem;
+}
+
+.quiz-history-date {
+    color: var(--text-muted);
+}
+
+.quiz-history-score {
+    font-weight: 600;
+}
+
+.quiz-history-score.excellent { color: var(--religion-color); }
+.quiz-history-score.good { color: #f39c12; }
+.quiz-history-score.poor { color: var(--primary-color); }
+
+.no-quiz-history {
+    color: var(--text-muted);
+    text-align: center;
+    padding: 15px;
+    font-size: 0.85rem;
+}
+
+/* ========================================
+   TAKEAWAYS VIEW
+   ======================================== */
+.takeaways-view {
+    padding: 0;
+}
+
+.takeaways-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.takeaways-header {
+    margin-bottom: 20px;
+}
+
+.takeaways-header h2 {
+    margin-bottom: 5px;
+}
+
+.takeaways-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.takeaway-editor {
+    background: var(--surface-color);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.takeaway-editor textarea {
+    width: 100%;
+    padding: 12px 15px;
+    background: var(--bg-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: 8px;
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 0.9rem;
+    resize: vertical;
+    min-height: 80px;
+    outline: none;
+    transition: border-color 0.2s;
+    line-height: 1.5;
+}
+
+.takeaway-editor textarea:focus {
+    border-color: var(--primary-color);
+}
+
+.takeaway-editor textarea::placeholder {
+    color: var(--text-muted);
+}
+
+.takeaway-editor-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.takeaway-tags {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+}
+
+.takeaway-tags label {
+    color: var(--text-muted);
+}
+
+.takeaway-tags select {
+    padding: 6px 10px;
+    background: var(--bg-color);
+    border: 1px solid var(--secondary-color);
+    color: var(--text-color);
+    border-radius: 5px;
+    font-size: 0.85rem;
+    max-width: 250px;
+}
+
+.takeaway-add-btn {
+    padding: 10px 24px;
+    background: var(--primary-color);
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    font-weight: 500;
+}
+
+.takeaway-add-btn:hover {
+    opacity: 0.9;
+}
+
+.takeaways-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.takeaway-item {
+    background: var(--surface-color);
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid var(--primary-color);
+    position: relative;
+}
+
+.takeaway-item .takeaway-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 10px;
+    white-space: pre-wrap;
+}
+
+.takeaway-item .takeaway-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.takeaway-entity-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--secondary-color);
+    border-radius: 10px;
+    font-size: 0.75rem;
+    color: var(--text-color);
+}
+
+.takeaway-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.takeaway-actions button {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    border-radius: 3px;
+    transition: all 0.2s;
+}
+
+.takeaway-actions button:hover {
+    color: var(--text-color);
+    background: var(--secondary-color);
+}
+
+.takeaway-actions .delete-takeaway:hover {
+    color: var(--primary-color);
+}
+
+.takeaway-edit-area {
+    width: 100%;
+    padding: 10px;
+    background: var(--bg-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 0.9rem;
+    resize: vertical;
+    min-height: 60px;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.takeaway-edit-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.takeaway-edit-actions button {
+    padding: 6px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.takeaway-save-btn {
+    background: var(--primary-color);
+    color: white;
+}
+
+.takeaway-cancel-btn {
+    background: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.no-takeaways {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    background: var(--surface-color);
+    border-radius: 10px;
 }
 
 /* ========================================
@@ -1366,5 +2009,34 @@ header h1 {
     .view-tab {
         padding: 8px 20px;
         font-size: 0.8rem;
+    }
+
+    /* Quiz responsive */
+    .quiz-header {
+        flex-direction: column;
+    }
+
+    .quiz-settings {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .quiz-welcome {
+        padding: 25px;
+    }
+
+    .quiz-stats {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* Takeaways responsive */
+    .takeaway-editor-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .takeaway-tags select {
+        max-width: 100%;
     }
 }

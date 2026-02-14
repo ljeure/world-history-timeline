@@ -22,8 +22,10 @@ class TimelineApp {
         await loadData();
         initializeTimelineData(); // Ensure categories are set before rendering
         console.log('Data loaded. Events:', timelineData.events.length);
+        this.quiz = new HistoryQuiz();
         this.bindEvents();
         this.render();
+        this.renderQuizHistory();
         console.log('Render complete');
 
         // Show server mode indicator
@@ -121,6 +123,17 @@ class TimelineApp {
             if (e.target === e.currentTarget) this.closeAddReferenceModal();
         });
 
+        // Quiz events
+        document.getElementById('startQuizBtn').addEventListener('click', () => this.startQuiz());
+        document.getElementById('quizNextBtn').addEventListener('click', () => this.showNextQuestion());
+        document.getElementById('quizRetryBtn').addEventListener('click', () => this.startQuiz());
+
+        // Takeaway events
+        document.getElementById('addTakeawayBtn').addEventListener('click', () => this.addTakeaway());
+        document.getElementById('takeawayInput').addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') this.addTakeaway();
+        });
+
         // Setup drag scroll
         this.setupDragScroll();
     }
@@ -180,9 +193,13 @@ class TimelineApp {
         document.querySelectorAll('.view-content').forEach(content => content.classList.remove('active'));
         document.getElementById(`${view}View`).classList.add('active');
 
-        // Initialize map if switching to map view
+        // Initialize views when switching
         if (view === 'map') {
             initMap();
+        } else if (view === 'quiz') {
+            this.initQuizView();
+        } else if (view === 'takeaways') {
+            this.initTakeawaysView();
         }
     }
 
@@ -1011,6 +1028,354 @@ class TimelineApp {
         this.closeAddReferenceModal();
         this.renderReferences(this.selectedEvent.id);
         this.showToast('Reference added!');
+    }
+
+    // ========================================
+    // QUIZ METHODS
+    // ========================================
+
+    initQuizView() {
+        // Show quiz stats
+        const stats = document.getElementById('quizStats');
+        const totalEvents = timelineData.events.filter(e => e.category !== 'period' && !e.isPeriod).length;
+        const userEvents = timelineData.events.filter(e => e.userAdded).length;
+        const totalRefs = timelineData.references.length;
+        stats.innerHTML = `
+            <div class="quiz-stat">
+                <span class="quiz-stat-value">${totalEvents}</span>
+                <span class="quiz-stat-label">Events Available</span>
+            </div>
+            <div class="quiz-stat">
+                <span class="quiz-stat-value">${userEvents}</span>
+                <span class="quiz-stat-label">Your Events</span>
+            </div>
+            <div class="quiz-stat">
+                <span class="quiz-stat-value">${totalRefs}</span>
+                <span class="quiz-stat-label">References</span>
+            </div>
+        `;
+        this.renderQuizHistory();
+    }
+
+    startQuiz() {
+        const difficulty = document.getElementById('quizDifficulty').value;
+        const source = document.getElementById('quizSource').value;
+        const count = parseInt(document.getElementById('quizCount').value);
+
+        const generated = this.quiz.generateQuestions(count, difficulty, source);
+
+        if (generated === 0) {
+            this.showToast('Not enough data to generate questions. Try adding more events or choosing "All Events".');
+            return;
+        }
+
+        // Show quiz UI
+        document.getElementById('quizWelcome').style.display = 'none';
+        document.getElementById('quizResults').style.display = 'none';
+        document.getElementById('quizHistory').style.display = 'none';
+        document.getElementById('quizCard').style.display = 'block';
+        document.getElementById('quizProgress').style.display = 'flex';
+        document.getElementById('quizScore').style.display = 'flex';
+
+        this.updateQuizScore();
+        this.showCurrentQuestion();
+    }
+
+    showCurrentQuestion() {
+        const q = this.quiz.getCurrentQuestion();
+        if (!q) return;
+
+        document.getElementById('quizQuestionType').textContent = q.type;
+        document.getElementById('quizQuestionText').textContent = q.question;
+        document.getElementById('quizFeedback').style.display = 'none';
+
+        // Update progress
+        const progress = ((this.quiz.currentIndex) / this.quiz.questions.length) * 100;
+        document.getElementById('quizProgressFill').style.width = `${progress}%`;
+        document.getElementById('quizProgressText').textContent =
+            `Question ${this.quiz.currentIndex + 1} of ${this.quiz.questions.length}`;
+
+        // Render answer buttons
+        const answersDiv = document.getElementById('quizAnswers');
+        answersDiv.innerHTML = '';
+        q.options.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'quiz-answer-btn';
+            btn.textContent = opt.text;
+            btn.addEventListener('click', () => this.handleQuizAnswer(i));
+            answersDiv.appendChild(btn);
+        });
+    }
+
+    handleQuizAnswer(optionIndex) {
+        const result = this.quiz.answerQuestion(optionIndex);
+        if (!result) return;
+
+        // Mark and disable buttons to prevent double-click
+        const buttons = document.querySelectorAll('.quiz-answer-btn');
+        const q = this.quiz.getCurrentQuestion();
+        buttons.forEach((btn, i) => {
+            btn.disabled = true;
+            btn.classList.add('answered');
+            if (q.options[i].correct) {
+                btn.classList.add('correct');
+            } else if (i === optionIndex && !result.isCorrect) {
+                btn.classList.add('incorrect');
+            }
+        });
+
+        // Show feedback
+        const feedback = document.getElementById('quizFeedback');
+        feedback.style.display = 'block';
+        document.getElementById('quizFeedbackText').textContent =
+            (result.isCorrect ? 'Correct! ' : 'Incorrect. ') + result.explanation;
+
+        // Update score
+        this.updateQuizScore();
+
+        // If last question, change button text
+        if (this.quiz.currentIndex >= this.quiz.questions.length - 1) {
+            document.getElementById('quizNextBtn').textContent = 'See Results';
+        } else {
+            document.getElementById('quizNextBtn').textContent = 'Next Question';
+        }
+    }
+
+    showNextQuestion() {
+        if (this.quiz.nextQuestion()) {
+            this.showCurrentQuestion();
+        } else {
+            this.showQuizResults();
+        }
+    }
+
+    updateQuizScore() {
+        document.getElementById('quizScoreValue').textContent = this.quiz.score;
+        document.getElementById('quizScoreTotal').textContent = this.quiz.answered;
+    }
+
+    showQuizResults() {
+        const results = this.quiz.getResults();
+
+        document.getElementById('quizCard').style.display = 'none';
+        document.getElementById('quizProgress').style.display = 'none';
+        document.getElementById('quizScore').style.display = 'none';
+        document.getElementById('quizResults').style.display = 'block';
+
+        const scoreDiv = document.getElementById('quizResultsScore');
+        scoreDiv.className = `quiz-results-score ${results.grade}`;
+        scoreDiv.innerHTML = `<span class="result-percent">${results.percent}%</span> (${results.score}/${results.total})`;
+
+        const breakdown = document.getElementById('quizResultsBreakdown');
+        const correctOnes = results.results.filter(r => r.correct).length;
+        const incorrectOnes = results.results.filter(r => !r.correct).length;
+        let msg = `You got ${correctOnes} correct and ${incorrectOnes} wrong.`;
+        if (results.percent >= 80) msg += ' Excellent work!';
+        else if (results.percent >= 50) msg += ' Good effort, keep studying!';
+        else msg += ' Keep learning, you\'ll improve!';
+        breakdown.textContent = msg;
+
+        // Save quiz history
+        this.saveQuizResult(results);
+        this.quiz.isActive = false;
+    }
+
+    saveQuizResult(results) {
+        if (!timelineData.quizHistory) timelineData.quizHistory = [];
+        timelineData.quizHistory.unshift({
+            date: new Date().toISOString(),
+            score: results.score,
+            total: results.total,
+            percent: results.percent,
+            difficulty: document.getElementById('quizDifficulty').value,
+            source: document.getElementById('quizSource').value
+        });
+        // Keep last 20
+        if (timelineData.quizHistory.length > 20) {
+            timelineData.quizHistory = timelineData.quizHistory.slice(0, 20);
+        }
+        saveData();
+    }
+
+    renderQuizHistory() {
+        const list = document.getElementById('quizHistoryList');
+        if (!list) return;
+        // Don't show history during active quiz
+        if (this.quiz && this.quiz.isActive) return;
+        const history = timelineData.quizHistory || [];
+
+        if (history.length === 0) {
+            list.innerHTML = '<div class="no-quiz-history">No quizzes taken yet</div>';
+            return;
+        }
+
+        list.innerHTML = history.slice(0, 10).map(h => {
+            const date = new Date(h.date);
+            const dateStr = date.toLocaleDateString();
+            const grade = h.percent >= 80 ? 'excellent' : h.percent >= 50 ? 'good' : 'poor';
+            return `
+                <div class="quiz-history-item">
+                    <span class="quiz-history-date">${dateStr} - ${h.difficulty} (${h.source})</span>
+                    <span class="quiz-history-score ${grade}">${h.score}/${h.total} (${h.percent}%)</span>
+                </div>
+            `;
+        }).join('');
+
+        // Show history section when returning to quiz
+        document.getElementById('quizHistory').style.display = 'block';
+    }
+
+    // ========================================
+    // TAKEAWAYS METHODS
+    // ========================================
+
+    initTakeawaysView() {
+        this.populateEntityDropdown();
+        this.renderTakeaways();
+    }
+
+    populateEntityDropdown() {
+        const select = document.getElementById('takeawayEntitySelect');
+        // Keep the first "General" option, clear the rest
+        while (select.options.length > 1) select.remove(1);
+
+        // Add entity groups
+        const types = { state: 'States', religion: 'Religions', culture: 'Cultures' };
+        Object.entries(types).forEach(([type, label]) => {
+            const group = document.createElement('optgroup');
+            group.label = label;
+            timelineData.entities
+                .filter(e => e.type === type)
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .forEach(entity => {
+                    const opt = document.createElement('option');
+                    opt.value = entity.id;
+                    opt.textContent = entity.name;
+                    group.appendChild(opt);
+                });
+            if (group.children.length > 0) select.appendChild(group);
+        });
+    }
+
+    addTakeaway() {
+        const input = document.getElementById('takeawayInput');
+        const text = input.value.trim();
+        if (!text) return;
+
+        const entityId = document.getElementById('takeawayEntitySelect').value;
+
+        if (!timelineData.takeaways) timelineData.takeaways = [];
+
+        const takeaway = {
+            id: Date.now(),
+            text,
+            entityId: entityId || null,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+
+        timelineData.takeaways.unshift(takeaway);
+        saveData();
+
+        input.value = '';
+        document.getElementById('takeawayEntitySelect').value = '';
+        this.renderTakeaways();
+        this.showToast('Takeaway added!');
+    }
+
+    renderTakeaways() {
+        const list = document.getElementById('takeawaysList');
+        if (!list) return;
+        const takeaways = timelineData.takeaways || [];
+
+        if (takeaways.length === 0) {
+            list.innerHTML = '<div class="no-takeaways">No takeaways yet. Start recording your key insights about history above.</div>';
+            return;
+        }
+
+        list.innerHTML = takeaways.map(t => {
+            const entity = t.entityId ? getEntityById(t.entityId) : null;
+            const date = new Date(t.createdAt).toLocaleDateString();
+            const entityTag = entity ? `<span class="takeaway-entity-tag">${entity.name}</span>` : '';
+
+            return `
+                <div class="takeaway-item" data-id="${t.id}">
+                    <div class="takeaway-text">${this.escapeHtml(t.text)}</div>
+                    <div class="takeaway-meta">
+                        <div>
+                            ${entityTag}
+                            <span style="margin-left: 8px;">${date}</span>
+                        </div>
+                        <div class="takeaway-actions">
+                            <button class="edit-takeaway" onclick="app.editTakeaway(${t.id})">Edit</button>
+                            <button class="delete-takeaway" onclick="app.deleteTakeaway(${t.id})">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    editTakeaway(id) {
+        const takeaways = timelineData.takeaways || [];
+        const takeaway = takeaways.find(t => t.id === id);
+        if (!takeaway) return;
+
+        const item = document.querySelector(`.takeaway-item[data-id="${id}"]`);
+        if (!item) return;
+
+        // Replace content with edit form
+        item.innerHTML = `
+            <textarea class="takeaway-edit-area">${this.escapeHtml(takeaway.text)}</textarea>
+            <div class="takeaway-edit-actions">
+                <button class="takeaway-cancel-btn" onclick="app.renderTakeaways()">Cancel</button>
+                <button class="takeaway-save-btn" onclick="app.saveTakeawayEdit(${id})">Save</button>
+            </div>
+        `;
+
+        const textarea = item.querySelector('textarea');
+        textarea.focus();
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+    }
+
+    saveTakeawayEdit(id) {
+        const takeaways = timelineData.takeaways || [];
+        const takeaway = takeaways.find(t => t.id === id);
+        if (!takeaway) return;
+
+        const item = document.querySelector(`.takeaway-item[data-id="${id}"]`);
+        if (!item) return;
+        const textarea = item.querySelector('textarea');
+        if (!textarea) return;
+        const newText = textarea.value.trim();
+
+        if (!newText) {
+            this.showToast('Takeaway cannot be empty');
+            return;
+        }
+
+        takeaway.text = newText;
+        takeaway.updatedAt = new Date().toISOString();
+        saveData();
+        this.renderTakeaways();
+        this.showToast('Takeaway updated!');
+    }
+
+    deleteTakeaway(id) {
+        const takeaways = timelineData.takeaways || [];
+        const index = takeaways.findIndex(t => t.id === id);
+        if (index === -1) return;
+
+        takeaways.splice(index, 1);
+        saveData();
+        this.renderTakeaways();
+        this.showToast('Takeaway deleted');
+    }
+
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     showToast(message) {
