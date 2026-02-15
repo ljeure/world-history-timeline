@@ -1,0 +1,13 @@
+{
+  "name": "world-history-timeline",
+  "version": "1.0.0",
+  "description": "Interactive world history timeline with maps, quiz, and takeaways",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "node scripts/fetch-geodata.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

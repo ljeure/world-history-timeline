@@ -5,31 +5,31 @@
 }
 
 :root {
-    --bg-color: #1a1a2e;
-    --surface-color: #16213e;
-    --primary-color: #e94560;
-    --secondary-color: #0f3460;
-    --text-color: #eee;
-    --text-muted: #888;
+    --bg-color: #f5e6c8;
+    --surface-color: #ede0c8;
+    --primary-color: #8b2500;
+    --secondary-color: #d4c4a0;
+    --text-color: #1a1a1a;
+    --text-muted: #6b5b47;
     /* New entity-type based colors */
-    --period-color: #34495e;
-    --state-color: #9b59b6;
-    --religion-color: #1abc9c;
-    --culture-color: #6c5ce7;
-    --event-color: #e94560;
+    --period-color: #8e7c61;
+    --state-color: #7b2d8e;
+    --religion-color: #1a8a6c;
+    --culture-color: #5b4fc7;
+    --event-color: #8b2500;
     /* Legacy colors for backwards compat */
-    --people-color: #e94560;
-    --political-color: #f39c12;
-    --technology-color: #3498db;
-    --civilizations-color: #9b59b6;
-    --science-color: #e67e22;
-    --era-european-color: #6c5ce7;
-    --era-chinese-color: #fd79a8;
-    --books-color: #2ecc71;
+    --people-color: #8b2500;
+    --political-color: #c47d10;
+    --technology-color: #2a7ab5;
+    --civilizations-color: #7b2d8e;
+    --science-color: #b86b1a;
+    --era-european-color: #5b4fc7;
+    --era-chinese-color: #c45a80;
+    --books-color: #228b56;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    font-family: 'Courier New', Courier, 'Georgia', serif;
     background-color: var(--bg-color);
     color: var(--text-color);
     min-height: 100vh;
@@ -58,7 +58,7 @@ header h1 {
 .controls {
     background: var(--surface-color);
     padding: 15px 20px;
-    border-radius: 10px;
+    border-radius: 2px;
     margin-bottom: 15px;
     display: flex;
     flex-wrap: wrap;
@@ -73,7 +73,7 @@ header h1 {
 #searchInput {
     padding: 8px 15px;
     border: 1px solid var(--secondary-color);
-    border-radius: 20px;
+    border-radius: 2px;
     background: var(--bg-color);
     color: var(--text-color);
     font-size: 0.85rem;
@@ -108,7 +108,7 @@ header h1 {
     border: 1px solid var(--secondary-color);
     background: transparent;
     color: var(--text-color);
-    border-radius: 15px;
+    border-radius: 2px;
     cursor: pointer;
     transition: all 0.2s;
     font-size: 0.75rem;
@@ -168,7 +168,7 @@ header h1 {
     border: none;
     background: var(--secondary-color);
     color: var(--text-color);
-    border-radius: 5px;
+    border-radius: 2px;
     cursor: pointer;
     font-size: 1rem;
     transition: background 0.2s;
@@ -189,7 +189,7 @@ header h1 {
     height: 6px;
     -webkit-appearance: none;
     background: var(--secondary-color);
-    border-radius: 3px;
+    border-radius: 2px;
     outline: none;
 }
 
@@ -212,7 +212,7 @@ header h1 {
     border: 1px solid var(--secondary-color);
     background: transparent;
     color: var(--text-color);
-    border-radius: 5px;
+    border-radius: 2px;
     cursor: pointer;
     font-size: 0.75rem;
     transition: all 0.2s;
@@ -237,7 +237,7 @@ header h1 {
     justify-content: space-between;
     padding: 6px 15px;
     background: var(--secondary-color);
-    border-radius: 8px;
+    border-radius: 2px;
     margin-bottom: 8px;
     font-size: 0.8rem;
     color: var(--text-muted);
@@ -250,7 +250,7 @@ header h1 {
     margin-bottom: 10px;
     padding: 8px 15px;
     background: var(--surface-color);
-    border-radius: 8px;
+    border-radius: 2px;
 }
 
 .legend-item {
@@ -285,7 +285,7 @@ header h1 {
 
 .timeline-container {
     background: var(--surface-color);
-    border-radius: 10px;
+    border-radius: 2px;
     padding: 15px;
     overflow-x: auto;
     overflow-y: hidden;
@@ -387,7 +387,7 @@ header h1 {
 .timeline-event {
     position: absolute;
     height: 26px;
-    border-radius: 4px;
+    border-radius: 2px;
     display: flex;
     align-items: center;
     padding: 0 6px;
@@ -413,7 +413,7 @@ header h1 {
 }
 
 .region-timeline.drag-over {
-    background: rgba(233, 69, 96, 0.1);
+    background: rgba(139, 37, 0, 0.1);
 }
 
 /* Row guides shown during drag */
@@ -422,7 +422,7 @@ header h1 {
     left: 0;
     right: 0;
     height: 32px;
-    border-top: 2px dashed rgba(233, 69, 96, 0.3);
+    border-top: 2px dashed rgba(139, 37, 0, 0.3);
     pointer-events: none;
 }
 
@@ -444,6 +444,7 @@ header h1 {
     min-width: 0;
     width: 2px !important;
     border-radius: 0;
+    z-index: 2;
 }
 
 .timeline-event.flag-event:hover {
@@ -453,8 +454,7 @@ header h1 {
 }
 
 .timeline-event.flag-event:hover .flag-label {
-    filter: brightness(1.3);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    background: var(--surface-color);
 }
 
 .flag-dot {
@@ -482,11 +482,12 @@ header h1 {
     left: 4px;
     white-space: nowrap;
     font-size: 0.65rem;
-    color: white;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    color: var(--text-color);
+    text-shadow: none;
     padding: 2px 6px;
-    border-radius: 3px;
-    background: var(--flag-color);
+    border-radius: 2px;
+    background: transparent;
+    border-left: 3px solid var(--flag-color);
     cursor: pointer;
     pointer-events: auto;
 }
@@ -495,6 +496,7 @@ header h1 {
 .timeline-event.narrow-bar-event {
     overflow: visible;
     min-width: 4px;
+    z-index: 2;
 }
 
 .narrow-bar-label {
@@ -504,18 +506,18 @@ header h1 {
     transform: translateY(-50%);
     white-space: nowrap;
     font-size: 0.65rem;
-    color: white;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    color: var(--text-color);
+    text-shadow: none;
     padding: 2px 6px;
-    border-radius: 3px;
-    background: var(--flag-color);
+    border-radius: 2px;
+    background: transparent;
+    border-left: 3px solid var(--flag-color);
     cursor: pointer;
     pointer-events: auto;
 }
 
 .timeline-event.narrow-bar-event:hover .narrow-bar-label {
-    filter: brightness(1.3);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    background: var(--surface-color);
 }
 
 /* Event colors by entity type (new knowledge map system) */
@@ -548,7 +550,7 @@ header h1 {
 .timeline-event.era {
     height: 24px;
     opacity: 0.85;
-    border-radius: 3px;
+    border-radius: 2px;
 }
 
 .timeline-event.era .event-label {
@@ -611,7 +613,7 @@ header h1 {
     padding: 8px 10px;
     margin-top: 4px;
     border: 1px solid var(--secondary-color);
-    border-radius: 5px;
+    border-radius: 2px;
     background: var(--bg-color);
     color: var(--text-color);
     font-family: inherit;
@@ -642,7 +644,7 @@ header h1 {
     padding: 10px 16px;
     background: var(--primary-color);
     border: none;
-    border-radius: 5px;
+    border-radius: 2px;
     color: white;
     font-size: 0.9rem;
     cursor: pointer;
@@ -663,7 +665,7 @@ header h1 {
 .category-color-preview {
     width: 20px;
     height: 20px;
-    border-radius: 4px;
+    border-radius: 2px;
     flex-shrink: 0;
 }
 
@@ -671,7 +673,7 @@ header h1 {
     flex: 1;
     padding: 8px 10px;
     border: 1px solid var(--secondary-color);
-    border-radius: 5px;
+    border-radius: 2px;
     background: var(--bg-color);
     color: var(--text-color);
     font-size: 0.85rem;
@@ -705,7 +707,7 @@ header h1 {
     padding: 10px 16px;
     background: transparent;
     border: 1px solid #e74c3c;
-    border-radius: 5px;
+    border-radius: 2px;
     color: #e74c3c;
     font-size: 0.85rem;
     cursor: pointer;
@@ -733,7 +735,7 @@ header h1 {
     height: 80px;
     padding: 10px;
     border: 1px solid var(--secondary-color);
-    border-radius: 5px;
+    border-radius: 2px;
     background: var(--bg-color);
     color: var(--text-color);
     resize: vertical;
@@ -746,7 +748,7 @@ header h1 {
     padding: 8px 16px;
     background: var(--primary-color);
     border: none;
-    border-radius: 5px;
+    border-radius: 2px;
     color: white;
     cursor: pointer;
     font-size: 0.85rem;
@@ -760,7 +762,7 @@ header h1 {
 #referencesList li {
     padding: 8px;
     background: var(--bg-color);
-    border-radius: 5px;
+    border-radius: 2px;
     margin-bottom: 6px;
     display: flex;
     justify-content: space-between;
@@ -784,7 +786,7 @@ header h1 {
 #referencesList .ref-status {
     font-size: 0.7rem;
     padding: 2px 6px;
-    border-radius: 8px;
+    border-radius: 2px;
     background: var(--secondary-color);
 }
 
@@ -800,7 +802,7 @@ header h1 {
     padding: 8px 16px;
     background: transparent;
     border: 1px dashed var(--text-muted);
-    border-radius: 5px;
+    border-radius: 2px;
     color: var(--text-muted);
     cursor: pointer;
     width: 100%;
@@ -833,7 +835,7 @@ header h1 {
 .modal-content {
     background: var(--surface-color);
     padding: 25px;
-    border-radius: 10px;
+    border-radius: 2px;
     width: 100%;
     max-width: 420px;
     max-height: 90vh;
@@ -858,7 +860,7 @@ header h1 {
     padding: 8px;
     margin-top: 4px;
     border: 1px solid var(--secondary-color);
-    border-radius: 5px;
+    border-radius: 2px;
     background: var(--bg-color);
     color: var(--text-color);
     font-family: inherit;
@@ -880,7 +882,7 @@ header h1 {
 .modal-buttons button {
     padding: 8px 16px;
     border: none;
-    border-radius: 5px;
+    border-radius: 2px;
     cursor: pointer;
     font-size: 0.85rem;
 }
@@ -903,11 +905,11 @@ header h1 {
     padding: 12px 20px;
     background: var(--primary-color);
     border: none;
-    border-radius: 25px;
+    border-radius: 2px;
     color: white;
     font-size: 0.9rem;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+    box-shadow: 0 4px 15px rgba(139, 37, 0, 0.4);
     transition: transform 0.2s;
     z-index: 500;
 }
@@ -931,7 +933,7 @@ header h1 {
     background: var(--secondary-color);
     border: 2px solid var(--secondary-color);
     color: var(--text-color);
-    border-radius: 25px;
+    border-radius: 2px;
     cursor: pointer;
     font-size: 0.9rem;
     font-weight: 500;
@@ -973,7 +975,7 @@ header h1 {
 .map-controls {
     background: var(--surface-color);
     padding: 15px 20px;
-    border-radius: 10px;
+    border-radius: 2px;
     margin-bottom: 15px;
 }
 
@@ -989,7 +991,7 @@ header h1 {
     border: none;
     background: var(--secondary-color);
     color: var(--text-color);
-    border-radius: 5px;
+    border-radius: 2px;
     cursor: pointer;
     font-size: 0.85rem;
     transition: background 0.2s;
@@ -1018,7 +1020,7 @@ header h1 {
     height: 8px;
     -webkit-appearance: none;
     background: var(--secondary-color);
-    border-radius: 4px;
+    border-radius: 2px;
     outline: none;
 }
 
@@ -1052,7 +1054,7 @@ header h1 {
     background: var(--bg-color);
     border: 1px solid var(--secondary-color);
     color: var(--text-color);
-    border-radius: 5px;
+    border-radius: 2px;
 }
 
 .map-scale-toggle {
@@ -1085,7 +1087,7 @@ header h1 {
 .map-sidebar {
     width: 220px;
     background: var(--surface-color);
-    border-radius: 10px;
+    border-radius: 2px;
     padding: 15px;
     overflow-y: auto;
 }
@@ -1108,7 +1110,7 @@ header h1 {
     gap: 8px;
     padding: 8px 10px;
     background: var(--bg-color);
-    border-radius: 5px;
+    border-radius: 2px;
     cursor: pointer;
     transition: background 0.2s;
     font-size: 0.8rem;
@@ -1121,7 +1123,7 @@ header h1 {
 .empire-color {
     width: 12px;
     height: 12px;
-    border-radius: 3px;
+    border-radius: 2px;
     flex-shrink: 0;
 }
 
@@ -1141,7 +1143,7 @@ header h1 {
 /* Map Container */
 .map-container {
     flex: 1;
-    border-radius: 10px;
+    border-radius: 2px;
     overflow: hidden;
     background: #72AED5;
     height: 100%;
@@ -1155,8 +1157,8 @@ header h1 {
 
 .empire-tooltip {
     background: var(--surface-color);
-    border: none;
-    border-radius: 5px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 2px;
     color: var(--text-color);
     font-size: 0.85rem;
     padding: 5px 10px;
@@ -1188,7 +1190,7 @@ header h1 {
 .empire-modal-content {
     background: var(--surface-color);
     padding: 30px;
-    border-radius: 10px;
+    border-radius: 2px;
     width: 100%;
     max-width: 450px;
     position: relative;
@@ -1232,7 +1234,7 @@ header h1 {
     padding: 12px 20px;
     background: var(--primary-color);
     border: none;
-    border-radius: 5px;
+    border-radius: 2px;
     color: white;
     font-size: 0.9rem;
     cursor: pointer;
@@ -1253,7 +1255,7 @@ header h1 {
     padding: 12px 20px;
     background: var(--religion-color);
     border: none;
-    border-radius: 5px;
+    border-radius: 2px;
     color: white;
     font-size: 0.9rem;
     cursor: pointer;
@@ -1283,7 +1285,7 @@ header h1 {
     padding: 8px 10px;
     margin-top: 4px;
     border: 1px solid var(--secondary-color);
-    border-radius: 5px;
+    border-radius: 2px;
     background: var(--bg-color);
     color: var(--text-color);
     font-family: inherit;
@@ -1308,7 +1310,7 @@ header h1 {
 .map-container-wrapper {
     flex: 1;
     position: relative;
-    border-radius: 10px;
+    border-radius: 2px;
     overflow: hidden;
 }
 
@@ -1324,7 +1326,7 @@ header h1 {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(26, 26, 46, 0.7);
+    background: rgba(245, 230, 200, 0.85);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1353,7 +1355,7 @@ header h1 {
     margin-top: 12px;
     padding: 10px;
     background: var(--bg-color);
-    border-radius: 5px;
+    border-radius: 2px;
 }
 
 .geo-info-item {
@@ -1373,7 +1375,7 @@ header h1 {
     padding: 12px 20px;
     background: var(--state-color);
     border: none;
-    border-radius: 5px;
+    border-radius: 2px;
     color: white;
     font-size: 0.9rem;
     cursor: pointer;
@@ -1398,7 +1400,7 @@ header h1 {
     background: var(--primary-color);
     color: white;
     padding: 12px 24px;
-    border-radius: 5px;
+    border-radius: 2px;
     z-index: 3000;
     transition: opacity 0.3s;
 }
@@ -1418,7 +1420,7 @@ header h1 {
 .quiz-header {
     background: var(--surface-color);
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 2px;
     margin-bottom: 15px;
     display: flex;
     justify-content: space-between;
@@ -1448,7 +1450,7 @@ header h1 {
     background: var(--bg-color);
     border: 1px solid var(--secondary-color);
     color: var(--text-color);
-    border-radius: 5px;
+    border-radius: 2px;
     font-size: 0.85rem;
 }
 
@@ -1456,7 +1458,7 @@ header h1 {
     padding: 10px 24px;
     background: var(--primary-color);
     border: none;
-    border-radius: 5px;
+    border-radius: 2px;
     color: white;
     font-size: 0.9rem;
     cursor: pointer;
@@ -1505,14 +1507,14 @@ header h1 {
     flex: 1;
     height: 6px;
     background: var(--secondary-color);
-    border-radius: 3px;
+    border-radius: 2px;
     overflow: hidden;
 }
 
 .quiz-progress-fill {
     height: 100%;
     background: var(--primary-color);
-    border-radius: 3px;
+    border-radius: 2px;
     transition: width 0.3s;
     width: 0%;
 }
@@ -1526,7 +1528,7 @@ header h1 {
 .quiz-welcome {
     background: var(--surface-color);
     padding: 40px;
-    border-radius: 10px;
+    border-radius: 2px;
     text-align: center;
     margin-bottom: 15px;
 }
@@ -1569,7 +1571,7 @@ header h1 {
 .quiz-question-card {
     background: var(--surface-color);
     padding: 30px;
-    border-radius: 10px;
+    border-radius: 2px;
     margin-bottom: 15px;
 }
 
@@ -1598,7 +1600,7 @@ header h1 {
     background: var(--bg-color);
     border: 2px solid var(--secondary-color);
     color: var(--text-color);
-    border-radius: 8px;
+    border-radius: 2px;
     cursor: pointer;
     font-size: 0.9rem;
     text-align: left;
@@ -1608,18 +1610,18 @@ header h1 {
 
 .quiz-answer-btn:hover:not(.answered) {
     border-color: var(--primary-color);
-    background: rgba(233, 69, 96, 0.1);
+    background: rgba(139, 37, 0, 0.1);
 }
 
 .quiz-answer-btn.correct {
     border-color: var(--religion-color);
-    background: rgba(26, 188, 156, 0.15);
+    background: rgba(26, 138, 108, 0.15);
     color: var(--religion-color);
 }
 
 .quiz-answer-btn.incorrect {
     border-color: var(--primary-color);
-    background: rgba(233, 69, 96, 0.15);
+    background: rgba(139, 37, 0, 0.15);
     color: var(--primary-color);
 }
 
@@ -1655,7 +1657,7 @@ header h1 {
     padding: 10px 24px;
     background: var(--secondary-color);
     border: none;
-    border-radius: 5px;
+    border-radius: 2px;
     color: var(--text-color);
     font-size: 0.9rem;
     cursor: pointer;
@@ -1669,7 +1671,7 @@ header h1 {
 .quiz-results {
     background: var(--surface-color);
     padding: 40px;
-    border-radius: 10px;
+    border-radius: 2px;
     text-align: center;
     margin-bottom: 15px;
 }
@@ -1689,7 +1691,7 @@ header h1 {
 }
 
 .quiz-results-score.excellent .result-percent { color: var(--religion-color); }
-.quiz-results-score.good .result-percent { color: #f39c12; }
+.quiz-results-score.good .result-percent { color: #c47d10; }
 .quiz-results-score.poor .result-percent { color: var(--primary-color); }
 
 .quiz-results-breakdown {
@@ -1702,7 +1704,7 @@ header h1 {
 .quiz-history {
     background: var(--surface-color);
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 2px;
 }
 
 .quiz-history h3 {
@@ -1723,7 +1725,7 @@ header h1 {
     align-items: center;
     padding: 10px 15px;
     background: var(--bg-color);
-    border-radius: 5px;
+    border-radius: 2px;
     font-size: 0.85rem;
 }
 
@@ -1736,7 +1738,7 @@ header h1 {
 }
 
 .quiz-history-score.excellent { color: var(--religion-color); }
-.quiz-history-score.good { color: #f39c12; }
+.quiz-history-score.good { color: #c47d10; }
 .quiz-history-score.poor { color: var(--primary-color); }
 
 .no-quiz-history {
@@ -1774,7 +1776,7 @@ header h1 {
 .takeaway-editor {
     background: var(--surface-color);
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 2px;
     margin-bottom: 20px;
 }
 
@@ -1783,7 +1785,7 @@ header h1 {
     padding: 12px 15px;
     background: var(--bg-color);
     border: 1px solid var(--secondary-color);
-    border-radius: 8px;
+    border-radius: 2px;
     color: var(--text-color);
     font-family: inherit;
     font-size: 0.9rem;
@@ -1827,7 +1829,7 @@ header h1 {
     background: var(--bg-color);
     border: 1px solid var(--secondary-color);
     color: var(--text-color);
-    border-radius: 5px;
+    border-radius: 2px;
     font-size: 0.85rem;
     max-width: 250px;
 }
@@ -1836,7 +1838,7 @@ header h1 {
     padding: 10px 24px;
     background: var(--primary-color);
     border: none;
-    border-radius: 5px;
+    border-radius: 2px;
     color: white;
     font-size: 0.9rem;
     cursor: pointer;
@@ -1857,7 +1859,7 @@ header h1 {
 .takeaway-item {
     background: var(--surface-color);
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 2px;
     border-left: 4px solid var(--primary-color);
     position: relative;
 }
@@ -1881,7 +1883,7 @@ header h1 {
     display: inline-block;
     padding: 2px 8px;
     background: var(--secondary-color);
-    border-radius: 10px;
+    border-radius: 2px;
     font-size: 0.75rem;
     color: var(--text-color);
 }
@@ -1898,7 +1900,7 @@ header h1 {
     cursor: pointer;
     font-size: 0.8rem;
     padding: 4px 8px;
-    border-radius: 3px;
+    border-radius: 2px;
     transition: all 0.2s;
 }
 
@@ -1916,7 +1918,7 @@ header h1 {
     padding: 10px;
     background: var(--bg-color);
     border: 1px solid var(--secondary-color);
-    border-radius: 5px;
+    border-radius: 2px;
     color: var(--text-color);
     font-family: inherit;
     font-size: 0.9rem;
@@ -1935,7 +1937,7 @@ header h1 {
 .takeaway-edit-actions button {
     padding: 6px 16px;
     border: none;
-    border-radius: 5px;
+    border-radius: 2px;
     cursor: pointer;
     font-size: 0.85rem;
 }
@@ -1956,7 +1958,7 @@ header h1 {
     color: var(--text-muted);
     font-size: 0.9rem;
     background: var(--surface-color);
-    border-radius: 10px;
+    border-radius: 2px;
 }
 
 /* ========================================
