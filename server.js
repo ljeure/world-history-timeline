@@ -3,7 +3,9 @@ const fs = require('fs');
 const path = require('path');
 
 const PORT = process.env.PORT || 3000;
-const USER_DATA_FILE = path.join(__dirname, 'user-data.json');
+const USER_DATA_FILE = process.env.RAILWAY_VOLUME_MOUNT_PATH
+    ? path.join(process.env.RAILWAY_VOLUME_MOUNT_PATH, 'user-data.json')
+    : path.join(__dirname, 'user-data.json');
 
 // MIME types for static files
 const MIME_TYPES = {
