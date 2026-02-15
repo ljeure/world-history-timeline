@@ -13,7 +13,8 @@ const MIME_TYPES = {
     '.css': 'text/css',
     '.js': 'application/javascript',
     '.json': 'application/json',
-    '.geojson': 'application/geo+json'
+    '.geojson': 'application/geo+json',
+    '.svg': 'image/svg+xml'
 };
 
 // Build sorted index of available GeoJSON snapshot years
