@@ -63,9 +63,6 @@ const timelineData = {
         { id: 'confucianism', name: 'Confucianism', type: 'religion', year: -500, endYear: 2026, region: 'asia', description: 'Chinese philosophical and ethical system founded by Confucius' },
 
         // === STATES (political entities - empires, kingdoms, nations) ===
-        // Prehistoric
-        { id: 'early-humans', name: 'Early Humans', type: 'culture', year: -300000, endYear: -10000, region: 'subsaharan-africa', description: 'Homo sapiens emergence and migration out of Africa' },
-
         // Ancient Mesopotamia
         { id: 'sumer', name: 'Sumerian City-States', type: 'state', year: -3500, endYear: -2300, region: 'asia', description: 'First known civilization with writing, cities, and complex society' },
         { id: 'akkad', name: 'Akkadian Empire', type: 'state', year: -2334, endYear: -2154, region: 'asia', description: 'First ancient empire of Mesopotamia, founded by Sargon' },
@@ -105,13 +102,24 @@ const timelineData = {
         // Mongol
         { id: 'mongol', name: 'Mongol Empire', type: 'state', year: 1206, endYear: 1368, region: 'asia', description: 'Largest contiguous land empire in history' },
 
+        // Tibetan
+        { id: 'tibetan-empire', name: 'Tibetan Empire', type: 'state', year: 618, endYear: 848, region: 'asia', description: 'According to Tang Annals: King in 600s attempted to marry Tang princess, was rebuffed, so he attacked the Tang. Then when he retreated, his request was granted.' },
+
+        // Mughal
+        { id: 'mughal-empire', name: 'Mughal Empire', type: 'state', year: 1526, endYear: 1818, region: 'asia', description: '' },
+
+        // Turkish States
+        { id: 'oghuz-turks', name: 'Oghuz Yabgu State', type: 'state', year: 750, endYear: 1055, region: 'asia', description: 'First major Turkish state' },
+        { id: 'seljuk-empire', name: 'Seljuk Empire', type: 'state', year: 1037, endYear: 1194, region: 'asia', description: 'Turkish empire. Nomadic people, came into Anatolia and conquered. Converted Greek-speaking Christian Anatolians into Turkish speaking Muslims' },
+        { id: 'timurid-emirates', name: 'Timurid Empire', type: 'state', year: 1363, endYear: 1562, region: 'asia', description: "Tamerlane-founded Turkish empire. Tamerlane (Timur, Tamer the Lame) claimed to descend from Genghis Khan" },
+
         // African States
         { id: 'egypt-old', name: 'Egyptian Old Kingdom', type: 'state', year: -2686, endYear: -2181, region: 'subsaharan-africa', description: 'Age of the pyramids, centralized pharaonic rule' },
         { id: 'egypt-middle', name: 'Egyptian Middle Kingdom', type: 'state', year: -2055, endYear: -1650, region: 'subsaharan-africa', description: 'Reunification and cultural flourishing of Egypt' },
         { id: 'egypt-new', name: 'Egyptian New Kingdom', type: 'state', year: -1550, endYear: -1070, region: 'subsaharan-africa', description: 'Egypt at its most powerful, era of Ramesses and Tutankhamun' },
         { id: 'aksum', name: 'Kingdom of Aksum', type: 'state', year: 100, endYear: 940, region: 'subsaharan-africa', description: 'Major trading empire in modern-day Ethiopia and Eritrea' },
         { id: 'zimbabwe', name: 'Kingdom of Zimbabwe', type: 'state', year: 1220, endYear: 1450, region: 'subsaharan-africa', description: 'Medieval kingdom known for Great Zimbabwe stone ruins' },
-        { id: 'kongo', name: 'Kingdom of Kongo', type: 'state', year: 1390, endYear: 1914, region: 'subsaharan-africa', description: 'Major kingdom in west-central Africa, early contact with Portugal' },
+        { id: 'kongo', name: 'Kingdom of Kongo', type: 'state', year: 1390, endYear: 1914, region: 'subsaharan-africa', description: 'Major kingdom in west-central Africa, early contact with Portugal. Defeated Portugal in Battle of Mbwila and demanded return of Kongo slaves.' },
         { id: 'zulu', name: 'Zulu Kingdom', type: 'state', year: 1816, endYear: 1897, region: 'subsaharan-africa', description: 'Southern African kingdom founded by Shaka Zulu' },
 
         // Omani Empire
@@ -120,6 +128,9 @@ const timelineData = {
         // European Nations (for later events)
         { id: 'england', name: 'England/Britain', type: 'state', year: 927, endYear: 2026, region: 'europe-middle-east', description: 'Kingdom of England, later Great Britain and UK' },
         { id: 'france', name: 'France', type: 'state', year: 843, endYear: 2026, region: 'europe-middle-east', description: 'French nation from Carolingian division' },
+
+        // Pacific
+        { id: 'australian-aboriginal-hunter-gatherers', name: 'Australian aboriginal hunter-gatherers', type: 'state', year: 1823, endYear: 1823, region: 'pacific', description: '' },
 
         // === CULTURES/ERAS (intellectual and artistic movements) ===
         // European Eras
@@ -133,7 +144,7 @@ const timelineData = {
         { id: 'early-middle-ages', name: 'Early Middle Ages', type: 'culture', year: 500, endYear: 1000, region: 'europe-middle-east', description: 'Period following the fall of Rome' },
         { id: 'high-middle-ages', name: 'High Middle Ages', type: 'culture', year: 1000, endYear: 1300, region: 'europe-middle-east', description: 'Period of population growth, urbanization, cultural achievements' },
         { id: 'renaissance', name: 'Renaissance', type: 'culture', year: 1300, endYear: 1600, region: 'europe-middle-east', description: 'Cultural rebirth in Europe, bridging Middle Ages and Modern era' },
-        { id: 'enlightenment', name: 'Enlightenment', type: 'culture', year: 1650, endYear: 1800, region: 'europe-middle-east', description: 'Age of Reason emphasizing science and rational thought' },
+        { id: 'enlightenment', name: 'Enlightenment', type: 'culture', year: 1600, endYear: 1789, region: 'europe-middle-east', description: 'Age of Reason emphasizing science and rational thought' },
         { id: 'scientific-revolution', name: 'Scientific Revolution', type: 'culture', year: 1543, endYear: 1700, region: 'europe-middle-east', description: 'Emergence of modern science from new methodology and discoveries' },
 
         // Philosophy traditions
@@ -160,14 +171,13 @@ const timelineData = {
         { id: 'europe-neolithic', name: 'Neolithic', year: -10000, endYear: -3200, region: 'europe-middle-east', description: 'Agricultural revolution spreads to Europe' },
         { id: 'europe-bronze-age', name: 'Bronze Age', year: -3200, endYear: -800, region: 'europe-middle-east', description: 'Bronze metallurgy and early Mediterranean civilizations' },
         { id: 'europe-antiquity', name: 'Antiquity', year: -800, endYear: 476, region: 'europe-middle-east', description: 'Classical Greece and Rome' },
-        { id: 'europe-middle-ages', name: 'Middle Ages', year: 476, endYear: 1450, region: 'europe-middle-east', description: 'Medieval period after fall of Rome' },
-        { id: 'europe-early-modern', name: 'Early Modern', year: 1450, endYear: 1789, region: 'europe-middle-east', description: 'Renaissance, Reformation, and Enlightenment' },
+        { id: 'europe-middle-ages', name: 'Middle Ages', year: 476, endYear: 1300, region: 'europe-middle-east', description: 'Medieval period after fall of Rome' },
         { id: 'europe-modern', name: 'Modern Era', year: 1789, endYear: 2025, region: 'europe-middle-east', description: 'Industrial revolution to present' },
 
         // Sub-Saharan Africa
         { id: 'africa-stone-age', name: 'Stone Age', year: -300000, endYear: -10000, region: 'subsaharan-africa', description: 'Origin of humanity and early development' },
-        { id: 'africa-neolithic', name: 'Neolithic', year: -10000, endYear: -2000, region: 'subsaharan-africa', description: 'Development of agriculture and pastoralism' },
-        { id: 'africa-iron-age', name: 'Iron Age', year: -2000, endYear: 1500, region: 'subsaharan-africa', description: 'Bantu expansion and African kingdoms' },
+        { id: 'africa-neolithic', name: 'Neolithic', year: -10000, endYear: -400, region: 'subsaharan-africa', description: 'Development of agriculture and pastoralism' },
+        { id: 'africa-iron-age', name: 'Iron Age', year: -400, endYear: 1500, region: 'subsaharan-africa', description: 'Bantu expansion and African kingdoms' },
         { id: 'africa-early-global', name: 'Early Global', year: 1500, endYear: 1800, region: 'subsaharan-africa', description: 'Trans-Atlantic trade and early European contact' },
         { id: 'africa-colonial', name: 'Colonial Era', year: 1800, endYear: 1960, region: 'subsaharan-africa', description: 'European colonization of Africa' },
         { id: 'africa-modern', name: 'Modern Era', year: 1960, endYear: 2025, region: 'subsaharan-africa', description: 'Independence movements and modern states' },
@@ -194,8 +204,7 @@ const timelineData = {
     // ===========================================
     events: [
         // === PREHISTORIC EVENTS ===
-        { id: 200, title: "Homo sapiens emerge", year: -300000, endYear: -200000, entityIds: ['early-humans'], region: "subsaharan-africa", description: "Anatomically modern humans first appear in Africa" },
-        { id: 201, title: "Out of Africa migration", year: -70000, endYear: -50000, entityIds: ['early-humans'], region: "subsaharan-africa", description: "Humans migrate out of Africa to populate the world" },
+        { id: 201, title: "Out of Africa migration", year: -70000, endYear: -50000, entityIds: [], region: "subsaharan-africa", description: "Humans migrate out of Africa to populate the world" },
         { id: 203, title: "Last Ice Age peak", year: -26000, endYear: -19000, entityIds: ['paleolithic'], region: "europe-middle-east", description: "Last Glacial Maximum - ice sheets at their greatest extent" },
 
         // === TECHNOLOGY EVENTS ===
@@ -259,6 +268,13 @@ const timelineData = {
         // === MORE EUROPEAN EVENTS ===
         { id: 93, title: "Thirty Years' War", year: 1618, endYear: 1648, entityIds: [], region: "europe-middle-east", description: "Devastating religious and political conflict across Central Europe" },
         { id: 94, title: "Treaty of Westphalia", year: 1648, entityIds: [], region: "europe-middle-east", description: "Peace treaties ending Thirty Years' War, established modern state sovereignty" },
+
+        // === USER-ADDED EVENTS ===
+        { id: 209, title: "The Last Supper (da Vinci)", year: 1498, entityIds: ['renaissance'], region: "europe-middle-east", description: "" },
+        { id: 210, title: "Black Death", year: 1346, endYear: 1353, entityIds: [], region: "europe-middle-east", description: "" },
+        { id: 211, title: "Carolingian dynasty", year: 751, endYear: 888, category: "state", entityIds: [], region: "europe-middle-east", description: "" },
+        { id: 212, title: "Sahara Desertification", year: -8000, endYear: -4500, entityIds: [], region: "subsaharan-africa", description: "" },
+        { id: 213, title: "Turks become Muslim", year: 800, endYear: 1000, category: "religion", entityIds: ['islam'], region: "asia", description: "Turkish slave-soldiers (mamluks/ghulams) enter Islamic armies. Muslim merchants travel in central Asia. Over time, the Turks become Muslim." },
     ],
 
     // ===========================================
@@ -330,6 +346,11 @@ const timelineData = {
         { id: 62, title: "Love in a Fallen City", type: "book", author: "Eileen Chang", entityIds: ['roc'], year: 1943, status: "completed", description: "Short stories of Shanghai and Hong Kong in the 1940s" },
         { id: 63, title: "The Arc of a Covenant", type: "book", author: "Walter Russell Mead", entityIds: ['christianity'], year: 2022, status: "completed", description: "The United States, Israel, and the fate of the Jewish people" },
         { id: 64, title: "The Bourgeois Catholicism vs Capitalism in 18th Century France", type: "book", author: "Bernard Groethuysen", entityIds: ['christianity', 'france', 'enlightenment'], year: 1927, status: "completed", description: "Religion and capitalism in 18th century France" },
+        { id: 65, eventId: 212, title: "What Really Turned the Sahara Desert From a Green Oasis Into a Wasteland", type: "other", url: "https://www.smithsonianmag.com/science-nature/what-really-turned-sahara-desert-green-oasis-wasteland-180962668/", status: "to-read", description: "" },
+        { id: 66, eventId: 'entity-mughal-empire', title: "Wikipedia: Mughal Empire", type: "other", url: "https://en.wikipedia.org/wiki/Mughal_Empire", status: "in-progress", description: "" },
+        { id: 67, eventId: 'entity-oghuz-turks', title: "Wikipedia: Oghuz Yabgu State", type: "other", url: "https://en.wikipedia.org/wiki/Oghuz_Yabgu_State", status: "in-progress", description: "" },
+        { id: 68, eventId: 'entity-seljuk-empire', title: "Wikipedia: Seljuk Empire", type: "other", url: "https://en.wikipedia.org/wiki/Seljuk_Empire", status: "in-progress", description: "" },
+        { id: 69, eventId: 'entity-seljuk-empire', title: "History of the Muslim World", type: "book", url: "https://www.goodreads.com/book/show/150276510-a-history-of-the-muslim-world", status: "in-progress", description: "" },
     ],
 
     // ===========================================
