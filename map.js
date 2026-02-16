@@ -584,6 +584,7 @@ class HistoryMap {
 
         const props = this.selectedEmpire;
 
+        const username = getUsername();
         const newEvent = {
             id: getNextEventId(),
             title: props.name || props.NAME,
@@ -594,7 +595,9 @@ class HistoryMap {
             description: props.description || '',
             userAdded: true,
             fromMap: true,
-            mapId: props.id || props.NAME
+            mapId: props.id || props.NAME,
+            createdBy: username,
+            sharedWith: [username]
         };
 
         timelineData.events.push(newEvent);
@@ -630,6 +633,7 @@ class HistoryMap {
 
         // Create new entity
         const region = guessRegionFromCoords(this.selectedGeometry?.coordinates);
+        const username = getUsername();
         const newEntity = {
             id: id,
             name: name,
@@ -638,7 +642,9 @@ class HistoryMap {
             endYear: this.currentYear,
             region: region,
             description: '',
-            userAdded: true
+            userAdded: true,
+            createdBy: username,
+            sharedWith: [username]
         };
 
         timelineData.entities.push(newEntity);
@@ -657,7 +663,9 @@ class HistoryMap {
             isEntity: true,
             userAdded: true,
             fromMap: true,
-            mapId: name
+            mapId: name,
+            createdBy: username,
+            sharedWith: [username]
         };
 
         timelineData.events.push(newEvent);

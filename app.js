@@ -14,6 +14,7 @@ class TimelineApp {
         this.wasDragging = false;
         this.draggedEvent = null;
         this.dragStartY = 0;
+        this.userFilters = { mine: true, shared: true, everyones: true };
 
         this.init();
     }
@@ -96,11 +97,11 @@ class TimelineApp {
         // Delete event
         document.getElementById('deleteEventBtn').addEventListener('click', () => this.deleteEvent());
 
-        // Export/Import/Reset
+        // Export/Import/Sample CSV
         document.getElementById('exportData').addEventListener('click', () => this.exportData());
         document.getElementById('importData').addEventListener('click', () => document.getElementById('importFile').click());
         document.getElementById('importFile').addEventListener('change', (e) => this.importData(e));
-        document.getElementById('resetData').addEventListener('click', () => this.resetData());
+        document.getElementById('sampleCsvBtn').addEventListener('click', () => this.downloadSampleCsv());
         document.getElementById('resetLayout').addEventListener('click', () => this.resetLayout());
 
         // Search
@@ -140,6 +141,33 @@ class TimelineApp {
         document.getElementById('takeawayInput').addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') this.addTakeaway();
         });
+
+        // User filter dropdown
+        document.getElementById('userFilterBtn').addEventListener('click', () => {
+            const menu = document.getElementById('userFilterMenu');
+            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        });
+        document.addEventListener('click', (e) => {
+            const dropdown = document.querySelector('.user-filter-dropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                document.getElementById('userFilterMenu').style.display = 'none';
+            }
+        });
+        document.getElementById('filterMyEntities').addEventListener('change', (e) => {
+            this.userFilters.mine = e.target.checked;
+            this.render();
+        });
+        document.getElementById('filterSharedWithMe').addEventListener('change', (e) => {
+            this.userFilters.shared = e.target.checked;
+            this.render();
+        });
+        document.getElementById('filterEveryones').addEventListener('change', (e) => {
+            this.userFilters.everyones = e.target.checked;
+            this.render();
+        });
+
+        // Join event button
+        document.getElementById('joinEventBtn').addEventListener('click', () => this.joinEvent());
 
         // Change name button
         document.getElementById('changeNameBtn').addEventListener('click', () => this.changeName());
@@ -424,12 +452,26 @@ class TimelineApp {
                         return e.category === 'culture' || e.entityType === 'culture';
                     }
                     if (f === 'event') {
-                        // Events are items that aren't entities or periods
-                        return e.category === 'event' || (!e.isEntity && !e.isPeriod && !e.entityType);
+                        return e.category === 'event';
                     }
                     // Direct category match for any other filters
                     return e.category === f;
                 });
+            });
+        }
+
+        // Apply user filter
+        const username = getUsername();
+        if (username && !(this.userFilters.mine && this.userFilters.shared && this.userFilters.everyones)) {
+            events = events.filter(e => {
+                const isMyEntity = e.createdBy && e.createdBy === username;
+                const isSharedWithMe = !isMyEntity && e.sharedWith && e.sharedWith.includes(username);
+                const isEveryones = !e.createdBy || (!isMyEntity && !isSharedWithMe);
+
+                if (isMyEntity && this.userFilters.mine) return true;
+                if (isSharedWithMe && this.userFilters.shared) return true;
+                if (isEveryones && this.userFilters.everyones) return true;
+                return false;
             });
         }
 
@@ -1024,13 +1066,28 @@ class TimelineApp {
 
         document.getElementById('eventDescription').value = event.description || '';
 
-        // Show addedBy info
+        // Show addedBy / createdBy info
         const addedByEl = document.getElementById('eventAddedBy');
-        if (event.addedBy) {
-            addedByEl.textContent = `Added by ${event.addedBy}`;
+        const creator = event.createdBy || event.addedBy;
+        if (creator) {
+            addedByEl.textContent = `Added by ${creator}`;
             addedByEl.style.display = 'block';
         } else {
             addedByEl.style.display = 'none';
+        }
+
+        // Show/hide Join button
+        const joinBtn = document.getElementById('joinEventBtn');
+        const username = getUsername();
+        if (event.createdBy && username) {
+            const sharedWith = event.sharedWith || [];
+            if (!sharedWith.includes(username)) {
+                joinBtn.style.display = 'block';
+            } else {
+                joinBtn.style.display = 'none';
+            }
+        } else {
+            joinBtn.style.display = 'none';
         }
 
         // Show tags
@@ -1187,6 +1244,7 @@ class TimelineApp {
     handleAddEvent(e) {
         e.preventDefault();
 
+        const username = getUsername();
         const newEvent = {
             id: getNextEventId(),
             title: document.getElementById('newEventTitle').value,
@@ -1195,7 +1253,9 @@ class TimelineApp {
             region: document.getElementById('newEventRegion').value,
             description: document.getElementById('newEventDescription').value,
             userAdded: true,
-            addedBy: getUsername()
+            addedBy: username,
+            createdBy: username,
+            sharedWith: [username]
         };
 
         const endYear = document.getElementById('newEventEndYear').value;
@@ -1613,6 +1673,23 @@ class TimelineApp {
         return div.innerHTML;
     }
 
+    joinEvent() {
+        if (!this.selectedEvent) return;
+        const username = getUsername();
+        if (!username) return;
+
+        if (!this.selectedEvent.sharedWith) {
+            this.selectedEvent.sharedWith = [];
+        }
+        if (!this.selectedEvent.sharedWith.includes(username)) {
+            this.selectedEvent.sharedWith.push(username);
+            this.selectedEvent.userAdded = true;
+            saveData();
+            document.getElementById('joinEventBtn').style.display = 'none';
+            this.showToast('Joined! This event is now shared with you.');
+        }
+    }
+
     showToast(message) {
         const toast = document.createElement('div');
         toast.style.cssText = `
@@ -1635,6 +1712,18 @@ class TimelineApp {
         }, 2000);
     }
 
+    downloadSampleCsv() {
+        const csv = `title,year,endYear,category,region,description,tags,entityIds,createdBy,sharedWith\nBattle of Hastings,1066,,event,europe-middle-east,Norman conquest of England,war;politics,england,,`;
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'timeline-sample.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+        this.showToast('Sample CSV downloaded!');
+    }
+
     resetLayout() {
         if (confirm('This will reset all row arrangements to auto-layout. Continue?')) {
             timelineData.rowAssignments = {};
@@ -1650,22 +1739,86 @@ class TimelineApp {
         }
     }
 
-    exportData() {
-        const data = {
-            events: timelineData.events,
-            references: timelineData.references,
-            notes: timelineData.notes,
-            exportDate: new Date().toISOString()
-        };
+    csvEscape(value) {
+        if (value == null) return '';
+        const str = String(value);
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+            return '"' + str.replace(/"/g, '""') + '"';
+        }
+        return str;
+    }
 
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    exportData() {
+        const events = this.getFilteredEvents();
+        const headers = ['title', 'year', 'endYear', 'category', 'region', 'description', 'tags', 'entityIds', 'createdBy', 'sharedWith'];
+        const rows = [headers.join(',')];
+
+        events.forEach(e => {
+            const row = [
+                this.csvEscape(e.title),
+                this.csvEscape(e.year),
+                this.csvEscape(e.endYear || ''),
+                this.csvEscape(e.category || ''),
+                this.csvEscape(e.region || ''),
+                this.csvEscape(e.description || ''),
+                this.csvEscape((e.tags || []).join(';')),
+                this.csvEscape((e.entityIds || []).join(';')),
+                this.csvEscape(e.createdBy || ''),
+                this.csvEscape((e.sharedWith || []).join(';'))
+            ];
+            rows.push(row.join(','));
+        });
+
+        const csv = rows.join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `world-history-timeline-${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `world-history-timeline-${new Date().toISOString().split('T')[0]}.csv`;
         a.click();
         URL.revokeObjectURL(url);
-        this.showToast('Data exported!');
+        this.showToast('CSV exported!');
+    }
+
+    parseCSV(text) {
+        const rows = [];
+        let current = '';
+        let inQuotes = false;
+        let row = [];
+
+        for (let i = 0; i < text.length; i++) {
+            const ch = text[i];
+            if (inQuotes) {
+                if (ch === '"' && text[i + 1] === '"') {
+                    current += '"';
+                    i++;
+                } else if (ch === '"') {
+                    inQuotes = false;
+                } else {
+                    current += ch;
+                }
+            } else {
+                if (ch === '"') {
+                    inQuotes = true;
+                } else if (ch === ',') {
+                    row.push(current);
+                    current = '';
+                } else if (ch === '\n' || (ch === '\r' && text[i + 1] === '\n')) {
+                    row.push(current);
+                    current = '';
+                    if (row.length > 1 || row[0] !== '') rows.push(row);
+                    row = [];
+                    if (ch === '\r') i++;
+                } else {
+                    current += ch;
+                }
+            }
+        }
+        // Last field/row
+        row.push(current);
+        if (row.length > 1 || row[0] !== '') rows.push(row);
+
+        return rows;
     }
 
     importData(e) {
@@ -1675,35 +1828,63 @@ class TimelineApp {
         const reader = new FileReader();
         reader.onload = (event) => {
             try {
-                const data = JSON.parse(event.target.result);
-
-                if (data.events) {
-                    const existingIds = new Set(timelineData.events.map(e => e.id));
-                    data.events.forEach(event => {
-                        if (!existingIds.has(event.id)) {
-                            timelineData.events.push(event);
-                        }
-                    });
+                const rows = this.parseCSV(event.target.result);
+                if (rows.length < 2) {
+                    this.showToast('CSV file is empty or has no data rows');
+                    return;
                 }
 
-                if (data.references) {
-                    const existingRefIds = new Set(timelineData.references.map(r => r.id));
-                    data.references.forEach(ref => {
-                        if (!existingRefIds.has(ref.id)) {
-                            timelineData.references.push(ref);
-                        }
-                    });
+                const headers = rows[0].map(h => h.trim().toLowerCase());
+                const titleIdx = headers.indexOf('title');
+                const yearIdx = headers.indexOf('year');
+                if (titleIdx === -1 || yearIdx === -1) {
+                    this.showToast('CSV must have "title" and "year" columns');
+                    return;
                 }
 
-                if (data.notes) {
-                    Object.assign(timelineData.notes, data.notes);
+                const username = getUsername();
+                let imported = 0;
+
+                for (let i = 1; i < rows.length; i++) {
+                    const cols = rows[i];
+                    const title = (cols[titleIdx] || '').trim();
+                    const year = parseInt(cols[yearIdx]);
+                    if (!title || isNaN(year)) continue;
+
+                    const get = (name) => {
+                        const idx = headers.indexOf(name);
+                        return idx >= 0 && cols[idx] ? cols[idx].trim() : '';
+                    };
+
+                    const endYearStr = get('endyear');
+                    const newEvent = {
+                        id: getNextEventId(),
+                        title: title,
+                        year: year,
+                        endYear: endYearStr ? parseInt(endYearStr) : null,
+                        category: get('category') || 'event',
+                        region: get('region') || 'europe-middle-east',
+                        description: get('description'),
+                        tags: get('tags') ? get('tags').split(';').map(t => t.trim()).filter(Boolean) : [],
+                        entityIds: get('entityids') ? get('entityids').split(';').map(t => t.trim()).filter(Boolean) : [],
+                        createdBy: get('createdby') || username,
+                        sharedWith: get('sharedwith') ? get('sharedwith').split(';').map(t => t.trim()).filter(Boolean) : [username],
+                        userAdded: true
+                    };
+
+                    timelineData.events.push(newEvent);
+                    imported++;
                 }
 
-                saveData();
-                this.render();
-                this.showToast('Data imported successfully!');
+                if (imported > 0) {
+                    saveData();
+                    this.render();
+                    this.showToast(`Imported ${imported} event${imported !== 1 ? 's' : ''} from CSV!`);
+                } else {
+                    this.showToast('No valid events found in CSV');
+                }
             } catch (err) {
-                this.showToast('Error importing data: invalid format');
+                this.showToast('Error importing CSV: invalid format');
                 console.error(err);
             }
         };

@@ -222,14 +222,71 @@ header h1 {
     background: var(--secondary-color);
 }
 
-#resetData {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
+/* User filter dropdown */
+.user-filter-dropdown {
+    position: relative;
 }
 
-#resetData:hover {
-    background: var(--primary-color);
+.user-filter-btn {
+    padding: 6px 10px;
+    border: 1px solid var(--secondary-color);
+    background: transparent;
+    color: var(--text-color);
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+}
+
+.user-filter-btn:hover {
+    background: var(--secondary-color);
+}
+
+.user-filter-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--surface-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: 2px;
+    padding: 8px;
+    z-index: 100;
+    min-width: 160px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.user-filter-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 0;
+    font-size: 0.8rem;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.user-filter-option input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+
+/* Join event button */
+.join-event-btn {
+    width: 100%;
+    padding: 10px 16px;
+    background: var(--culture-color);
+    border: none;
+    border-radius: 2px;
     color: white;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: opacity 0.2s;
+}
+
+.join-event-btn:hover {
+    opacity: 0.9;
 }
 
 .stats-bar {

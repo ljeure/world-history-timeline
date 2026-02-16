@@ -18,7 +18,7 @@
                 <button class="view-tab active" data-view="timeline">Timeline</button>
                 <button class="view-tab" data-view="map">World Map</button>
                 <button class="view-tab" data-view="quiz">Quiz</button>
-                <button class="view-tab" data-view="takeaways">Takeaways</button>
+                <button class="view-tab" data-view="takeaways" style="display: none;">Takeaways</button>
             </div>
         </header>
 
@@ -56,12 +56,27 @@
                 <button id="zoomReset">Reset</button>
             </div>
 
+            <div class="user-filter-dropdown">
+                <button id="userFilterBtn" class="user-filter-btn" title="Filter by user">Users ▾</button>
+                <div id="userFilterMenu" class="user-filter-menu" style="display: none;">
+                    <label class="user-filter-option">
+                        <input type="checkbox" id="filterMyEntities" checked> My entities
+                    </label>
+                    <label class="user-filter-option">
+                        <input type="checkbox" id="filterSharedWithMe" checked> Shared with me
+                    </label>
+                    <label class="user-filter-option">
+                        <input type="checkbox" id="filterEveryones" checked> Everyone's
+                    </label>
+                </div>
+            </div>
+
             <div class="data-controls">
-                <button id="exportData" title="Export your data">Export</button>
-                <button id="importData" title="Import data">Import</button>
+                <button id="exportData" title="Export your data">Export CSV</button>
+                <button id="importData" title="Import CSV data">Import CSV</button>
+                <button id="sampleCsvBtn" title="Download sample CSV template">Sample CSV</button>
                 <button id="resetLayout" title="Reset row arrangements">Reset Layout</button>
-                <button id="resetData" title="Reset to default data">Reset All</button>
-                <input type="file" id="importFile" accept=".json" style="display: none;">
+                <input type="file" id="importFile" accept=".csv" style="display: none;">
                 <button id="changeNameBtn" title="Change display name" class="change-name-btn"></button>
             </div>
         </div>
@@ -144,6 +159,7 @@
             </div>
 
             <div class="event-added-by" id="eventAddedBy" style="display: none;"></div>
+            <button id="joinEventBtn" class="join-event-btn" style="display: none;">Join This Event</button>
 
             <div class="event-tags-section" id="eventTagsSection" style="display: none;">
                 <h4>Tags</h4>

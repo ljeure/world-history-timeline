@@ -140,6 +140,7 @@ const timelineData = {
         // European Nations (for later events)
         { id: 'england', name: 'England/Britain', type: 'state', year: 927, endYear: 2026, region: 'europe-middle-east', description: 'Kingdom of England, later Great Britain and UK' },
         { id: 'france', name: 'France', type: 'state', year: 843, endYear: 2026, region: 'europe-middle-east', description: 'French nation from Carolingian division' },
+        { id: 'carolingian', name: 'Carolingian Dynasty', type: 'state', year: 751, endYear: 888, region: 'europe-middle-east', description: 'Frankish dynasty that ruled Western Europe' },
 
         // Pacific
         { id: 'australian-aboriginal-hunter-gatherers', name: 'Australian aboriginal hunter-gatherers', type: 'state', year: 1823, endYear: 1823, region: 'pacific', description: '' },
@@ -216,77 +217,76 @@ const timelineData = {
     // ===========================================
     events: [
         // === PREHISTORIC EVENTS ===
-        { id: 201, title: "Out of Africa migration", year: -70000, endYear: -50000, entityIds: [], region: "subsaharan-africa", description: "Humans migrate out of Africa to populate the world" },
-        { id: 203, title: "Last Ice Age peak", year: -26000, endYear: -19000, entityIds: ['paleolithic'], region: "europe-middle-east", description: "Last Glacial Maximum - ice sheets at their greatest extent" },
+        { id: 201, title: "Out of Africa migration", year: -70000, endYear: -50000, entityIds: [], region: "subsaharan-africa", description: "Humans migrate out of Africa to populate the world", tags: ['exploration'] },
+        { id: 203, title: "Last Ice Age peak", year: -26000, endYear: -19000, entityIds: ['paleolithic'], region: "europe-middle-east", description: "Last Glacial Maximum - ice sheets at their greatest extent", tags: ['disaster'] },
 
         // === TECHNOLOGY EVENTS ===
-        { id: 204, title: "Agriculture begins", year: -10000, endYear: -8000, entityIds: ['neolithic'], region: "europe-middle-east", description: "Neolithic Revolution - transition from hunting/gathering to farming" },
-        { id: 205, title: "Domestication of animals", year: -10000, endYear: -7000, entityIds: ['neolithic'], region: "asia", description: "Dogs, sheep, goats, and cattle domesticated" },
-        { id: 206, title: "First cities emerge", year: -6000, endYear: -4000, entityIds: ['neolithic'], region: "europe-middle-east", description: "Çatalhöyük, Jericho, and other early urban settlements" },
-        { id: 207, title: "Writing invented", year: -3400, endYear: -3200, entityIds: ['sumer'], region: "asia", description: "Cuneiform in Mesopotamia and hieroglyphics in Egypt" },
-        { id: 208, title: "Bronze Age begins", year: -3300, entityIds: ['bronze-age'], region: "europe-middle-east", description: "Widespread use of bronze for tools and weapons" },
-        { id: 31, title: "Rice paddies & canals", year: -1000, entityIds: [], region: "asia", description: "Development of sophisticated irrigation for rice farming" },
-        { id: 32, title: "Rice mechanization", year: 1850, entityIds: [], region: "asia", description: "Industrial mechanization of rice farming" },
-        { id: 33, title: "Rice Green Revolution", year: 1960, entityIds: [], region: "asia", description: "High-yield rice varieties dramatically increase production" },
+        { id: 204, title: "Agriculture begins", year: -10000, endYear: -8000, entityIds: ['neolithic'], region: "europe-middle-east", description: "Neolithic Revolution - transition from hunting/gathering to farming", tags: ['science'] },
+        { id: 205, title: "Domestication of animals", year: -10000, endYear: -7000, entityIds: ['neolithic'], region: "asia", description: "Dogs, sheep, goats, and cattle domesticated", tags: ['science'] },
+        { id: 206, title: "First cities emerge", year: -6000, endYear: -4000, entityIds: ['neolithic'], region: "europe-middle-east", description: "Çatalhöyük, Jericho, and other early urban settlements", tags: ['science', 'trade'] },
+        { id: 207, title: "Writing invented", year: -3400, endYear: -3200, entityIds: ['sumer'], region: "asia", description: "Cuneiform in Mesopotamia and hieroglyphics in Egypt", tags: ['science'] },
+        { id: 208, title: "Bronze Age begins", year: -3300, entityIds: ['bronze-age'], region: "europe-middle-east", description: "Widespread use of bronze for tools and weapons", tags: ['science'] },
+        { id: 31, title: "Rice paddies & canals", year: -1000, entityIds: [], region: "asia", description: "Development of sophisticated irrigation for rice farming", tags: ['science', 'trade'] },
+        { id: 32, title: "Rice mechanization", year: 1850, entityIds: [], region: "asia", description: "Industrial mechanization of rice farming", tags: ['science', 'trade'] },
+        { id: 33, title: "Rice Green Revolution", year: 1960, entityIds: [], region: "asia", description: "High-yield rice varieties dramatically increase production", tags: ['science'] },
 
         // === PEOPLE - Religious figures (one event per person: most prominent achievement) ===
-        { id: 160, title: "Buddha achieves enlightenment", year: -528, entityIds: ['buddhism'], region: "asia", description: "Siddhartha Gautama attains nirvana under the Bodhi tree" },
-        { id: 20, title: "Jesus crucified", year: 33, entityIds: ['christianity', 'roman-empire'], region: "europe-middle-east", description: "Crucifixion and resurrection, founding event of Christianity" },
-        { id: 30, title: "Mani executed", year: 274, entityIds: ['manichaeism', 'sasanian'], region: "europe-middle-east", description: "Mani executed by Sasanian authorities" },
-        { id: 40, title: "Augustine writes Confessions", year: 400, entityIds: ['christianity'], region: "europe-middle-east", description: "Augustine completes his autobiographical work" },
-        { id: 51, title: "Hijra to Medina", year: 622, entityIds: ['islam'], region: "europe-middle-east", description: "Muhammad's migration to Medina, start of Islamic calendar" },
-        { id: 60, title: "Aquinas writes Summa Theologica", year: 1265, endYear: 1274, entityIds: ['christianity', 'high-middle-ages'], region: "europe-middle-east", description: "Aquinas composes his masterwork of systematic theology" },
-        { id: 70, title: "Bahá'u'lláh declares mission", year: 1863, entityIds: ['bahai'], region: "europe-middle-east", description: "Bahá'u'lláh declares himself the Promised One" },
+        { id: 160, title: "Buddha achieves enlightenment", year: -528, entityIds: ['buddhism'], region: "asia", description: "Siddhartha Gautama attains nirvana under the Bodhi tree", tags: ['religion'] },
+        { id: 20, title: "Jesus crucified", year: 33, entityIds: ['christianity', 'roman-empire'], region: "europe-middle-east", description: "Crucifixion and resurrection, founding event of Christianity", tags: ['religion'] },
+        { id: 30, title: "Mani executed", year: 274, entityIds: ['manichaeism', 'sasanian'], region: "europe-middle-east", description: "Mani executed by Sasanian authorities", tags: ['religion', 'politics'] },
+        { id: 40, title: "Augustine writes Confessions", year: 400, entityIds: ['christianity'], region: "europe-middle-east", description: "Augustine completes his autobiographical work", tags: ['religion', 'art'] },
+        { id: 51, title: "Hijra to Medina", year: 622, entityIds: ['islam'], region: "europe-middle-east", description: "Muhammad's migration to Medina, start of Islamic calendar", tags: ['religion', 'politics'] },
+        { id: 60, title: "Aquinas writes Summa Theologica", year: 1265, endYear: 1274, entityIds: ['christianity', 'high-middle-ages'], region: "europe-middle-east", description: "Aquinas composes his masterwork of systematic theology", tags: ['religion', 'art'] },
+        { id: 70, title: "Bahá'u'lláh declares mission", year: 1863, entityIds: ['bahai'], region: "europe-middle-east", description: "Bahá'u'lláh declares himself the Promised One", tags: ['religion'] },
 
         // === PEOPLE - Political leaders ===
-        { id: 170, title: "Alexander conquers Persian Empire", year: -330, entityIds: ['macedon', 'achaemenid'], region: "europe-middle-east", description: "Alexander defeats Darius III, ending Achaemenid Empire" },
-        { id: 80, title: "Mongol Empire founded", year: 1206, entityIds: ['mongol'], region: "asia", description: "Temüjin proclaimed Genghis Khan, unifying Mongol tribes" },
+        { id: 170, title: "Alexander conquers Persian Empire", year: -330, entityIds: ['macedon', 'achaemenid'], region: "europe-middle-east", description: "Alexander defeats Darius III, ending Achaemenid Empire", tags: ['war', 'politics'] },
+        { id: 80, title: "Mongol Empire founded", year: 1206, entityIds: ['mongol'], region: "asia", description: "Temüjin proclaimed Genghis Khan, unifying Mongol tribes", tags: ['war', 'politics'] },
 
         // === PEOPLE - Philosophers and Scientists ===
-        { id: 110, title: "Thales predicts solar eclipse", year: -585, entityIds: ['greek-philosophy', 'ancient-greece'], region: "europe-middle-east", description: "Thales allegedly predicts eclipse, demonstrating natural philosophy" },
-        { id: 12, title: "Pythagoras born", year: -570, entityIds: ['greek-philosophy', 'ancient-greece'], region: "europe-middle-east", description: "Birth of mathematician and philosopher" },
-        { id: 13, title: "Confucius born", year: -551, entityIds: ['confucianism'], region: "asia", description: "Birth of Chinese philosopher" },
-        { id: 140, title: "Herodotus writes Histories", year: -440, entityIds: ['ancient-greece', 'classical-antiquity'], region: "europe-middle-east", description: "Herodotus composes first great narrative history" },
-        { id: 150, title: "Plato founds the Academy", year: -387, entityIds: ['greek-philosophy', 'ancient-greece'], region: "europe-middle-east", description: "Plato establishes school in Athens" },
-        { id: 180, title: "Marcus Aurelius writes Meditations", year: 170, endYear: 180, entityIds: ['stoicism', 'roman-empire'], region: "europe-middle-east", description: "Marcus Aurelius composes personal philosophical writings" },
+        { id: 110, title: "Thales predicts solar eclipse", year: -585, entityIds: ['greek-philosophy', 'ancient-greece'], region: "europe-middle-east", description: "Thales allegedly predicts eclipse, demonstrating natural philosophy", tags: ['science'] },
+        { id: 12, title: "Pythagoras born", year: -570, entityIds: ['greek-philosophy', 'ancient-greece'], region: "europe-middle-east", description: "Birth of mathematician and philosopher", tags: ['science'] },
+        { id: 13, title: "Confucius born", year: -551, entityIds: ['confucianism'], region: "asia", description: "Birth of Chinese philosopher", tags: ['religion', 'politics'] },
+        { id: 140, title: "Herodotus writes Histories", year: -440, entityIds: ['ancient-greece', 'classical-antiquity'], region: "europe-middle-east", description: "Herodotus composes first great narrative history", tags: ['art'] },
+        { id: 150, title: "Plato founds the Academy", year: -387, entityIds: ['greek-philosophy', 'ancient-greece'], region: "europe-middle-east", description: "Plato establishes school in Athens", tags: ['science', 'art'] },
+        { id: 180, title: "Marcus Aurelius writes Meditations", year: 170, endYear: 180, entityIds: ['stoicism', 'roman-empire'], region: "europe-middle-east", description: "Marcus Aurelius composes personal philosophical writings", tags: ['religion', 'art', 'politics'] },
 
         // === SCIENCE & PHILOSOPHY EVENTS ===
-        { id: 10, title: "Iliad & Odyssey composed", year: -750, entityIds: ['ancient-greece', 'classical-antiquity'], region: "europe-middle-east", description: "Homer's epic poems first recorded" },
-        { id: 19, title: "Copernicus publishes heliocentric model", year: 1543, entityIds: ['scientific-revolution', 'renaissance'], region: "europe-middle-east", description: "Published theory that Earth revolves around the Sun" },
-        { id: 21, title: "Kepler publishes laws of planetary motion", year: 1609, entityIds: ['scientific-revolution'], region: "europe-middle-east", description: "Discovered that planets move in ellipses" },
-        { id: 22, title: "Galileo condemned by Inquisition", year: 1633, entityIds: ['scientific-revolution', 'christianity'], region: "europe-middle-east", description: "Forced to recant support for heliocentrism" },
-        { id: 23, title: "Royal Society founded", year: 1660, entityIds: ['scientific-revolution', 'england'], region: "europe-middle-east", description: "World's oldest national scientific institution established" },
-        { id: 24, title: "Newton publishes Principia", year: 1687, entityIds: ['scientific-revolution', 'england'], region: "europe-middle-east", description: "Laws of motion and universal gravitation published" },
-        { id: 90, title: "Darwin publishes Origin of Species", year: 1859, entityIds: ['england'], region: "europe-middle-east", description: "Theory of evolution by natural selection published" },
+        { id: 10, title: "Iliad & Odyssey composed", year: -750, entityIds: ['ancient-greece', 'classical-antiquity'], region: "europe-middle-east", description: "Homer's epic poems first recorded", tags: ['art'] },
+        { id: 19, title: "Copernicus publishes heliocentric model", year: 1543, entityIds: ['scientific-revolution', 'renaissance'], region: "europe-middle-east", description: "Published theory that Earth revolves around the Sun", tags: ['science'] },
+        { id: 21, title: "Kepler publishes laws of planetary motion", year: 1609, entityIds: ['scientific-revolution'], region: "europe-middle-east", description: "Discovered that planets move in ellipses", tags: ['science'] },
+        { id: 22, title: "Galileo condemned by Inquisition", year: 1633, entityIds: ['scientific-revolution', 'christianity'], region: "europe-middle-east", description: "Forced to recant support for heliocentrism", tags: ['science', 'religion', 'politics'] },
+        { id: 23, title: "Royal Society founded", year: 1660, entityIds: ['scientific-revolution', 'england'], region: "europe-middle-east", description: "World's oldest national scientific institution established", tags: ['science', 'politics'] },
+        { id: 24, title: "Newton publishes Principia", year: 1687, entityIds: ['scientific-revolution', 'england'], region: "europe-middle-east", description: "Laws of motion and universal gravitation published", tags: ['science'] },
+        { id: 90, title: "Darwin publishes Origin of Species", year: 1859, entityIds: ['england'], region: "europe-middle-east", description: "Theory of evolution by natural selection published", tags: ['science'] },
 
         // === RELIGIOUS/CULTURAL EVENTS ===
-        { id: 111, title: "Buddhism spreads to China", year: 100, entityIds: ['buddhism'], region: "asia", description: "Buddhism begins to spread along the Silk Road into China" },
-        { id: 112, title: "Council of Nicaea", year: 325, entityIds: ['christianity', 'roman-empire'], region: "europe-middle-east", description: "First ecumenical council of the Christian Church" },
-        { id: 113, title: "Islam spreads to Southeast Asia", year: 700, entityIds: ['islam'], region: "asia", description: "Islamic traders and missionaries spread religion across Asia" },
+        { id: 111, title: "Buddhism spreads to China", year: 100, entityIds: ['buddhism'], region: "asia", description: "Buddhism begins to spread along the Silk Road into China", tags: ['religion', 'exploration', 'trade'] },
+        { id: 112, title: "Council of Nicaea", year: 325, entityIds: ['christianity', 'roman-empire'], region: "europe-middle-east", description: "First ecumenical council of the Christian Church", tags: ['religion', 'politics'] },
+        { id: 113, title: "Islam spreads to Southeast Asia", year: 700, entityIds: ['islam'], region: "asia", description: "Islamic traders and missionaries spread religion across Asia", tags: ['religion', 'exploration', 'trade'] },
 
         // === POLITICAL EVENTS ===
-        { id: 72, title: "English Civil War begins", year: 1642, entityIds: ['england'], region: "europe-middle-east", description: "War between Parliamentarians and Royalists begins" },
-        { id: 73, title: "English Civil War ends", year: 1651, entityIds: ['england'], region: "europe-middle-east", description: "Parliamentary victory, Charles I executed" },
-        { id: 74, title: "Great Plague of London", year: 1665, entityIds: ['england'], region: "europe-middle-east", description: "Major bubonic plague epidemic killing ~100,000 people" },
-        { id: 75, title: "Great Fire of London", year: 1666, entityIds: ['england'], region: "europe-middle-east", description: "Devastating fire destroys much of central London" },
-        { id: 82, title: "Glorious Revolution", year: 1688, entityIds: ['england'], region: "europe-middle-east", description: "Overthrow of James II, constitutional monarchy established" },
-        { id: 83, title: "French Revolution begins", year: 1789, entityIds: ['france', 'enlightenment'], region: "europe-middle-east", description: "Revolutionary period transforms France and Europe" },
-        { id: 84, title: "Napoleonic Wars", year: 1803, endYear: 1815, entityIds: ['france'], region: "europe-middle-east", description: "Major conflicts involving Napoleon's French Empire" },
-        { id: 91, title: "Seven Years' War", year: 1756, endYear: 1763, entityIds: ['england', 'france'], region: "europe-middle-east", description: "Global conflict involving most European powers" },
+        { id: 72, title: "English Civil War begins", year: 1642, entityIds: ['england'], region: "europe-middle-east", description: "War between Parliamentarians and Royalists begins", tags: ['war', 'politics'] },
+        { id: 73, title: "English Civil War ends", year: 1651, entityIds: ['england'], region: "europe-middle-east", description: "Parliamentary victory, Charles I executed", tags: ['war', 'politics'] },
+        { id: 74, title: "Great Plague of London", year: 1665, entityIds: ['england'], region: "europe-middle-east", description: "Major bubonic plague epidemic killing ~100,000 people", tags: ['disaster'] },
+        { id: 75, title: "Great Fire of London", year: 1666, entityIds: ['england'], region: "europe-middle-east", description: "Devastating fire destroys much of central London", tags: ['disaster'] },
+        { id: 82, title: "Glorious Revolution", year: 1688, entityIds: ['england'], region: "europe-middle-east", description: "Overthrow of James II, constitutional monarchy established", tags: ['politics'] },
+        { id: 83, title: "French Revolution begins", year: 1789, entityIds: ['france', 'enlightenment'], region: "europe-middle-east", description: "Revolutionary period transforms France and Europe", tags: ['politics', 'war'] },
+        { id: 84, title: "Napoleonic Wars", year: 1803, endYear: 1815, entityIds: ['france'], region: "europe-middle-east", description: "Major conflicts involving Napoleon's French Empire", tags: ['war', 'politics'] },
+        { id: 91, title: "Seven Years' War", year: 1756, endYear: 1763, entityIds: ['england', 'france'], region: "europe-middle-east", description: "Global conflict involving most European powers", tags: ['war', 'politics'] },
 
         // === AFRICAN EVENTS ===
-        { id: 92, title: "Foundation of Lamu", year: 1370, entityIds: [], region: "subsaharan-africa", description: "Founding of Lamu, major Swahili trading port on the Kenyan coast" },
+        { id: 92, title: "Foundation of Lamu", year: 1370, entityIds: [], region: "subsaharan-africa", description: "Founding of Lamu, major Swahili trading port on the Kenyan coast", tags: ['trade', 'exploration'] },
 
         // === MORE EUROPEAN EVENTS ===
-        { id: 93, title: "Thirty Years' War", year: 1618, endYear: 1648, entityIds: [], region: "europe-middle-east", description: "Devastating religious and political conflict across Central Europe" },
-        { id: 94, title: "Treaty of Westphalia", year: 1648, entityIds: [], region: "europe-middle-east", description: "Peace treaties ending Thirty Years' War, established modern state sovereignty" },
+        { id: 93, title: "Thirty Years' War", year: 1618, endYear: 1648, entityIds: [], region: "europe-middle-east", description: "Devastating religious and political conflict across Central Europe", tags: ['war', 'religion'] },
+        { id: 94, title: "Treaty of Westphalia", year: 1648, entityIds: [], region: "europe-middle-east", description: "Peace treaties ending Thirty Years' War, established modern state sovereignty", tags: ['politics'] },
 
         // === USER-ADDED EVENTS ===
-        { id: 209, title: "The Last Supper (da Vinci)", year: 1498, entityIds: ['renaissance'], region: "europe-middle-east", description: "" },
-        { id: 210, title: "Black Death", year: 1346, endYear: 1353, entityIds: [], region: "europe-middle-east", description: "" },
-        { id: 211, title: "Carolingian dynasty", year: 751, endYear: 888, category: "state", entityIds: [], region: "europe-middle-east", description: "" },
-        { id: 212, title: "Sahara Desertification", year: -8000, endYear: -4500, entityIds: [], region: "subsaharan-africa", description: "" },
-        { id: 213, title: "Turks become Muslim", year: 800, endYear: 1000, category: "religion", entityIds: ['islam'], region: "asia", description: "Turkish slave-soldiers (mamluks/ghulams) enter Islamic armies. Muslim merchants travel in central Asia. Over time, the Turks become Muslim." },
+        { id: 209, title: "The Last Supper (da Vinci)", year: 1498, entityIds: ['renaissance'], region: "europe-middle-east", description: "", tags: ['art'] },
+        { id: 210, title: "Black Death", year: 1346, endYear: 1353, entityIds: [], region: "europe-middle-east", description: "", tags: ['disaster'] },
+        { id: 212, title: "Sahara Desertification", year: -8000, endYear: -4500, entityIds: [], region: "subsaharan-africa", description: "", tags: ['disaster'] },
+        { id: 213, title: "Turks become Muslim", year: 800, endYear: 1000, category: "event", entityIds: ['islam'], region: "asia", description: "Turkish slave-soldiers (mamluks/ghulams) enter Islamic armies. Muslim merchants travel in central Asia. Over time, the Turks become Muslim.", tags: ['religion', 'politics'] },
     ],
 
     // ===========================================
@@ -527,22 +527,28 @@ async function loadData() {
             timelineData.entities = timelineData.entities.filter(e => !userData.deletedIds.includes(e.id));
         }
 
-        // Add user entities
+        // Add user entities (replace defaults if IDs match, to preserve user edits)
         if (userData.entities) {
             userData.entities.forEach(e => {
                 e.userAdded = true;
-                if (!timelineData.entities.find(existing => existing.id === e.id)) {
+                const existingIdx = timelineData.entities.findIndex(existing => existing.id === e.id);
+                if (existingIdx >= 0) {
+                    timelineData.entities[existingIdx] = e;
+                } else {
                     timelineData.entities.push(e);
                 }
             });
         }
 
-        // Add user events
+        // Add user events (replace defaults if IDs match, to preserve user edits)
         if (userData.events) {
             userData.events.forEach(e => {
                 e.userAdded = true;
-                if (e.id == null || !timelineData.events.find(existing => existing.id === e.id)) {
-                    if (e.id == null) e.id = getNextEventId();
+                if (e.id == null) e.id = getNextEventId();
+                const existingIdx = timelineData.events.findIndex(existing => existing.id === e.id);
+                if (existingIdx >= 0) {
+                    timelineData.events[existingIdx] = e;
+                } else {
                     timelineData.events.push(e);
                 }
             });
