@@ -617,15 +617,31 @@ class TimelineApp {
                 // Sort row events by start position to calculate gaps
                 const sorted = [...rowEvents].sort((a, b) => a.year - b.year);
                 sorted.forEach((event, i) => {
-                    // Calculate gap from end of this event's bar to start of next event's bar
+                    // Calculate max label width for external labels (narrow bars and flags)
                     let maxLabelWidth = null;
                     if (i < sorted.length - 1) {
-                        const thisEnd = event.endYear ? this.yearToPosition(event.endYear) : this.yearToPosition(event.year);
-                        const nextStart = this.yearToPosition(sorted[i + 1].year);
-                        const gap = nextStart - thisEnd;
-                        // Always constrain external labels to available gap
-                        // Subtract 8px for the label's left offset + padding
-                        maxLabelWidth = Math.max(gap - 8, 0);
+                        const startPos = this.yearToPosition(event.year);
+                        const endPos = event.endYear ? this.yearToPosition(event.endYear) : startPos;
+                        const rawWidth = endPos - startPos;
+                        const hasSpan = event.endYear && event.endYear !== event.year;
+                        const isNarrowBar = hasSpan && rawWidth < 80;
+                        const isFlag = !hasSpan;
+
+                        // Only constrain external labels (narrow bars and flags)
+                        if (isFlag || isNarrowBar) {
+                            const nextStart = this.yearToPosition(sorted[i + 1].year);
+                            let labelStart;
+                            if (isFlag) {
+                                // Flag label: css left: 4px from the flag div
+                                labelStart = startPos + 4;
+                            } else {
+                                // Narrow bar label: css left: calc(100% + 4px) from bar div
+                                const eventWidth = Math.max(rawWidth, 6);
+                                labelStart = startPos + eventWidth + 4;
+                            }
+                            // Leave 4px margin before the next event's bar
+                            maxLabelWidth = Math.max(nextStart - labelStart - 4, 0);
+                        }
                     }
                     const eventDiv = this.createEventElement(event, rowIndex, maxLabelWidth);
                     timelineArea.appendChild(eventDiv);

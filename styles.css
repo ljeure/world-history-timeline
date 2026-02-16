@@ -578,7 +578,7 @@ header h1 {
 }
 
 .timeline-event.flag-event:hover .flag-label {
-    background: var(--surface-color);
+    background: var(--bg-color);
 }
 
 /* When gap is too small, fully hide the label including border */
@@ -586,13 +586,17 @@ header h1 {
     visibility: hidden;
 }
 
-/* On hover, reveal clipped flag labels */
+/* On hover, reveal clipped flag labels as floating tooltip */
 .timeline-event.flag-event:hover .flag-label.label-clipped {
     max-width: none !important;
     visibility: visible !important;
-    background: var(--surface-color);
+    background: #fff;
     z-index: 50;
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    border: 1px solid var(--secondary-color);
+    border-radius: 3px;
+    padding: 4px 8px;
+    white-space: nowrap;
 }
 
 .flag-dot {
@@ -663,17 +667,26 @@ header h1 {
     visibility: hidden;
 }
 
-/* On hover, expand clipped labels to show full text */
+/* On hover, show full label text above the bar as a floating tooltip */
 .timeline-event.narrow-bar-event:hover .narrow-bar-label.label-clipped {
     max-width: none !important;
     visibility: visible !important;
-    background: var(--surface-color);
+    /* Reposition above the bar to avoid overlapping adjacent events */
+    top: auto !important;
+    bottom: calc(100% + 2px) !important;
+    left: 0 !important;
+    transform: none !important;
+    background: #fff;
     z-index: 50;
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    border: 1px solid var(--secondary-color);
+    border-radius: 3px;
+    padding: 4px 8px;
+    white-space: nowrap;
 }
 
 .timeline-event.narrow-bar-event:hover .narrow-bar-label {
-    background: var(--surface-color);
+    background: var(--bg-color);
 }
 
 /* Event colors by entity type (new knowledge map system) */
