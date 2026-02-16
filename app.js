@@ -63,7 +63,6 @@ class TimelineApp {
         // Zoom controls
         document.getElementById('zoomIn').addEventListener('click', () => this.zoom(1.5));
         document.getElementById('zoomOut').addEventListener('click', () => this.zoom(0.67));
-        document.getElementById('zoomReset').addEventListener('click', () => this.resetZoom());
 
         // Zoom slider
         document.getElementById('zoomSlider').addEventListener('input', (e) => {
@@ -103,7 +102,6 @@ class TimelineApp {
         document.getElementById('importData').addEventListener('click', () => document.getElementById('importFile').click());
         document.getElementById('importFile').addEventListener('change', (e) => this.importData(e));
         document.getElementById('sampleCsvBtn').addEventListener('click', () => this.downloadSampleCsv());
-        document.getElementById('resetLayout').addEventListener('click', () => this.resetLayout());
 
         // Search
         document.getElementById('searchInput').addEventListener('input', (e) => {
@@ -899,8 +897,8 @@ class TimelineApp {
             div.appendChild(labelSpan);
         }
 
-        // Show first tag icon on non-flag events
-        if (event.tags && event.tags.length > 0 && !isFlag) {
+        // Show first tag icon only on event-category items (not states/religions/cultures/periods)
+        if (event.tags && event.tags.length > 0 && !isFlag && event.category === 'event') {
             const firstTag = SUB_TAGS.find(t => t.id === event.tags[0]);
             if (firstTag) {
                 const tagIcon = document.createElement('span');
@@ -1080,8 +1078,12 @@ class TimelineApp {
             joinBtn.style.display = 'none';
         }
 
-        // Show tags
-        this.renderEventTagsInDetail(event);
+        // Show tags only for event-category items
+        if (event.category === 'event') {
+            this.renderEventTagsInDetail(event);
+        } else {
+            document.getElementById('eventTagsSection').style.display = 'none';
+        }
 
         document.getElementById('notesInput').value = timelineData.notes[event.id] || '';
         this.renderReferences(event.id);

@@ -287,10 +287,10 @@ class HistoryMap {
                 // Render unnamed features as land background
                 L.geoJSON(feature, {
                     style: {
-                        fillColor: '#d4c5a9',
-                        fillOpacity: 0.4,
-                        color: '#b8a88a',
-                        weight: 0.5
+                        fillColor: '#c8b99a',
+                        fillOpacity: 0.7,
+                        color: '#a89878',
+                        weight: 0.8
                     }
                 }).addTo(this.empireLayerGroup);
                 return;
