@@ -617,15 +617,15 @@ class TimelineApp {
                 // Sort row events by start position to calculate gaps
                 const sorted = [...rowEvents].sort((a, b) => a.year - b.year);
                 sorted.forEach((event, i) => {
-                    // Calculate gap to next event on same row for label clipping
+                    // Calculate gap from end of this event's bar to start of next event's bar
                     let maxLabelWidth = null;
                     if (i < sorted.length - 1) {
                         const thisEnd = event.endYear ? this.yearToPosition(event.endYear) : this.yearToPosition(event.year);
                         const nextStart = this.yearToPosition(sorted[i + 1].year);
                         const gap = nextStart - thisEnd;
-                        if (gap < 200) {
-                            maxLabelWidth = Math.max(gap - 12, 20); // 12px for padding/border
-                        }
+                        // Always constrain external labels to available gap
+                        // Subtract 8px for the label's left offset + padding
+                        maxLabelWidth = Math.max(gap - 8, 0);
                     }
                     const eventDiv = this.createEventElement(event, rowIndex, maxLabelWidth);
                     timelineArea.appendChild(eventDiv);
@@ -816,6 +816,10 @@ class TimelineApp {
             labelSpan.textContent = event.title;
             if (maxLabelWidth !== null) {
                 labelSpan.style.maxWidth = `${maxLabelWidth}px`;
+                labelSpan.classList.add('label-clipped');
+                if (maxLabelWidth < 20) {
+                    labelSpan.classList.add('label-hidden');
+                }
             }
             div.appendChild(labelSpan);
         } else if (isNarrowBar) {
@@ -830,6 +834,10 @@ class TimelineApp {
             labelSpan.textContent = event.title;
             if (maxLabelWidth !== null) {
                 labelSpan.style.maxWidth = `${maxLabelWidth}px`;
+                labelSpan.classList.add('label-clipped');
+                if (maxLabelWidth < 20) {
+                    labelSpan.classList.add('label-hidden');
+                }
             }
             div.appendChild(labelSpan);
         } else {

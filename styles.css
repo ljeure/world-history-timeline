@@ -581,6 +581,20 @@ header h1 {
     background: var(--surface-color);
 }
 
+/* When gap is too small, fully hide the label including border */
+.flag-label.label-hidden {
+    visibility: hidden;
+}
+
+/* On hover, reveal clipped flag labels */
+.timeline-event.flag-event:hover .flag-label.label-clipped {
+    max-width: none !important;
+    visibility: visible !important;
+    background: var(--surface-color);
+    z-index: 50;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.15);
+}
+
 .flag-dot {
     position: absolute;
     bottom: 0;
@@ -642,6 +656,20 @@ header h1 {
     border-left: 3px solid var(--flag-color);
     cursor: pointer;
     pointer-events: auto;
+}
+
+/* When gap is too small, fully hide the label including border */
+.narrow-bar-label.label-hidden {
+    visibility: hidden;
+}
+
+/* On hover, expand clipped labels to show full text */
+.timeline-event.narrow-bar-event:hover .narrow-bar-label.label-clipped {
+    max-width: none !important;
+    visibility: visible !important;
+    background: var(--surface-color);
+    z-index: 50;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.15);
 }
 
 .timeline-event.narrow-bar-event:hover .narrow-bar-label {
