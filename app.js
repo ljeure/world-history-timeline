@@ -14,7 +14,7 @@ class TimelineApp {
         this.wasDragging = false;
         this.draggedEvent = null;
         this.dragStartY = 0;
-        this.userFilters = { mine: true, shared: true, everyones: true };
+        this.userFilters = {}; // { "Luke": true, "Jia": true, "System": true } — populated dynamically
 
         this.init();
     }
@@ -32,6 +32,7 @@ class TimelineApp {
         this.quiz = new HistoryQuiz();
         this.bindEvents();
         this.initTagUI();
+        await this.loadUserFilter();
         this.render();
         this.renderQuizHistory();
         console.log('Render complete');
@@ -152,18 +153,6 @@ class TimelineApp {
             if (dropdown && !dropdown.contains(e.target)) {
                 document.getElementById('userFilterMenu').style.display = 'none';
             }
-        });
-        document.getElementById('filterMyEntities').addEventListener('change', (e) => {
-            this.userFilters.mine = e.target.checked;
-            this.render();
-        });
-        document.getElementById('filterSharedWithMe').addEventListener('change', (e) => {
-            this.userFilters.shared = e.target.checked;
-            this.render();
-        });
-        document.getElementById('filterEveryones').addEventListener('change', (e) => {
-            this.userFilters.everyones = e.target.checked;
-            this.render();
         });
 
         // Join event button
@@ -460,18 +449,12 @@ class TimelineApp {
             });
         }
 
-        // Apply user filter
-        const username = getUsername();
-        if (username && !(this.userFilters.mine && this.userFilters.shared && this.userFilters.everyones)) {
+        // Apply user filter (by actual user names)
+        const allChecked = Object.values(this.userFilters).every(v => v);
+        if (!allChecked && Object.keys(this.userFilters).length > 0) {
             events = events.filter(e => {
-                const isMyEntity = e.createdBy && e.createdBy === username;
-                const isSharedWithMe = !isMyEntity && e.sharedWith && e.sharedWith.includes(username);
-                const isEveryones = !e.createdBy || (!isMyEntity && !isSharedWithMe);
-
-                if (isMyEntity && this.userFilters.mine) return true;
-                if (isSharedWithMe && this.userFilters.shared) return true;
-                if (isEveryones && this.userFilters.everyones) return true;
-                return false;
+                const creator = e.createdBy || 'System';
+                return this.userFilters[creator] === true;
             });
         }
 
@@ -775,6 +758,13 @@ class TimelineApp {
 
             // Auto-layout the rest within this category group
             autoEvents.forEach(event => {
+                // Periods (order 0) always go on the first row (row 0) regardless of overlap
+                if (order === 0) {
+                    if (rows.length === 0) rows.push([]);
+                    rows[0].push(event);
+                    return;
+                }
+
                 const startPos = this.yearToPosition(event.year);
                 const endPos = event.endYear ? this.yearToPosition(event.endYear) : startPos;
                 const rawWidth = endPos - startPos;
@@ -1688,6 +1678,46 @@ class TimelineApp {
             document.getElementById('joinEventBtn').style.display = 'none';
             this.showToast('Joined! This event is now shared with you.');
         }
+    }
+
+    async loadUserFilter() {
+        try {
+            const resp = await fetch('/api/users');
+            const data = await resp.json();
+            this.populateUserFilter(data.users || []);
+        } catch (err) {
+            // Offline / no server — populate from local data
+            const localUsers = new Set();
+            timelineData.events.forEach(e => { if (e.createdBy) localUsers.add(e.createdBy); });
+            this.populateUserFilter(Array.from(localUsers));
+        }
+    }
+
+    populateUserFilter(users) {
+        const menu = document.getElementById('userFilterMenu');
+        if (!menu) return;
+
+        // Always include "System" for built-in data
+        const allNames = ['System', ...users.filter(u => u !== 'System')];
+
+        // Initialize filter state — all checked by default
+        this.userFilters = {};
+        allNames.forEach(name => { this.userFilters[name] = true; });
+
+        // Build checkbox HTML
+        menu.innerHTML = allNames.map(name =>
+            `<label class="user-filter-option">
+                <input type="checkbox" data-user-filter="${name}" checked> ${name}
+            </label>`
+        ).join('');
+
+        // Bind change events
+        menu.querySelectorAll('input[data-user-filter]').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                this.userFilters[e.target.dataset.userFilter] = e.target.checked;
+                this.render();
+            });
+        });
     }
 
     showToast(message) {

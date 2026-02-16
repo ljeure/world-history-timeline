@@ -114,6 +114,23 @@ const server = http.createServer((req, res) => {
         return;
     }
 
+    // API: Get distinct user names from saved data
+    if (req.method === 'GET' && req.url === '/api/users') {
+        try {
+            const raw = fs.readFileSync(USER_DATA_FILE, 'utf8');
+            const data = JSON.parse(raw);
+            const users = new Set();
+            (data.events || []).forEach(e => { if (e.createdBy) users.add(e.createdBy); });
+            (data.entities || []).forEach(e => { if (e.createdBy) users.add(e.createdBy); });
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ users: Array.from(users) }));
+        } catch (err) {
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ users: [] }));
+        }
+        return;
+    }
+
     // API: Get historical map data for a year
     if (req.method === 'GET' && req.url.match(/^\/api\/map\/-?\d+$/)) {
         const targetYear = parseInt(req.url.split('/').pop(), 10);

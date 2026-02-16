@@ -77,16 +77,6 @@ class HistoryQuiz {
             }
         });
 
-        // 6. Reference-based questions (if the user has references)
-        if (source === 'references' || source === 'all') {
-            references.forEach(ref => {
-                if (ref.author && ref.title) {
-                    const q = this.makeReferenceQuestion(ref, references, difficulty);
-                    if (q) pool.push(q);
-                }
-            });
-        }
-
         return pool;
     }
 
@@ -221,26 +211,6 @@ class HistoryQuiz {
             question: `Which ${entity.type} is described as: "${entity.description}"?`,
             options,
             explanation: `${entity.name} (${this.formatYear(entity.year)}${entity.endYear ? ' - ' + this.formatYear(entity.endYear) : ''}).`,
-            difficulty
-        };
-    }
-
-    makeReferenceQuestion(ref, allRefs, difficulty) {
-        const withAuthors = allRefs.filter(r => r.author && r.id !== ref.id);
-        if (withAuthors.length < 3) return null;
-
-        const distractors = this.shuffle(withAuthors).slice(0, 3);
-
-        const options = this.shuffle([
-            { text: ref.author, correct: true },
-            ...distractors.map(r => ({ text: r.author, correct: false }))
-        ]);
-
-        return {
-            type: 'Reference',
-            question: `Who wrote "${ref.title}"?`,
-            options,
-            explanation: ref.description || `"${ref.title}" was written by ${ref.author}.`,
             difficulty
         };
     }

@@ -283,7 +283,18 @@ class HistoryMap {
         const candidates = [];
         data.features.forEach(feature => {
             const name = feature.properties.NAME;
-            if (!name) return;
+            if (!name) {
+                // Render unnamed features as land background
+                L.geoJSON(feature, {
+                    style: {
+                        fillColor: '#d4c5a9',
+                        fillOpacity: 0.4,
+                        color: '#b8a88a',
+                        weight: 0.5
+                    }
+                }).addTo(this.empireLayerGroup);
+                return;
+            }
             const area = this.computeBboxArea(feature.geometry);
             const entityMatch = findEntityForName(name, year);
             const isKnown = NAME_TO_ENTITY.hasOwnProperty(name);

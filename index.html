@@ -13,11 +13,12 @@
     <div class="app-container">
         <header>
             <h1>Stone, Paper, Silicon</h1>
-            <p class="subtitle">Your archive of human history</p>
+            <p class="subtitle">Your personal archive of human history - shared with others</p>
             <div class="view-tabs">
                 <button class="view-tab active" data-view="timeline">Timeline</button>
                 <button class="view-tab" data-view="map">World Map</button>
                 <button class="view-tab" data-view="quiz">Quiz</button>
+                <button class="view-tab" data-view="about">About</button>
                 <button class="view-tab" data-view="takeaways" style="display: none;">Takeaways</button>
             </div>
         </header>
@@ -59,15 +60,7 @@
             <div class="user-filter-dropdown">
                 <button id="userFilterBtn" class="user-filter-btn" title="Filter by user">Users ▾</button>
                 <div id="userFilterMenu" class="user-filter-menu" style="display: none;">
-                    <label class="user-filter-option">
-                        <input type="checkbox" id="filterMyEntities" checked> My entities
-                    </label>
-                    <label class="user-filter-option">
-                        <input type="checkbox" id="filterSharedWithMe" checked> Shared with me
-                    </label>
-                    <label class="user-filter-option">
-                        <input type="checkbox" id="filterEveryones" checked> Everyone's
-                    </label>
+                    <!-- Populated dynamically -->
                 </div>
             </div>
 
@@ -429,6 +422,39 @@
                 <div class="takeaways-list" id="takeawaysList"></div>
             </div>
         </div> <!-- End Takeaways View -->
+
+        <!-- About View -->
+        <div class="view-content about-view" id="aboutView">
+            <div class="about-container">
+                <h2>About Stone, Paper, Silicon</h2>
+                <p class="about-intro">A shared tool for exploring and recording human history. Add events, track empires, quiz yourself, and collaborate with others.</p>
+
+                <div class="about-section">
+                    <h3>Timeline</h3>
+                    <p>The main view shows historical events, states, religions, cultures, and periods laid out across time. Use the filters at the top to show specific categories, and the tag bar to filter by subtypes like war, science, or trade.</p>
+                    <p>Click any event bar to view details, edit it, add notes, or attach references. You can drag events vertically to rearrange rows, and use the zoom controls or mouse wheel (Ctrl+scroll) to zoom in and out.</p>
+                    <p>Use "Export CSV" to save your timeline data and "Import CSV" to load events from a spreadsheet. The "Sample CSV" button downloads a template you can fill in.</p>
+                </div>
+
+                <div class="about-section">
+                    <h3>World Map</h3>
+                    <p>The map view shows historical borders from GeoJSON basemaps. Use the time slider or play button to scrub through history and watch empires rise and fall.</p>
+                    <p>Click any territory on the map to see its details. If it matches a known entity, you can add it directly to your timeline. For unrecognized territories, use "Create State Entity" to define a new entity.</p>
+                    <p>The sidebar lists all active territories for the current time period. Linked entities (already in your timeline) are highlighted.</p>
+                </div>
+
+                <div class="about-section">
+                    <h3>Quiz</h3>
+                    <p>Test your knowledge with auto-generated questions based on your timeline data. Choose difficulty (beginner, intermediate, advanced) and the source of questions (all events, your added events, or events linked to your references).</p>
+                    <p>Question types include: date questions ("When did X happen?"), identification ("What happened around year X?"), chronology ("Which came first?"), true/false, and entity identification.</p>
+                </div>
+
+                <div class="about-section">
+                    <h3>Multi-User</h3>
+                    <p>Set your display name using the name button in the toolbar. Events you create are tagged with your name. Use the "Users" dropdown to filter the timeline by contributor. Click "Join" on another user's event to add it to your shared collection.</p>
+                </div>
+            </div>
+        </div> <!-- End About View -->
 
         <!-- Empire Detail Modal (for Map) -->
         <div class="empire-detail-modal" id="empireDetailModal">
