@@ -79,7 +79,7 @@ class HistoryMap {
         this.playInterval = null;
         this.selectedEmpire = null;
         this.linkedTimelineEvent = null;
-        this.useExperienceScale = false;
+        this.useExperienceScale = true;
 
         // New: async GeoJSON loading state
         this.geoJsonCache = new Map();
@@ -94,18 +94,16 @@ class HistoryMap {
 
     init() {
         this.map = L.map('mapContainer', {
-            center: [30, 40],
-            zoom: 3,
-            minZoom: 2,
-            maxZoom: 8,
-            worldCopyJump: true
+            crs: L.CRS.EPSG4326,
+            center: [30, 20],
+            zoom: 1,
+            minZoom: 0,
+            maxZoom: 5,
+            worldCopyJump: false
         });
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
-            maxZoom: 20
-        }).addTo(this.map);
+        // No tile layer — GeoJSON borders on blue background (set via CSS)
+        // The .leaflet-container background-color provides the ocean
 
         // Initialize layer groups
         this.empireLayerGroup = L.layerGroup().addTo(this.map);
@@ -113,9 +111,13 @@ class HistoryMap {
 
         this.bindEvents();
 
+        // With experience scale on, position 500/1000 = 0.5 maps to ~1300 CE
         const initialPosition = 500 / 1000;
         const initialYear = sliderPositionToYear(initialPosition, this.useExperienceScale);
         this.setYear(initialYear);
+
+        // Fit to world bounds for EPSG:4326
+        this.map.fitBounds([[-60, -180], [80, 180]]);
     }
 
     bindEvents() {
@@ -147,6 +149,7 @@ class HistoryMap {
 
         const scaleToggle = document.getElementById('mapExperienceScale');
         if (scaleToggle) {
+            scaleToggle.checked = this.useExperienceScale;
             scaleToggle.addEventListener('change', (e) => {
                 this.useExperienceScale = e.target.checked;
                 this.updateSliderPosition();
