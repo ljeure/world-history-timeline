@@ -614,8 +614,20 @@ class TimelineApp {
             timelineArea.style.minHeight = `${regionHeight}px`;
 
             rows.forEach((rowEvents, rowIndex) => {
-                rowEvents.forEach(event => {
-                    const eventDiv = this.createEventElement(event, rowIndex);
+                // Sort row events by start position to calculate gaps
+                const sorted = [...rowEvents].sort((a, b) => a.year - b.year);
+                sorted.forEach((event, i) => {
+                    // Calculate gap to next event on same row for label clipping
+                    let maxLabelWidth = null;
+                    if (i < sorted.length - 1) {
+                        const thisEnd = event.endYear ? this.yearToPosition(event.endYear) : this.yearToPosition(event.year);
+                        const nextStart = this.yearToPosition(sorted[i + 1].year);
+                        const gap = nextStart - thisEnd;
+                        if (gap < 200) {
+                            maxLabelWidth = Math.max(gap - 12, 20); // 12px for padding/border
+                        }
+                    }
+                    const eventDiv = this.createEventElement(event, rowIndex, maxLabelWidth);
                     timelineArea.appendChild(eventDiv);
                 });
             });
@@ -746,7 +758,7 @@ class TimelineApp {
         return rows.filter(row => row.length > 0);
     }
 
-    createEventElement(event, rowIndex) {
+    createEventElement(event, rowIndex, maxLabelWidth) {
         const div = document.createElement('div');
         const isPeriod = event.endYear && (event.endYear - event.year) > 30;
         const isEra = event.category && event.category.startsWith('era-');
@@ -802,6 +814,9 @@ class TimelineApp {
             const labelSpan = document.createElement('span');
             labelSpan.className = 'flag-label';
             labelSpan.textContent = event.title;
+            if (maxLabelWidth !== null) {
+                labelSpan.style.maxWidth = `${maxLabelWidth}px`;
+            }
             div.appendChild(labelSpan);
         } else if (isNarrowBar) {
             // Time-spanning event too narrow for text inside: bar + external label
@@ -813,6 +828,9 @@ class TimelineApp {
             const labelSpan = document.createElement('span');
             labelSpan.className = 'narrow-bar-label';
             labelSpan.textContent = event.title;
+            if (maxLabelWidth !== null) {
+                labelSpan.style.maxWidth = `${maxLabelWidth}px`;
+            }
             div.appendChild(labelSpan);
         } else {
             div.className = `timeline-event ${categoryClass} ${isPeriod ? 'period' : ''} ${isEra ? 'era' : ''}`;

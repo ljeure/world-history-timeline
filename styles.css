@@ -12,7 +12,7 @@
     --text-color: #1a1a1a;
     --text-muted: #6b5b47;
     /* New entity-type based colors */
-    --period-color: #8e7c61;
+    --period-color: #5c4e36;
     --state-color: #7b2d8e;
     --religion-color: #1a8a6c;
     --culture-color: #5b4fc7;
@@ -605,6 +605,8 @@ header h1 {
     bottom: 17px;
     left: 4px;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 0.65rem;
     color: var(--text-color);
     text-shadow: none;
@@ -629,6 +631,8 @@ header h1 {
     left: calc(100% + 4px);
     transform: translateY(-50%);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 0.65rem;
     color: var(--text-color);
     text-shadow: none;
@@ -645,7 +649,7 @@ header h1 {
 }
 
 /* Event colors by entity type (new knowledge map system) */
-.timeline-event.period { background: var(--period-color); opacity: 0.6; }
+.timeline-event.period { background: var(--period-color); opacity: 0.85; }
 .timeline-event.state { background: var(--state-color); }
 .timeline-event.religion { background: var(--religion-color); }
 .timeline-event.culture { background: var(--culture-color); }
@@ -684,7 +688,7 @@ header h1 {
 
 /* Period events (long duration) */
 .timeline-event.period {
-    opacity: 0.9;
+    opacity: 0.95;
 }
 
 /* Event Detail Panel */
