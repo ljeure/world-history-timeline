@@ -283,6 +283,127 @@ header h1 {
 .legend-color.science { background: var(--science-color); }
 .legend-color.books { background: var(--books-color); }
 
+/* Sub-tag system */
+.tag-filter-bar {
+    display: flex;
+    gap: 6px;
+    padding: 6px 15px;
+    background: var(--surface-color);
+    border-radius: 2px;
+    margin-bottom: 8px;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.tag-filter-btn {
+    padding: 4px 10px;
+    border: 1px solid var(--secondary-color);
+    background: transparent;
+    color: var(--text-muted);
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.tag-filter-btn:hover {
+    background: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.tag-filter-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.tag-filter-icon {
+    font-weight: 700;
+}
+
+.tag-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.tag-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 3px 6px;
+    background: var(--bg-color);
+    border-radius: 2px;
+    border: 1px solid var(--secondary-color);
+    transition: all 0.2s;
+}
+
+.tag-checkbox-label:hover {
+    border-color: var(--primary-color);
+}
+
+.tag-checkbox-label input[type="checkbox"] {
+    width: 12px;
+    height: 12px;
+    cursor: pointer;
+}
+
+.tag-checkbox-icon {
+    font-weight: 700;
+    font-size: 0.7rem;
+}
+
+.tag-chip {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--secondary-color);
+    border-radius: 2px;
+    font-size: 0.7rem;
+    color: var(--text-color);
+    margin-right: 4px;
+    margin-bottom: 4px;
+}
+
+.event-tags-section {
+    padding: 8px 0;
+    margin-bottom: 5px;
+}
+
+.event-tags-section h4 {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.event-tags-display {
+    margin-bottom: 8px;
+}
+
+.tag-checkboxes-edit {
+    margin-bottom: 0;
+}
+
+.no-tags {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.event-tag-icon {
+    position: absolute;
+    right: 2px;
+    top: 1px;
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.7);
+    line-height: 1;
+}
+
 .timeline-container {
     background: var(--surface-color);
     border-radius: 2px;
@@ -294,19 +415,22 @@ header h1 {
 }
 
 .timeline-scale {
-    height: 40px;
-    border-bottom: 2px solid var(--secondary-color);
     position: sticky;
     top: 0;
+    z-index: 20;
     background: var(--surface-color);
-    z-index: 10;
-    margin-bottom: 10px;
+    height: 40px;
+    border-bottom: 2px solid var(--secondary-color);
+    overflow: hidden;
+    margin-left: 0;
+    padding-left: 135px;
+    border-radius: 2px 2px 0 0;
 }
 
 .scale-markers {
     position: relative;
     height: 100%;
-    margin-left: 120px;
+    margin-left: 0;
 }
 
 .scale-marker {
@@ -693,6 +817,36 @@ header h1 {
 #eventRegion {
     color: var(--text-color);
     text-transform: capitalize;
+}
+
+/* Added By Label */
+.event-added-by {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    padding: 6px 0;
+    margin-bottom: 5px;
+    font-style: italic;
+}
+
+/* Change Name Button */
+.change-name-btn {
+    padding: 6px 10px;
+    border: 1px solid var(--secondary-color);
+    background: transparent;
+    color: var(--text-muted);
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.change-name-btn:hover {
+    background: var(--secondary-color);
+    color: var(--text-color);
 }
 
 /* Danger Zone */

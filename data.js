@@ -13,6 +13,18 @@ const REGIONS = [
 // Entity types for societal entities
 const ENTITY_TYPES = ['religion', 'state', 'culture'];
 
+// Sub-tags for finer categorization of events
+const SUB_TAGS = [
+    { id: 'war', name: 'War & Conflict', icon: 'W' },
+    { id: 'art', name: 'Art & Architecture', icon: 'A' },
+    { id: 'science', name: 'Science & Technology', icon: 'S' },
+    { id: 'politics', name: 'Politics & Law', icon: 'P' },
+    { id: 'trade', name: 'Trade & Economics', icon: 'T' },
+    { id: 'religion', name: 'Religion & Philosophy', icon: 'R' },
+    { id: 'exploration', name: 'Exploration', icon: 'X' },
+    { id: 'disaster', name: 'Disaster & Disease', icon: 'D' }
+];
+
 // Region mapping for periods (CSV uses different names)
 const PERIOD_REGION_MAP = {
     'Asia': 'asia',
@@ -408,6 +420,28 @@ function getNextReferenceId() {
 function getNextInsightId() {
     if (timelineData.insights.length === 0) return 1;
     return Math.max(...timelineData.insights.map(i => i.id)) + 1;
+}
+
+// Multi-user display name
+function getUsername() {
+    return localStorage.getItem('sps-username') || null;
+}
+
+function setUsername(name) {
+    localStorage.setItem('sps-username', name);
+}
+
+function promptForUsername() {
+    let name = getUsername();
+    if (!name) {
+        name = prompt('Welcome to World History Timeline! Enter your display name:');
+        if (name && name.trim()) {
+            setUsername(name.trim());
+        } else {
+            setUsername('Anonymous');
+        }
+    }
+    return getUsername();
 }
 
 // Check if running on server (vs file://)

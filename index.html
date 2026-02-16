@@ -62,6 +62,7 @@
                 <button id="resetLayout" title="Reset row arrangements">Reset Layout</button>
                 <button id="resetData" title="Reset to default data">Reset All</button>
                 <input type="file" id="importFile" accept=".json" style="display: none;">
+                <button id="changeNameBtn" title="Change display name" class="change-name-btn"></button>
             </div>
         </div>
 
@@ -78,10 +79,12 @@
             <span class="legend-item"><span class="legend-color event"></span>Events</span>
         </div>
 
+        <div class="tag-filter-bar" id="tagFilterBar"></div>
+
+        <div class="timeline-scale" id="timelineScale">
+            <div class="scale-markers"></div>
+        </div>
         <div class="timeline-container">
-            <div class="timeline-scale">
-                <div class="scale-markers"></div>
-            </div>
             <div class="timeline-content" id="timelineContent">
                 <!-- Timeline regions will be rendered here -->
             </div>
@@ -140,6 +143,14 @@
                 <button id="saveEventEditsBtn" class="save-edits-btn">Save Changes</button>
             </div>
 
+            <div class="event-added-by" id="eventAddedBy" style="display: none;"></div>
+
+            <div class="event-tags-section" id="eventTagsSection" style="display: none;">
+                <h4>Tags</h4>
+                <div class="event-tags-display" id="eventTagsDisplay"></div>
+                <div class="tag-checkboxes tag-checkboxes-edit" id="eventTagsEdit"></div>
+            </div>
+
             <div class="event-notes" id="eventNotes">
                 <h4>My Notes</h4>
                 <textarea id="notesInput" placeholder="Add your notes here..."></textarea>
@@ -193,6 +204,8 @@
                             <option value="period">Period</option>
                         </select>
                     </label>
+                    <label>Tags (optional)</label>
+                    <div class="tag-checkboxes" id="newEventTags"></div>
                     <label>
                         Description
                         <textarea id="newEventDescription"></textarea>

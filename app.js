@@ -10,6 +10,7 @@ class TimelineApp {
         this.selectedEvent = null;
         this.timelineWidth = 2500;
         this.searchQuery = '';
+        this.activeTagFilters = [];
         this.wasDragging = false;
         this.draggedEvent = null;
         this.dragStartY = 0;
@@ -22,8 +23,14 @@ class TimelineApp {
         await loadData();
         initializeTimelineData(); // Ensure categories are set before rendering
         console.log('Data loaded. Events:', timelineData.events.length);
+
+        // Prompt for display name on first visit
+        const username = promptForUsername();
+        this.updateNameButton(username);
+
         this.quiz = new HistoryQuiz();
         this.bindEvents();
+        this.initTagUI();
         this.render();
         this.renderQuizHistory();
         console.log('Render complete');
@@ -134,12 +141,128 @@ class TimelineApp {
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') this.addTakeaway();
         });
 
+        // Change name button
+        document.getElementById('changeNameBtn').addEventListener('click', () => this.changeName());
+
         // Setup drag scroll
         this.setupDragScroll();
     }
 
+    updateNameButton(name) {
+        const btn = document.getElementById('changeNameBtn');
+        if (btn) {
+            btn.textContent = name || 'Set Name';
+        }
+    }
+
+    changeName() {
+        const current = getUsername() || '';
+        const newName = prompt('Enter your display name:', current);
+        if (newName !== null && newName.trim()) {
+            setUsername(newName.trim());
+            this.updateNameButton(newName.trim());
+            this.showToast(`Name changed to "${newName.trim()}"`);
+        }
+    }
+
+    initTagUI() {
+        // Populate tag checkboxes in Add Event modal
+        const newEventTags = document.getElementById('newEventTags');
+        if (newEventTags) {
+            newEventTags.innerHTML = SUB_TAGS.map(tag =>
+                `<label class="tag-checkbox-label">
+                    <input type="checkbox" value="${tag.id}">
+                    <span class="tag-checkbox-icon">${tag.icon}</span> ${tag.name}
+                </label>`
+            ).join('');
+        }
+
+        // Populate tag filter bar
+        this.renderTagFilterBar();
+    }
+
+    renderTagFilterBar() {
+        const bar = document.getElementById('tagFilterBar');
+        if (!bar) return;
+        bar.innerHTML = SUB_TAGS.map(tag => {
+            const active = this.activeTagFilters.includes(tag.id) ? ' active' : '';
+            return `<button class="tag-filter-btn${active}" data-tag="${tag.id}" title="${tag.name}">
+                <span class="tag-filter-icon">${tag.icon}</span> ${tag.name}
+            </button>`;
+        }).join('');
+
+        bar.querySelectorAll('.tag-filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const tagId = btn.dataset.tag;
+                const idx = this.activeTagFilters.indexOf(tagId);
+                if (idx >= 0) {
+                    this.activeTagFilters.splice(idx, 1);
+                } else {
+                    this.activeTagFilters.push(tagId);
+                }
+                this.renderTagFilterBar();
+                this.render();
+            });
+        });
+    }
+
+    getSelectedNewEventTags() {
+        const checkboxes = document.querySelectorAll('#newEventTags input[type="checkbox"]:checked');
+        return Array.from(checkboxes).map(cb => cb.value);
+    }
+
+    renderEventTagsInDetail(event) {
+        const section = document.getElementById('eventTagsSection');
+        const display = document.getElementById('eventTagsDisplay');
+        const edit = document.getElementById('eventTagsEdit');
+
+        const tags = event.tags || [];
+
+        // Always show the section for editing
+        section.style.display = 'block';
+
+        // Show current tag chips
+        if (tags.length > 0) {
+            display.innerHTML = tags.map(tagId => {
+                const tag = SUB_TAGS.find(t => t.id === tagId);
+                return tag ? `<span class="tag-chip">${tag.icon} ${tag.name}</span>` : '';
+            }).join('');
+        } else {
+            display.innerHTML = '<span class="no-tags">No tags</span>';
+        }
+
+        // Show edit checkboxes
+        edit.innerHTML = SUB_TAGS.map(tag => {
+            const checked = tags.includes(tag.id) ? ' checked' : '';
+            return `<label class="tag-checkbox-label">
+                <input type="checkbox" value="${tag.id}"${checked} data-event-tag="true">
+                <span class="tag-checkbox-icon">${tag.icon}</span> ${tag.name}
+            </label>`;
+        }).join('');
+
+        // Update tags on change
+        edit.querySelectorAll('input[data-event-tag]').forEach(cb => {
+            cb.addEventListener('change', () => {
+                if (!this.selectedEvent) return;
+                const selected = Array.from(edit.querySelectorAll('input[data-event-tag]:checked')).map(c => c.value);
+                this.selectedEvent.tags = selected;
+                // Update display chips
+                this.renderEventTagsInDetail(this.selectedEvent);
+            });
+        });
+    }
+
     setupDragScroll() {
         const container = document.querySelector('.timeline-container');
+        const scale = document.getElementById('timelineScale');
+
+        // Sync horizontal scroll of scale with timeline container
+        if (container && scale) {
+            container.addEventListener('scroll', () => {
+                scale.scrollLeft = container.scrollLeft;
+            });
+        }
+
         let isDown = false;
         let startX;
         let scrollLeft;
@@ -310,6 +433,14 @@ class TimelineApp {
             });
         }
 
+        // Apply tag filter
+        if (this.activeTagFilters.length > 0) {
+            events = events.filter(e => {
+                if (!e.tags || e.tags.length === 0) return false;
+                return this.activeTagFilters.some(tag => e.tags.includes(tag));
+            });
+        }
+
         // Filter to visible year range
         events = events.filter(e => {
             const endYear = e.endYear || e.year;
@@ -350,63 +481,90 @@ class TimelineApp {
         const width = this.timelineWidth * this.zoomLevel;
         container.style.width = `${width}px`;
 
-        // Key milestone years to always show (when they fit)
-        const milestoneYears = [
+        // Key milestone years (major markers placed first)
+        const majorMarkers = [
             { year: -300000, label: '300,000 BCE', major: true },
             { year: -100000, label: '100,000 BCE', major: true },
-            { year: -50000, label: '50,000 BCE', major: false },
             { year: -10000, label: '10,000 BCE', major: true },
-            { year: -6000, label: '6000 BCE', major: false },
             { year: -3000, label: '3000 BCE', major: true },
-            { year: -2000, label: '2000 BCE', major: false },
             { year: -1000, label: '1000 BCE', major: true },
-            { year: -500, label: '500 BCE', major: false },
             { year: 0, label: '1 CE', major: true },
-            { year: 500, label: '500', major: false },
             { year: 1000, label: '1000', major: true },
-            { year: 1300, label: '1300', major: true },
-            { year: 1500, label: '1500', major: false },
-            { year: 1700, label: '1700', major: false },
-            { year: 1800, label: '1800', major: false },
+            { year: 1500, label: '1500', major: true },
             { year: 1900, label: '1900', major: true },
             { year: 2000, label: '2000', major: true },
         ];
 
-        // Add more detailed markers when zoomed in
-        if (this.zoomLevel > 2) {
-            for (let year = -500; year <= 2000; year += 100) {
-                if (!milestoneYears.find(m => m.year === year)) {
-                    milestoneYears.push({ year, label: year < 0 ? `${Math.abs(year)} BCE` : `${year}`, major: false });
-                }
+        const minorMarkers = [
+            { year: -50000, label: '50,000 BCE', major: false },
+            { year: -6000, label: '6000 BCE', major: false },
+            { year: -2000, label: '2000 BCE', major: false },
+            { year: -500, label: '500 BCE', major: false },
+            { year: 500, label: '500', major: false },
+            { year: 1300, label: '1300', major: false },
+            { year: 1700, label: '1700', major: false },
+            { year: 1800, label: '1800', major: false },
+        ];
+
+        // Add more detailed markers based on zoom level tiers
+        const addMarker = (year, markers) => {
+            if (!markers.find(m => m.year === year)) {
+                const label = year < 0 ? `${Math.abs(year)} BCE` : `${year}`;
+                markers.push({ year, label, major: false });
             }
+        };
+
+        if (this.zoomLevel > 1.5) {
+            for (let year = -3000; year <= 2000; year += 500) addMarker(year, minorMarkers);
         }
-        if (this.zoomLevel > 5) {
-            for (let year = -500; year <= 2000; year += 50) {
-                if (!milestoneYears.find(m => m.year === year)) {
-                    milestoneYears.push({ year, label: year < 0 ? `${Math.abs(year)} BCE` : `${year}`, major: false });
-                }
-            }
+        if (this.zoomLevel > 3) {
+            for (let year = -1000; year <= 2000; year += 100) addMarker(year, minorMarkers);
+        }
+        if (this.zoomLevel > 6) {
+            for (let year = -500; year <= 2000; year += 50) addMarker(year, minorMarkers);
+        }
+        if (this.zoomLevel > 10) {
+            for (let year = -500; year <= 2000; year += 25) addMarker(year, minorMarkers);
         }
 
-        // Sort by year
-        milestoneYears.sort((a, b) => a.year - b.year);
+        // Two-pass approach: place major markers first, then fill minor markers in remaining gaps
+        const minPixelGap = 80;
+        const placedPositions = [];
 
-        // Filter to visible range and prevent bunching
-        const minPixelGap = 60; // Minimum pixels between labels
-        let lastPixelPos = -Infinity;
+        // Sort major markers by year
+        majorMarkers.sort((a, b) => a.year - b.year);
 
-        milestoneYears.forEach(marker => {
+        // Pass 1: Major markers
+        majorMarkers.forEach(marker => {
             if (marker.year >= this.minYear && marker.year <= this.maxYear) {
                 const pixelPos = this.yearToPosition(marker.year);
-
-                // Only show if enough space from last marker
-                if (pixelPos - lastPixelPos >= minPixelGap) {
+                const canPlace = placedPositions.every(pos => Math.abs(pixelPos - pos) >= minPixelGap);
+                if (canPlace) {
                     const div = document.createElement('div');
-                    div.className = `scale-marker ${marker.major ? 'major' : ''}`;
+                    div.className = 'scale-marker major';
                     div.style.left = `${pixelPos}px`;
                     div.innerHTML = `<span>${marker.label}</span>`;
                     container.appendChild(div);
-                    lastPixelPos = pixelPos;
+                    placedPositions.push(pixelPos);
+                }
+            }
+        });
+
+        // Sort minor markers by year
+        minorMarkers.sort((a, b) => a.year - b.year);
+
+        // Pass 2: Minor markers in remaining gaps
+        minorMarkers.forEach(marker => {
+            if (marker.year >= this.minYear && marker.year <= this.maxYear) {
+                const pixelPos = this.yearToPosition(marker.year);
+                const canPlace = placedPositions.every(pos => Math.abs(pixelPos - pos) >= minPixelGap);
+                if (canPlace) {
+                    const div = document.createElement('div');
+                    div.className = 'scale-marker';
+                    div.style.left = `${pixelPos}px`;
+                    div.innerHTML = `<span>${marker.label}</span>`;
+                    container.appendChild(div);
+                    placedPositions.push(pixelPos);
                 }
             }
         });
@@ -667,8 +825,20 @@ class TimelineApp {
             div.appendChild(labelSpan);
         }
 
+        // Show first tag icon on non-flag events
+        if (event.tags && event.tags.length > 0 && !isFlag) {
+            const firstTag = SUB_TAGS.find(t => t.id === event.tags[0]);
+            if (firstTag) {
+                const tagIcon = document.createElement('span');
+                tagIcon.className = 'event-tag-icon';
+                tagIcon.textContent = firstTag.icon;
+                div.appendChild(tagIcon);
+            }
+        }
+
         // Tooltip with full info
-        div.title = `${event.title}\n${this.formatYear(event.year)}${event.endYear ? ' - ' + this.formatYear(event.endYear) : ''}\n${event.description || ''}\n\nDrag to reorder rows`;
+        const tagNames = (event.tags || []).map(t => { const st = SUB_TAGS.find(s => s.id === t); return st ? st.name : t; }).join(', ');
+        div.title = `${event.title}\n${this.formatYear(event.year)}${event.endYear ? ' - ' + this.formatYear(event.endYear) : ''}\n${event.description || ''}${tagNames ? '\nTags: ' + tagNames : ''}\n\nDrag to reorder rows`;
 
         // Drag events for reordering
         div.addEventListener('dragstart', (e) => this.handleDragStart(e, event));
@@ -812,6 +982,18 @@ class TimelineApp {
 
         document.getElementById('eventDescription').value = event.description || '';
 
+        // Show addedBy info
+        const addedByEl = document.getElementById('eventAddedBy');
+        if (event.addedBy) {
+            addedByEl.textContent = `Added by ${event.addedBy}`;
+            addedByEl.style.display = 'block';
+        } else {
+            addedByEl.style.display = 'none';
+        }
+
+        // Show tags
+        this.renderEventTagsInDetail(event);
+
         document.getElementById('notesInput').value = timelineData.notes[event.id] || '';
         this.renderReferences(event.id);
 
@@ -850,6 +1032,10 @@ class TimelineApp {
         this.selectedEvent.category = document.getElementById('eventCategorySelect').value;
         this.selectedEvent.region = document.getElementById('eventRegionSelect').value;
         this.selectedEvent.description = document.getElementById('eventDescription').value;
+
+        // Save tags from detail panel checkboxes
+        const tagCheckboxes = document.querySelectorAll('#eventTagsEdit input[data-event-tag]:checked');
+        this.selectedEvent.tags = Array.from(tagCheckboxes).map(cb => cb.value);
 
         if (!this.selectedEvent.userAdded) {
             this.selectedEvent.userAdded = true;
@@ -966,12 +1152,19 @@ class TimelineApp {
             category: document.getElementById('newEventCategory').value,
             region: document.getElementById('newEventRegion').value,
             description: document.getElementById('newEventDescription').value,
-            userAdded: true
+            userAdded: true,
+            addedBy: getUsername()
         };
 
         const endYear = document.getElementById('newEventEndYear').value;
         if (endYear) {
             newEvent.endYear = parseInt(endYear);
+        }
+
+        // Collect tags
+        const selectedTags = this.getSelectedNewEventTags();
+        if (selectedTags.length > 0) {
+            newEvent.tags = selectedTags;
         }
 
         timelineData.events.push(newEvent);
