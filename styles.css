@@ -865,7 +865,7 @@ header h1 {
     flex: 1;
 }
 
-.event-edit-fields .save-edits-btn {
+.event-detail-panel > .save-edits-btn {
     width: 100%;
     padding: 10px 16px;
     background: var(--primary-color);
@@ -874,11 +874,11 @@ header h1 {
     color: white;
     font-size: 0.9rem;
     cursor: pointer;
-    margin-top: 5px;
+    margin-top: 10px;
     transition: opacity 0.2s;
 }
 
-.event-edit-fields .save-edits-btn:hover {
+.event-detail-panel > .save-edits-btn:hover {
     opacity: 0.9;
 }
 
@@ -1000,15 +1000,6 @@ header h1 {
     margin-bottom: 10px;
 }
 
-#saveNotes {
-    padding: 8px 16px;
-    background: var(--primary-color);
-    border: none;
-    border-radius: 2px;
-    color: white;
-    cursor: pointer;
-    font-size: 0.85rem;
-}
 
 #referencesList {
     list-style: none;

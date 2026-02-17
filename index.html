@@ -145,8 +145,6 @@
                     Description
                     <textarea id="eventDescription" rows="3"></textarea>
                 </label>
-
-                <button id="saveEventEditsBtn" class="save-edits-btn">Save Changes</button>
             </div>
 
             <div class="event-added-by" id="eventAddedBy" style="display: none;"></div>
@@ -161,8 +159,9 @@
             <div class="event-notes" id="eventNotes">
                 <h4>My Notes</h4>
                 <textarea id="notesInput" placeholder="Add your notes here..."></textarea>
-                <button id="saveNotes">Save Notes</button>
             </div>
+
+            <button id="saveEventEditsBtn" class="save-edits-btn">Save</button>
 
             <div class="event-references" id="eventReferences">
                 <h4>References</h4>
@@ -245,7 +244,7 @@
                     </label>
                     <label>
                         Title
-                        <input type="text" id="refTitle" required>
+                        <input type="text" id="refTitle">
                     </label>
                     <label>
                         URL (Goodreads, Spotify, etc.)

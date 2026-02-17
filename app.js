@@ -83,9 +83,6 @@ class TimelineApp {
         document.getElementById('cancelAddReference').addEventListener('click', () => this.closeAddReferenceModal());
         document.getElementById('addReferenceForm').addEventListener('submit', (e) => this.handleAddReference(e));
 
-        // Save notes
-        document.getElementById('saveNotes').addEventListener('click', () => this.saveNotes());
-
         // Category color preview
         document.getElementById('eventCategorySelect').addEventListener('change', (e) => {
             this.updateCategoryColorPreview(e.target.value);
@@ -1128,6 +1125,9 @@ class TimelineApp {
         const tagCheckboxes = document.querySelectorAll('#eventTagsEdit input[data-event-tag]:checked');
         this.selectedEvent.tags = Array.from(tagCheckboxes).map(cb => cb.value);
 
+        // Save notes
+        timelineData.notes[this.selectedEvent.id] = document.getElementById('notesInput').value;
+
         if (!this.selectedEvent.userAdded) {
             this.selectedEvent.userAdded = true;
         }
@@ -1135,7 +1135,7 @@ class TimelineApp {
         saveData();
         this.render();
         this.updateCategoryColorPreview(this.selectedEvent.category);
-        this.showToast('Event updated!');
+        this.showToast('Saved!');
     }
 
     deleteEvent() {
