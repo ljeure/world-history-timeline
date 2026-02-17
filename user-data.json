@@ -11,7 +11,8 @@
       "region": "subsaharan-africa",
       "description": "Humans migrate out of Africa to populate the world",
       "category": "event",
-      "userAdded": true
+      "userAdded": true,
+      "createdBy": "Luke"
     },
     {
       "id": 203,
@@ -24,7 +25,8 @@
       "region": "americas",
       "description": "Last Glacial Maximum - ice sheets at their greatest extent. Lets people get to Americas",
       "category": "event",
-      "userAdded": true
+      "userAdded": true,
+      "createdBy": "Luke"
     },
     {
       "id": 206,
@@ -37,7 +39,8 @@
       "region": "europe-middle-east",
       "description": "Çatalhöyük, Jericho, and other early urban settlements",
       "category": "state",
-      "userAdded": true
+      "userAdded": true,
+      "createdBy": "Luke"
     },
     {
       "id": 209,
@@ -46,7 +49,8 @@
       "category": "event",
       "region": "europe-middle-east",
       "description": "",
-      "userAdded": true
+      "userAdded": true,
+      "createdBy": "Luke"
     },
     {
       "id": "entity-renaissance",
@@ -99,7 +103,8 @@
       "region": "europe-middle-east",
       "description": "",
       "userAdded": true,
-      "endYear": 1353
+      "endYear": 1353,
+      "createdBy": "Luke"
     },
     {
       "id": null,
@@ -109,7 +114,8 @@
       "region": "europe-middle-east",
       "description": "",
       "userAdded": true,
-      "endYear": 888
+      "endYear": 888,
+      "createdBy": "Luke"
     }
   ],
   "entities": [],
