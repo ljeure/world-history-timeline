@@ -105,7 +105,8 @@ class HistoryMap {
         // No tile layer — GeoJSON borders on blue background (set via CSS)
         // The .leaflet-container background-color provides the ocean
 
-        // Initialize layer groups
+        // Initialize layer groups (land below empires)
+        this.landLayerGroup = L.layerGroup().addTo(this.map);
         this.empireLayerGroup = L.layerGroup().addTo(this.map);
         this.curatedLayerGroup = L.layerGroup(); // Not added by default
 
@@ -227,6 +228,7 @@ class HistoryMap {
                 signal: this.fetchController.signal
             });
             if (!response.ok) {
+                this.landLayerGroup.clearLayers();
                 this.empireLayerGroup.clearLayers();
                 this.updateEmpiresList([]);
                 return;
@@ -249,6 +251,7 @@ class HistoryMap {
         } catch (err) {
             if (err.name === 'AbortError') return; // Fetch was cancelled, ignore
             console.error('Failed to fetch map data:', err);
+            this.landLayerGroup.clearLayers();
             this.empireLayerGroup.clearLayers();
             this.updateEmpiresList([]);
         } finally {
@@ -277,6 +280,7 @@ class HistoryMap {
     }
 
     renderGeoJsonData(data, year) {
+        this.landLayerGroup.clearLayers();
         this.empireLayerGroup.clearLayers();
 
         // Pre-compute areas and metadata for all named features
@@ -284,15 +288,15 @@ class HistoryMap {
         data.features.forEach(feature => {
             const name = feature.properties.NAME;
             if (!name) {
-                // Render unnamed features as land background
+                // Render unnamed features as land background (on dedicated layer below empires)
                 L.geoJSON(feature, {
                     style: {
-                        fillColor: '#c8b99a',
-                        fillOpacity: 0.7,
-                        color: '#a89878',
-                        weight: 0.8
+                        fillColor: '#d4c9a8',
+                        fillOpacity: 1,
+                        color: '#b8a88a',
+                        weight: 0.5
                     }
-                }).addTo(this.empireLayerGroup);
+                }).addTo(this.landLayerGroup);
                 return;
             }
             const area = this.computeBboxArea(feature.geometry);
