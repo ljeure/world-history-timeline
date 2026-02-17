@@ -14,7 +14,7 @@ class TimelineApp {
         this.wasDragging = false;
         this.draggedEvent = null;
         this.dragStartY = 0;
-        this.userFilters = {}; // { "Luke": true, "Jia": true, "System": true } — populated dynamically
+        this.userFilters = {}; // { "Luke": true, "Jia": true, "Default": true } — populated dynamically
 
         this.init();
     }
@@ -491,7 +491,7 @@ class TimelineApp {
         const allChecked = Object.values(this.userFilters).every(v => v);
         if (!allChecked && Object.keys(this.userFilters).length > 0) {
             events = events.filter(e => {
-                const creator = e.createdBy || 'System';
+                const creator = e.createdBy || 'Default';
                 return this.userFilters[creator] === true;
             });
         }
@@ -1743,8 +1743,8 @@ class TimelineApp {
         const menu = document.getElementById('userFilterMenu');
         if (!menu) return;
 
-        // Always include "System" for built-in data
-        const allNames = ['System', ...users.filter(u => u !== 'System')];
+        // Always include "Default" for built-in data without explicit creator
+        const allNames = ['Default', ...users.filter(u => u !== 'Default')];
 
         // Initialize filter state — all checked by default
         this.userFilters = {};

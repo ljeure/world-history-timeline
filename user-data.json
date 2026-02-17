@@ -65,7 +65,8 @@
       "region": "europe-middle-east",
       "description": "Cultural rebirth in Europe, bridging Middle Ages and Modern era",
       "isEntity": true,
-      "userAdded": true
+      "userAdded": true,
+      "createdBy": "Luke"
     },
     {
       "id": "entity-enlightenment",
@@ -80,7 +81,8 @@
       "region": "europe-middle-east",
       "description": "Age of Reason emphasizing science and rational thought",
       "isEntity": true,
-      "userAdded": true
+      "userAdded": true,
+      "createdBy": "Luke"
     },
     {
       "id": "period-europe-middle-ages",
