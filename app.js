@@ -513,6 +513,7 @@ class TimelineApp {
             { year: 1500, label: '1500', major: true },
             { year: 1900, label: '1900', major: true },
             { year: 2000, label: '2000', major: true },
+            { year: 2026, label: '2026', major: true },
         ];
 
         const minorMarkers = [
