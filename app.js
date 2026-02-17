@@ -163,7 +163,7 @@ class TimelineApp {
     updateNameButton(name) {
         const btn = document.getElementById('changeNameBtn');
         if (btn) {
-            btn.textContent = name || 'Set Name';
+            btn.textContent = 'Change username';
         }
     }
 

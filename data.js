@@ -619,7 +619,8 @@ function initializeTimelineData() {
             entityType: entity.type,
             region: entity.region,
             description: entity.description,
-            isEntity: true
+            isEntity: true,
+            createdBy: entity.createdBy
         };
 
         // Only add if not already present and not deleted by user
