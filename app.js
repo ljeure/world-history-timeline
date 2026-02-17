@@ -64,9 +64,9 @@ class TimelineApp {
         document.getElementById('zoomIn').addEventListener('click', () => this.zoom(1.5));
         document.getElementById('zoomOut').addEventListener('click', () => this.zoom(0.67));
 
-        // Zoom slider
+        // Zoom slider (logarithmic: 0–100 maps to 0.5–10)
         document.getElementById('zoomSlider').addEventListener('input', (e) => {
-            this.zoomLevel = parseFloat(e.target.value);
+            this.zoomLevel = this.sliderToZoom(parseFloat(e.target.value));
             this.render();
         });
 
@@ -315,6 +315,36 @@ class TimelineApp {
                 this.zoom(zoomFactor);
             }
         }, { passive: false });
+
+        // Pinch-to-zoom on touch devices
+        let lastPinchDist = 0;
+        container.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                lastPinchDist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+            }
+        }, { passive: true });
+
+        container.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                const dist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                if (lastPinchDist > 0) {
+                    const scale = dist / lastPinchDist;
+                    this.zoom(scale);
+                }
+                lastPinchDist = dist;
+            }
+        }, { passive: false });
+
+        container.addEventListener('touchend', () => {
+            lastPinchDist = 0;
+        }, { passive: true });
     }
 
     handleTabSwitch(e) {
@@ -364,10 +394,23 @@ class TimelineApp {
         this.render();
     }
 
+    // Logarithmic zoom slider mapping: slider 0–100 <-> zoom 0.5–10
+    sliderToZoom(sliderVal) {
+        // 0 -> 0.5, 50 -> ~2.2, 100 -> 10
+        const minZoom = 0.5, maxZoom = 10;
+        const t = sliderVal / 100;
+        return minZoom * Math.pow(maxZoom / minZoom, t);
+    }
+
+    zoomToSlider(zoomVal) {
+        const minZoom = 0.5, maxZoom = 10;
+        return 100 * Math.log(zoomVal / minZoom) / Math.log(maxZoom / minZoom);
+    }
+
     zoom(factor) {
         this.zoomLevel *= factor;
         this.zoomLevel = Math.max(0.5, Math.min(10, this.zoomLevel));
-        document.getElementById('zoomSlider').value = this.zoomLevel;
+        document.getElementById('zoomSlider').value = this.zoomToSlider(this.zoomLevel);
         this.render();
     }
 

@@ -2270,8 +2270,20 @@ header h1 {
         right: -100%;
     }
 
+    .app-container {
+        padding: 10px;
+    }
+
+    header {
+        margin-bottom: 10px;
+    }
+
     header h1 {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
+    }
+
+    .subtitle {
+        font-size: 0.7rem;
     }
 
     .region-label {
@@ -2281,31 +2293,96 @@ header h1 {
     }
 
     /* Map responsive */
+    .map-view {
+        height: calc(100vh - 120px);
+    }
+
+    .map-controls {
+        padding: 8px 12px;
+        margin-bottom: 8px;
+    }
+
+    .map-time-control {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .map-year-display {
+        font-size: 1.1rem;
+        min-width: auto;
+        order: -1;
+        width: 100%;
+        text-align: center;
+    }
+
+    .map-slider {
+        min-width: 100px;
+    }
+
+    .map-nav-btn, .map-play-btn {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+
+    .map-play-btn {
+        min-width: 60px;
+    }
+
+    .map-speed-control {
+        font-size: 0.75rem;
+    }
+
+    .map-scale-toggle label {
+        font-size: 0.75rem;
+    }
+
     .map-main {
         flex-direction: column;
+        min-height: 0;
     }
 
     .map-sidebar {
         width: 100%;
-        max-height: 150px;
+        max-height: 80px;
+        padding: 8px;
+        overflow-y: auto;
     }
 
-    .map-time-control {
-        flex-direction: column;
-        align-items: stretch;
+    .map-sidebar h3 {
+        font-size: 0.75rem;
+        margin-bottom: 5px;
     }
 
-    .map-year-display {
-        order: -1;
+    .empire-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .empire-list-item {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+    }
+
+    .map-container-wrapper {
+        min-height: 300px;
     }
 
     .view-tabs {
-        gap: 5px;
+        gap: 4px;
+        flex-wrap: wrap;
     }
 
     .view-tab {
-        padding: 8px 20px;
-        font-size: 0.8rem;
+        padding: 6px 12px;
+        font-size: 0.75rem;
+    }
+
+    /* Timeline touch: allow horizontal pinch-zoom */
+    .timeline-container {
+        touch-action: pan-y;
     }
 
     /* Quiz responsive */
