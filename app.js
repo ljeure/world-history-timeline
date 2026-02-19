@@ -104,6 +104,10 @@ class TimelineApp {
         document.getElementById('searchInput').addEventListener('input', (e) => {
             this.searchQuery = e.target.value.toLowerCase();
             this.render();
+            if (this.searchQuery) {
+                const filtered = this.getFilteredEvents();
+                this.zoomToFitEvents(filtered);
+            }
         });
 
         // Keyboard shortcuts
@@ -412,6 +416,25 @@ class TimelineApp {
         this.zoomLevel = Math.max(0.5, Math.min(10, this.zoomLevel));
         document.getElementById('zoomSlider').value = this.zoomToSlider(this.zoomLevel);
         this.render();
+    }
+
+    zoomToFitEvents(events) {
+        if (!events.length) return;
+        const years = events.flatMap(e => [e.year, e.endYear || e.year]);
+        const minY = Math.min(...years);
+        const maxY = Math.max(...years);
+        const padding = Math.max((maxY - minY) * 0.1, 50);
+        const container = document.querySelector('.timeline-container');
+        const containerW = container.clientWidth - 120; // minus region label width
+        const yearRange = (maxY + padding) - (minY - padding);
+        const totalRange = this.maxYear - this.minYear;
+        const neededZoom = (containerW / this.timelineWidth) * (totalRange / yearRange);
+        this.zoomLevel = Math.max(0.5, Math.min(10, neededZoom));
+        document.getElementById('zoomSlider').value = this.zoomToSlider(this.zoomLevel);
+        this.render();
+        // Scroll to center the results
+        const centerX = this.yearToPosition((minY + maxY) / 2);
+        container.scrollLeft = centerX - containerW / 2;
     }
 
     resetZoom() {

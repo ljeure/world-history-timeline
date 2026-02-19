@@ -131,6 +131,13 @@ const server = http.createServer((req, res) => {
         return;
     }
 
+    // API: List available snapshot years for prefetch
+    if (req.method === 'GET' && req.url === '/api/map/snapshots') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ years: snapshotIndex.map(s => s.year) }));
+        return;
+    }
+
     // API: Get historical map data for a year
     if (req.method === 'GET' && req.url.match(/^\/api\/map\/-?\d+$/)) {
         const targetYear = parseInt(req.url.split('/').pop(), 10);

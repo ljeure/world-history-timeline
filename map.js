@@ -90,6 +90,8 @@ class HistoryMap {
         this.currentSnapshotYear = null;
         this.selectedGeometry = null;
         this.fetchController = null;
+        this.snapshotYears = [];
+        this.prefetching = false;
     }
 
     init() {
@@ -112,6 +114,9 @@ class HistoryMap {
 
         this.bindEvents();
 
+        // Fetch available snapshot years for prefetch
+        this.loadSnapshotYears();
+
         // With experience scale on, position 500/1000 = 0.5 maps to ~1300 CE
         const initialPosition = 500 / 1000;
         const initialYear = sliderPositionToYear(initialPosition, this.useExperienceScale);
@@ -133,7 +138,10 @@ class HistoryMap {
 
             // Debounce the actual fetch
             clearTimeout(this.debounceTimer);
-            this.debounceTimer = setTimeout(() => this.setYear(year, false), 150);
+            this.debounceTimer = setTimeout(() => {
+                this.setYear(year, false);
+                this.prefetchAround(year);
+            }, 150);
         });
 
         document.getElementById('mapPlayBtn').addEventListener('click', () => this.togglePlay());
@@ -207,6 +215,58 @@ class HistoryMap {
         if (el) el.style.display = show ? 'flex' : 'none';
     }
 
+    async loadSnapshotYears() {
+        try {
+            const resp = await fetch('/api/map/snapshots');
+            const data = await resp.json();
+            this.snapshotYears = data.years || [];
+            // Prefetch around initial position
+            if (this.snapshotYears.length > 0) {
+                this.prefetchAround(this.currentYear);
+            }
+        } catch (err) {
+            console.warn('Could not load snapshot years:', err);
+        }
+    }
+
+    async prefetchAround(year, count = 5) {
+        if (this.prefetching || this.snapshotYears.length === 0) return;
+        this.prefetching = true;
+
+        try {
+            // Find nearest index
+            let nearestIdx = 0;
+            let minDist = Infinity;
+            for (let i = 0; i < this.snapshotYears.length; i++) {
+                const dist = Math.abs(this.snapshotYears[i] - year);
+                if (dist < minDist) {
+                    minDist = dist;
+                    nearestIdx = i;
+                }
+            }
+
+            const startIdx = Math.max(0, nearestIdx - count);
+            const endIdx = Math.min(this.snapshotYears.length - 1, nearestIdx + count);
+
+            for (let i = startIdx; i <= endIdx; i++) {
+                const snapYear = this.snapshotYears[i];
+                if (this.geoJsonCache.has(snapYear)) continue;
+
+                try {
+                    const resp = await fetch(`/api/map/${snapYear}`);
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        this.geoJsonCache.set(snapYear, data);
+                    }
+                } catch (e) {
+                    // Silently skip failed prefetches
+                }
+            }
+        } finally {
+            this.prefetching = false;
+        }
+    }
+
     async renderEmpires() {
         const year = this.currentYear;
 
@@ -221,7 +281,7 @@ class HistoryMap {
             this.fetchController.abort();
         }
         this.fetchController = new AbortController();
-        this.showLoading(true);
+        if (!this.isPlaying) this.showLoading(true);
 
         try {
             const response = await fetch(`/api/map/${year}`, {
@@ -255,7 +315,7 @@ class HistoryMap {
             this.empireLayerGroup.clearLayers();
             this.updateEmpiresList([]);
         } finally {
-            this.showLoading(false);
+            if (!this.isPlaying) this.showLoading(false);
         }
     }
 
