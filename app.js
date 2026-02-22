@@ -1177,7 +1177,7 @@ class TimelineApp {
         preview.style.background = colorMap[category] || 'var(--state-color)';
     }
 
-    saveEventEdits() {
+    async saveEventEdits() {
         if (!this.selectedEvent) return;
 
         this.selectedEvent.title = document.getElementById('eventTitle').value;
@@ -1199,13 +1199,13 @@ class TimelineApp {
             this.selectedEvent.userAdded = true;
         }
 
-        saveData();
+        await saveData();
         this.render();
         this.updateCategoryColorPreview(this.selectedEvent.category);
         this.showToast('Saved!');
     }
 
-    deleteEvent() {
+    async deleteEvent() {
         if (!this.selectedEvent) return;
 
         const eventTitle = this.selectedEvent.title;
@@ -1234,7 +1234,7 @@ class TimelineApp {
             delete timelineData.rowAssignments[key];
         }
 
-        saveData();
+        await saveData();
         this.closeDetailPanel();
         this.render();
         this.showToast(`"${eventTitle}" deleted`);
@@ -1283,10 +1283,10 @@ class TimelineApp {
         this.selectedEvent = null;
     }
 
-    saveNotes() {
+    async saveNotes() {
         if (this.selectedEvent) {
             timelineData.notes[this.selectedEvent.id] = document.getElementById('notesInput').value;
-            saveData();
+            await saveData();
             this.showToast('Notes saved!');
         }
     }
@@ -1300,7 +1300,7 @@ class TimelineApp {
         document.getElementById('addEventForm').reset();
     }
 
-    handleAddEvent(e) {
+    async handleAddEvent(e) {
         e.preventDefault();
 
         const username = getUsername();
@@ -1345,7 +1345,7 @@ class TimelineApp {
             timelineData.references.push(newRef);
         }
 
-        saveData();
+        await saveData();
 
         this.closeAddEventModal();
         this.render();
@@ -1361,7 +1361,7 @@ class TimelineApp {
         document.getElementById('addReferenceForm').reset();
     }
 
-    handleAddReference(e) {
+    async handleAddReference(e) {
         e.preventDefault();
 
         if (!this.selectedEvent) return;
@@ -1377,7 +1377,7 @@ class TimelineApp {
         };
 
         timelineData.references.push(newRef);
-        saveData();
+        await saveData();
 
         this.closeAddReferenceModal();
         this.renderReferences(this.selectedEvent.id);
@@ -1508,7 +1508,7 @@ class TimelineApp {
         document.getElementById('quizScoreTotal').textContent = this.quiz.answered;
     }
 
-    showQuizResults() {
+    async showQuizResults() {
         const results = this.quiz.getResults();
 
         document.getElementById('quizCard').style.display = 'none';
@@ -1530,11 +1530,11 @@ class TimelineApp {
         breakdown.textContent = msg;
 
         // Save quiz history
-        this.saveQuizResult(results);
+        await this.saveQuizResult(results);
         this.quiz.isActive = false;
     }
 
-    saveQuizResult(results) {
+    async saveQuizResult(results) {
         if (!timelineData.quizHistory) timelineData.quizHistory = [];
         timelineData.quizHistory.unshift({
             date: new Date().toISOString(),
@@ -1548,7 +1548,7 @@ class TimelineApp {
         if (timelineData.quizHistory.length > 20) {
             timelineData.quizHistory = timelineData.quizHistory.slice(0, 20);
         }
-        saveData();
+        await saveData();
     }
 
     renderQuizHistory() {
@@ -1611,7 +1611,7 @@ class TimelineApp {
         });
     }
 
-    addTakeaway() {
+    async addTakeaway() {
         const input = document.getElementById('takeawayInput');
         const text = input.value.trim();
         if (!text) return;
@@ -1629,7 +1629,7 @@ class TimelineApp {
         };
 
         timelineData.takeaways.unshift(takeaway);
-        saveData();
+        await saveData();
 
         input.value = '';
         document.getElementById('takeawayEntitySelect').value = '';
@@ -1692,7 +1692,7 @@ class TimelineApp {
         textarea.setSelectionRange(textarea.value.length, textarea.value.length);
     }
 
-    saveTakeawayEdit(id) {
+    async saveTakeawayEdit(id) {
         const takeaways = timelineData.takeaways || [];
         const takeaway = takeaways.find(t => t.id === id);
         if (!takeaway) return;
@@ -1710,18 +1710,18 @@ class TimelineApp {
 
         takeaway.text = newText;
         takeaway.updatedAt = new Date().toISOString();
-        saveData();
+        await saveData();
         this.renderTakeaways();
         this.showToast('Takeaway updated!');
     }
 
-    deleteTakeaway(id) {
+    async deleteTakeaway(id) {
         const takeaways = timelineData.takeaways || [];
         const index = takeaways.findIndex(t => t.id === id);
         if (index === -1) return;
 
         takeaways.splice(index, 1);
-        saveData();
+        await saveData();
         this.renderTakeaways();
         this.showToast('Takeaway deleted');
     }
@@ -1732,7 +1732,7 @@ class TimelineApp {
         return div.innerHTML;
     }
 
-    joinEvent() {
+    async joinEvent() {
         if (!this.selectedEvent) return;
         const username = getUsername();
         if (!username) return;
@@ -1743,7 +1743,7 @@ class TimelineApp {
         if (!this.selectedEvent.sharedWith.includes(username)) {
             this.selectedEvent.sharedWith.push(username);
             this.selectedEvent.userAdded = true;
-            saveData();
+            await saveData();
             document.getElementById('joinEventBtn').style.display = 'none';
             this.showToast('Joined! This event is now shared with you.');
         }
@@ -1823,10 +1823,10 @@ class TimelineApp {
         this.showToast('Sample CSV downloaded!');
     }
 
-    resetLayout() {
+    async resetLayout() {
         if (confirm('This will reset all row arrangements to auto-layout. Continue?')) {
             timelineData.rowAssignments = {};
-            saveData();
+            await saveData();
             this.render();
             this.showToast('Layout reset to auto-arrange');
         }
@@ -1925,7 +1925,7 @@ class TimelineApp {
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = async (event) => {
             try {
                 const rows = this.parseCSV(event.target.result);
                 if (rows.length < 2) {
@@ -1976,7 +1976,7 @@ class TimelineApp {
                 }
 
                 if (imported > 0) {
-                    saveData();
+                    await saveData();
                     this.render();
                     this.showToast(`Imported ${imported} event${imported !== 1 ? 's' : ''} from CSV!`);
                 } else {

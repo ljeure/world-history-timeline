@@ -477,6 +477,9 @@ async function saveData() {
             });
             if (response.ok) {
                 console.log('Data saved to server');
+            } else {
+                console.error('Server save failed with status:', response.status);
+                localStorage.setItem('worldHistoryTimeline', JSON.stringify(userData));
             }
         } catch (err) {
             console.error('Failed to save to server, falling back to localStorage:', err);

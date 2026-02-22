@@ -654,7 +654,7 @@ class HistoryMap {
         this.linkedTimelineEvent = null;
     }
 
-    addSelectedToTimeline() {
+    async addSelectedToTimeline() {
         if (!this.selectedEmpire) return;
 
         const props = this.selectedEmpire;
@@ -676,7 +676,7 @@ class HistoryMap {
         };
 
         timelineData.events.push(newEvent);
-        saveData();
+        await saveData();
 
         this.showToast(`"${newEvent.title}" added to timeline!`);
 
@@ -693,7 +693,7 @@ class HistoryMap {
         }, 500);
     }
 
-    createStateEntity() {
+    async createStateEntity() {
         if (!this.selectedEmpire) return;
 
         const props = this.selectedEmpire;
@@ -744,7 +744,7 @@ class HistoryMap {
         };
 
         timelineData.events.push(newEvent);
-        saveData();
+        await saveData();
 
         this.showToast(`Created entity "${name}" and added to timeline!`);
 
@@ -757,7 +757,7 @@ class HistoryMap {
         }, 500);
     }
 
-    saveTimelineEdits() {
+    async saveTimelineEdits() {
         if (!this.linkedTimelineEvent) return;
 
         this.linkedTimelineEvent.title = document.getElementById('editEmpireTitle').value;
@@ -771,7 +771,7 @@ class HistoryMap {
         this.linkedTimelineEvent.description = document.getElementById('editEmpireDescription').value;
         this.linkedTimelineEvent.userAdded = true;
 
-        saveData();
+        await saveData();
 
         this.showToast('Timeline event updated!');
 
