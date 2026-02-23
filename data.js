@@ -125,6 +125,15 @@ const timelineData = {
         { id: 'seljuk-empire', name: 'Seljuk Empire', type: 'state', year: 1037, endYear: 1194, region: 'asia', description: 'Turkish empire. Nomadic people, came into Anatolia and conquered. Converted Greek-speaking Christian Anatolians into Turkish speaking Muslims', createdBy: 'Luke' },
         { id: 'timurid-emirates', name: 'Timurid Empire', type: 'state', year: 1363, endYear: 1562, region: 'asia', description: "Tamerlane-founded Turkish empire. Tamerlane (Timur, Tamer the Lame) claimed to descend from Genghis Khan", createdBy: 'Luke' },
 
+        // Iranian States
+        { id: 'ilkhanate', name: 'Ilkhanate', type: 'state', year: 1256, endYear: 1335, region: 'europe-middle-east', description: 'Mongol khanate ruling Persia, founded by Hulagu Khan after sacking Baghdad', createdBy: 'Luke' },
+        { id: 'qajar-dynasty', name: 'Qajar Dynasty', type: 'state', year: 1789, endYear: 1925, region: 'europe-middle-east', description: 'Iranian dynasty ruling during an era of European imperial pressure and modernization efforts', createdBy: 'Luke' },
+        { id: 'pahlavi-dynasty', name: 'Pahlavi Dynasty', type: 'state', year: 1925, endYear: 1979, region: 'europe-middle-east', description: 'Last Iranian monarchy, modernized Iran before the 1979 Islamic Revolution', createdBy: 'Luke' },
+
+        // American States
+        { id: 'aztec-empire', name: 'Aztec Empire', type: 'state', year: 1428, endYear: 1521, region: 'americas', description: 'Mesoamerican empire centered on Tenochtitlan, conquered by Spanish under Cortés', createdBy: 'Luke' },
+        { id: 'inca-empire', name: 'Inca Empire', type: 'state', year: 1438, endYear: 1533, region: 'americas', description: 'Largest empire in pre-Columbian Americas, spanning the Andes from Ecuador to Chile', createdBy: 'Luke' },
+
         // African States
         { id: 'egypt-old', name: 'Egyptian Old Kingdom', type: 'state', year: -2686, endYear: -2181, region: 'subsaharan-africa', description: 'Age of the pyramids, centralized pharaonic rule', createdBy: 'Luke' },
         { id: 'egypt-middle', name: 'Egyptian Middle Kingdom', type: 'state', year: -2055, endYear: -1650, region: 'subsaharan-africa', description: 'Reunification and cultural flourishing of Egypt', createdBy: 'Luke' },
