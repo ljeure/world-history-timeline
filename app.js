@@ -4,7 +4,7 @@ class TimelineApp {
     constructor() {
         this.currentFilter = 'all';
         this.useExperienceScale = true;
-        this.zoomLevel = 1;
+        this.zoomLevel = 0.5;
         this.minYear = -300000;  // Full human history
         this.maxYear = 2026;
         this.selectedEvent = null;
@@ -438,8 +438,8 @@ class TimelineApp {
     }
 
     resetZoom() {
-        this.zoomLevel = 1;
-        document.getElementById('zoomSlider').value = 1;
+        this.zoomLevel = 0.5;
+        document.getElementById('zoomSlider').value = 0;
         this.render();
     }
 
