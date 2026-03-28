@@ -268,6 +268,14 @@ class TimelineApp {
         });
     }
 
+    syncScaleScroll() {
+        const container = document.querySelector('.timeline-container');
+        const scale = document.getElementById('timelineScale');
+        if (container && scale) {
+            scale.scrollLeft = container.scrollLeft;
+        }
+    }
+
     setupDragScroll() {
         const container = document.querySelector('.timeline-container');
         const scale = document.getElementById('timelineScale');
@@ -307,6 +315,7 @@ class TimelineApp {
             const x = e.pageX - container.offsetLeft;
             const walk = (x - startX) * 1.5;
             container.scrollLeft = scrollLeft - walk;
+            this.syncScaleScroll();
         });
 
         container.style.cursor = 'grab';
@@ -435,6 +444,7 @@ class TimelineApp {
         // Scroll to center the results
         const centerX = this.yearToPosition((minY + maxY) / 2);
         container.scrollLeft = centerX - containerW / 2;
+        this.syncScaleScroll();
     }
 
     resetZoom() {
@@ -540,6 +550,7 @@ class TimelineApp {
         this.renderScaleMarkers();
         this.renderRegionTimeline();
         this.updateStats();
+        this.syncScaleScroll();
     }
 
     updateStats() {
@@ -662,7 +673,7 @@ class TimelineApp {
         container.innerHTML = '';
 
         const width = this.timelineWidth * this.zoomLevel;
-        container.style.width = `${width}px`;
+        container.style.width = `${width + 120}px`;
 
         const events = this.getFilteredEvents();
         console.log('Filtered events:', events.length, 'Year range:', this.minYear, 'to', this.maxYear);
